@@ -81,7 +81,7 @@ region_metaData_generation <- function(regions,
     rangesB <- split(IRanges(cpg_shelf_chroi$start, cpg_shelf_chroi$end), chromosome)
 
     #which regionsB overlap w no regionA regions
-    not_ov <- countOverlaps(rangesB, rangesA, type = 'any')>0
+    not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')>0
 
     cpg_shelf_chroi <- cpg_shelf_chroi[not_ov[[1]],]
     cpg_shelf_chroi$class <- "CpG_shelf"
@@ -183,7 +183,7 @@ region_metaData_generation <- function(regions,
     rangesB <- split(IRanges(chr_oi_all$start, chr_oi_all$end), chromosome)
 
     #which rangesB have an overlap with at least one rangesA?
-    ov <- countOverlaps(rangesB, rangesA, type="any")>0
+    ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- chr_oi_all[ov[[1]],]
 
     gene_id <- 0
@@ -248,7 +248,7 @@ region_metaData_generation <- function(regions,
       # Categorize cpg_sites based on chromatin state map ranges and names
       chromatin_states_oi <- as.data.frame(chromatin_states[seqnames(chromatin_states) == chromosome,])
       rangesB <- split(IRanges(chromatin_states_oi$start, chromatin_states_oi$end), chromosome)
-      chromatin_overlaps <- countOverlaps(rangesB, rangesA, type = "any")>0
+      chromatin_overlaps <- GenomicRanges::countOverlaps(rangesB, rangesA, type = "any")>0
       hit_chromatin <- chromatin_states_oi[chromatin_overlaps[[1]],]
       # hit_chromatin
       if (nrow(hit_chromatin) > 0) {

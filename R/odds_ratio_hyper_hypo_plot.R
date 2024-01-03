@@ -20,6 +20,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   pqlseq_res_fdr1 <- pqlseq_res[pqlseq_res$fdr_perc < fdr_perc,]
   region_metaData_fdr1 <- region_metaData[region_metaData$region %in% rownames(pqlseq_res_fdr1),]
   pqlseq_res_fdr1 <- pqlseq_res_fdr1[order(rownames(pqlseq_res_fdr1)),]
+  region_metaData_fdr1 <- region_metaData_fdr1[order(region_metaData_fdr1$region),]
 
   if (all(region_metaData_fdr1$region == rownames(pqlseq_res_fdr1)) == FALSE) {return(message("region_metadata does not match pqlseq_res"))}
 

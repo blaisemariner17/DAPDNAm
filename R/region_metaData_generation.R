@@ -56,7 +56,7 @@ region_metaData_generation <- function(regions,
     rangesB <- split(IRanges(cpg_shores_chroi$start, cpg_shores_chroi$end), chromosome)
 
     #which regionsB overlap w no regionA regions
-    not_ov <- countOverlaps(rangesB, rangesA, type = 'any')>0
+    not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')>0
 
     cpg_shores_chroi <- cpg_shores_chroi[not_ov[[1]],]
     cpg_shores_chroi$class <- "CpG_shore"

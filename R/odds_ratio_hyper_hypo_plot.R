@@ -44,8 +44,8 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       number_sig_notfrom_col <- nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
       numer_notsig_notfrom_col <- sum(region_metaData[,c(paste0(col))] == 0) - nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
 
-      if (nrow(number_sighyp_from_col) == 0 | nrow(number_notsighyp_from_col) == 0 |
-          nrow(number_sig_notfrom_col) == 0 | nrow(numer_notsig_notfrom_col) == 0) {next}
+      if ((number_sighyp_from_col) == 0 | (number_notsighyp_from_col) == 0 |
+          (number_sig_notfrom_col) == 0 | (numer_notsig_notfrom_col) == 0) {next}
 
       data_oi <- matrix(c(number_sighyp_from_col,
                           number_sig_notfrom_col,
@@ -94,8 +94,8 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       number_sig_notfrom_col <- nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
       numer_notsig_notfrom_col <- sum(region_metaData[,c(paste0(col))] == 0) - nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
 
-      if (nrow(number_sighyp_from_col) == 0 | nrow(number_notsighyp_from_col) == 0 |
-          nrow(number_sig_notfrom_col) == 0 | nrow(numer_notsig_notfrom_col) == 0) {next}
+      if ((number_sighyp_from_col) == 0 | (number_notsighyp_from_col) == 0 |
+          (number_sig_notfrom_col) == 0 | (numer_notsig_notfrom_col) == 0) {next}
 
       data_oi <- matrix(c(number_sighyp_from_col,
                           number_sig_notfrom_col,

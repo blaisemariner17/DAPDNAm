@@ -8,7 +8,8 @@ odds_ratio_hyper_hypo_plot(
   pqlseq_res,
   region_metaData = region_metaData,
   fdr_perc = 0.05,
-  omit_class = c()
+  omit_class = c(),
+  color_order = c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red")
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ odds_ratio_hyper_hypo_plot(
 \item{fdr_perc}{fdr percent cutoff}
 
 \item{omit_class}{what classes to omit from the scatterplot. e.g. c("SINE","LINE")}
+
+\item{color_order}{the colors to be assigned to the plots in ggplot}
 }
 \value{
 Function returns plot of annotations from the region_metaData that are enriched/depleted in hypomethyated and hypermethylated regions

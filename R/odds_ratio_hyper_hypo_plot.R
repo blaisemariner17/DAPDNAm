@@ -4,13 +4,15 @@
 #' @param region_metaData region metadata
 #' @param fdr_perc fdr percent cutoff
 #' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
+#' @param color_order the colors to be assigned to the plots in ggplot
 #' @return Function returns plot of annotations from the region_metaData that are enriched/depleted in hypomethyated and hypermethylated regions
 #' @export odds_ratio_hyper_hypo_plot
 
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
                                        region_metaData = region_metaData,
                                        fdr_perc = 0.05,
-                                       omit_class = c()
+                                       omit_class = c(),
+                                       color_order =c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red" )
 ) {
   pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
   pqlseq_res <- pqlseq_res[order(pqlseq_res$padj),]
@@ -147,8 +149,6 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
                           (for_ggplot_both$odds_ratio_log10_hyper < 0 & for_ggplot_both$odds_ratio_log10_hypo > 0)] <- "red"
   for_ggplot_both$color[for_ggplot_both$color_hyper == "red" & for_ggplot_both$color_hypo == "red" &
                           (for_ggplot_both$odds_ratio_log10_hyper >0 & for_ggplot_both$odds_ratio_log10_hypo < 0)] <- "purple"
-
-  color_order <- c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red" )
 
   for_ggplot_both$color <- factor(for_ggplot_both$color,
                                   levels =color_order)

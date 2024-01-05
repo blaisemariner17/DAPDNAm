@@ -44,6 +44,9 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       number_sig_notfrom_col <- nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
       numer_notsig_notfrom_col <- sum(region_metaData[,c(paste0(col))] == 0) - nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
 
+      if (nrow(number_sighyp_from_col) == 0 | nrow(number_notsighyp_from_col) == 0 |
+          nrow(number_sig_notfrom_col) == 0 | nrow(numer_notsig_notfrom_col) == 0) {next}
+
       data_oi <- matrix(c(number_sighyp_from_col,
                           number_sig_notfrom_col,
                           number_notsighyp_from_col,
@@ -78,7 +81,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   if (exists("for_ggplot_hypo")){rm(for_ggplot_hypo)}
   res <- list()
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta < 0],]
-  for (col in colnames(region_metaData_fdr1_oi)colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
+  for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
       next
     }
@@ -90,6 +93,9 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       number_notsighyp_from_col <- sum(region_metaData[,c(paste0(col))] == 1) - nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 1,])
       number_sig_notfrom_col <- nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
       numer_notsig_notfrom_col <- sum(region_metaData[,c(paste0(col))] == 0) - nrow(region_metaData_fdr1_oi[region_metaData_fdr1_oi[,c(paste0(col))] == 0,])
+
+      if (nrow(number_sighyp_from_col) == 0 | nrow(number_notsighyp_from_col) == 0 |
+          nrow(number_sig_notfrom_col) == 0 | nrow(numer_notsig_notfrom_col) == 0) {next}
 
       data_oi <- matrix(c(number_sighyp_from_col,
                           number_sig_notfrom_col,

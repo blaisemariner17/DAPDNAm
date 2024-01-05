@@ -3,12 +3,14 @@
 #' @param pqlseq_res pqlseq_results
 #' @param region_metaData region metadata
 #' @param fdr_perc fdr percent cutoff
+#' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
 #' @return Function returns plot of annotations from the region_metaData that are enriched/depleted in hypomethyated and hypermethylated regions
 #' @export odds_ratio_hyper_hypo_plot
 
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
                                        region_metaData = region_metaData,
-                                       fdr_perc = 0.05
+                                       fdr_perc = 0.05,
+                                       omit_class = c()
 ) {
   pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
   pqlseq_res <- pqlseq_res[order(pqlseq_res$padj),]
@@ -155,7 +157,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   theme_blaise <- theme(plot.title.position = "plot", axis.text.x = element_text(angle=0),      plot.title = element_text(family = "sans", size = 24, hjust = 0.5, color="black", face='bold'),      plot.subtitle = element_text(family = "sans", size = 11, color="black"), axis.text = element_text(family = "sans", size = 18, color="black"),axis.title.y = element_markdown(family = "sans", size = 20), axis.title.x = element_markdown(family = "sans", size = 20),       panel.border = element_blank(),      axis.line = element_line(colour = "black", linewidth = 1),       axis.ticks = element_line(colour = "black", linewidth = 1),       legend.key.size = unit(1.5, 'cm'),      legend.key = element_rect(fill=NA),      legend.text = element_text(family = "sans", size = 20),      legend.title = element_blank(),      legend.background = element_blank(),      legend.box.background = element_blank(),      legend.text.align =	0,      panel.background = element_blank(),      panel.grid.major = element_line(colour = "black"),      panel.grid.minor = element_blank())+ removeGrid()
 
-  plot_ <- ggplot(for_ggplot_both[!for_ggplot_both$class_hyper %in% c("SINE", "LINE"),],
+  plot_ <- ggplot(for_ggplot_both[!for_ggplot_both$class_hyper %in% omit_class,],
                   aes(x = odds_ratio_log10_hypo, y = odds_ratio_log10_hyper, label = class_hyper, color = color)) +
     geom_hline(yintercept = 0, color = "darkgrey", linetype = "dashed") +
     geom_vline(xintercept = 0, color = "darkgrey", linetype = "dashed") +

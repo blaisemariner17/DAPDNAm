@@ -5,7 +5,7 @@
 #' @param fdr_perc fdr percent cutoff
 #' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
 #' @param color_order the colors to be assigned to the plots in ggplot
-#' @return Function returns dataframe of epitools::oddsratio calculations for hypo and hyper comparisons of interest
+#' @return Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest
 #' @export odds_ratio_hyper_hypo_plot
 
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
@@ -53,19 +53,12 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       colnames(data_oi) <- class_oi
       rownames(data_oi) <- outcome_oi
       data_oi
-
-      # an.error.occured <- FALSE
-      # tryCatch( { epitools::oddsratio(data_oi) }
-      #           , error = function(e) {an.error.occured <<- TRUE})
-      #
-      # if (an.error.occured) {next}
-
-      odds_ratio <- epitools::oddsratio(data_oi)
+      odds_ratio <- oddsratio(data_oi)
       odds_ratio
 
-      # if (round(odds_ratio$p.value[2,2], digits = 10) < 0.05) { color = "red"} else {color = "black"}
+      # if (odds_ratio$p.value[2,2] < 0.05) { color = "red"} else {color = "black"}
 
-      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 10), "odds_ratio_log10" = round(log10(odds_ratio$measure[2,1]), digits = 3),
+      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log10" = round(log10(odds_ratio$measure[2,1]), digits = 3),
                          "lower" = round(log10(odds_ratio$measure[2,2]), digits = 3), "upper" = round(log10(odds_ratio$measure[2,3]), digits = 3))
       res[[col]] <- res_
       if (exists("for_ggplot_hyper") == FALSE){
@@ -85,7 +78,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   if (exists("for_ggplot_hypo")){rm(for_ggplot_hypo)}
   res <- list()
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta < 0],]
-  for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
+  for (col in colnames(region_metaData_fdr1_oi)colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
       next
     }
@@ -107,17 +100,10 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       colnames(data_oi) <- class_oi
       rownames(data_oi) <- outcome_oi
       data_oi
+      odds_ratio <- oddsratio(data_oi)
+      odds_ratio
 
-      # an.error.occured <- FALSE
-      # tryCatch( { epitools::oddsratio(data_oi) }
-      #           , error = function(e) {an.error.occured <<- TRUE})
-      #
-      # if (an.error.occured) {next}
-
-      odds_ratio <- epitools::oddsratio(data_oi)
-
-
-      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 10), "odds_ratio_log10" = round(log10(odds_ratio$measure[2,1]), digits = 3),
+      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log10" = round(log10(odds_ratio$measure[2,1]), digits = 3),
                          "lower" = round(log10(odds_ratio$measure[2,2]), digits = 3), "upper" = round(log10(odds_ratio$measure[2,3]), digits = 3))
       res[[col]] <- res_
       if (exists("for_ggplot_hypo") == FALSE){

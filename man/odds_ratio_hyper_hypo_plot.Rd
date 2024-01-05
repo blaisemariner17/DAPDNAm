@@ -24,7 +24,7 @@ odds_ratio_hyper_hypo_plot(
 \item{color_order}{the colors to be assigned to the plots in ggplot}
 }
 \value{
-Function returns plot of annotations from the region_metaData that are enriched/depleted in hypomethyated and hypermethylated regions
+Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest
 }
 \description{
 plot the odds ratio scatter plot for enriched and depleted regions from the hyper and hypo methylated regions of interest

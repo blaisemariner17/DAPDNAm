@@ -5,7 +5,7 @@
 #' @param fdr_perc fdr percent cutoff
 #' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
 #' @param color_order the colors to be assigned to the plots in ggplot
-#' @return Function returns plot of annotations from the region_metaData that are enriched/depleted in hypomethyated and hypermethylated regions
+#' @return Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest
 #' @export odds_ratio_hyper_hypo_plot
 
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
@@ -157,37 +157,37 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   theme_blaise <- theme(plot.title.position = "plot", axis.text.x = element_text(angle=0),      plot.title = element_text(family = "sans", size = 24, hjust = 0.5, color="black", face='bold'),      plot.subtitle = element_text(family = "sans", size = 11, color="black"), axis.text = element_text(family = "sans", size = 18, color="black"),axis.title.y = element_markdown(family = "sans", size = 20), axis.title.x = element_markdown(family = "sans", size = 20),       panel.border = element_blank(),      axis.line = element_line(colour = "black", linewidth = 1),       axis.ticks = element_line(colour = "black", linewidth = 1),       legend.key.size = unit(1.5, 'cm'),      legend.key = element_rect(fill=NA),      legend.text = element_text(family = "sans", size = 20),      legend.title = element_blank(),      legend.background = element_blank(),      legend.box.background = element_blank(),      legend.text.align =	0,      panel.background = element_blank(),      panel.grid.major = element_line(colour = "black"),      panel.grid.minor = element_blank())+ removeGrid()
 
-  plot_ <- ggplot(for_ggplot_both[!for_ggplot_both$class_hyper %in% omit_class,],
-                  aes(x = odds_ratio_log10_hypo, y = odds_ratio_log10_hyper, label = class_hyper, color = color)) +
-    geom_hline(yintercept = 0, color = "darkgrey", linetype = "dashed") +
-    geom_vline(xintercept = 0, color = "darkgrey", linetype = "dashed") +
-    geom_point(size = 3) +
-    ylab("hypermethylation log<sub>10</sub>(odds ratio)")+
-    xlab("hypomethylation log<sub>10</sub>(odds ratio)")+
-    theme_blaise +
-    theme(plot.caption = element_markdown(size = 14), legend.position = c(0.8, 0.82),
-          legend.key.height = unit(1, 'line'),
-          legend.key.width = unit(1, 'line'),
-          legend.text = element_markdown(size = 12)
-    )+
-    geom_label(x = -0.25, y = 0.65, label = "Significantly enriched in hypermethylated regions \n and significantly depleted in hypomethylated regions",
-               family= 'sans', color = "purple") +
-    geom_label(x = 0.4, y = -0.65, label = "Significantly enriched in hypomethylated regions \n and significantly depleted in hypermethylated regions",
-               family= 'sans', color = "red") +
-    geom_label_repel(aes(label=ifelse(color!="black", as.character(class_hyper),'')), box.padding = .2,
-                     point.padding = 0.01, segment.color = 'grey', color = "black"
-    ) +
-    xlim(-0.5,0.6) + ylim(-0.82,0.77) +
-    scale_color_manual(values = color_order,
-                       labels = c(
-                         "Enriched in hyper & depleted in hypo",
-                         "Enriched in hyper only",
-                         "Depleted in hypo only",
-                         "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)",
-                         "Depleted in hyper only",
-                         "Enriched in hypo only",
-                         "Enriched in hypo & depleted in hyper"
-                       ))
+  # plot_ <- ggplot(for_ggplot_both[!for_ggplot_both$class_hyper %in% omit_class,],
+  #                 aes(x = odds_ratio_log10_hypo, y = odds_ratio_log10_hyper, label = class_hyper, color = color)) +
+  #   geom_hline(yintercept = 0, color = "darkgrey", linetype = "dashed") +
+  #   geom_vline(xintercept = 0, color = "darkgrey", linetype = "dashed") +
+  #   geom_point(size = 3) +
+  #   ylab("hypermethylation log<sub>10</sub>(odds ratio)")+
+  #   xlab("hypomethylation log<sub>10</sub>(odds ratio)")+
+  #   theme_blaise +
+  #   theme(plot.caption = element_markdown(size = 14), legend.position = c(0.8, 0.82),
+  #         legend.key.height = unit(1, 'line'),
+  #         legend.key.width = unit(1, 'line'),
+  #         legend.text = element_markdown(size = 12)
+  #   )+
+  #   geom_label(x = -0.25, y = 0.65, label = "Significantly enriched in hypermethylated regions \n and significantly depleted in hypomethylated regions",
+  #              family= 'sans', color = "purple") +
+  #   geom_label(x = 0.4, y = -0.65, label = "Significantly enriched in hypomethylated regions \n and significantly depleted in hypermethylated regions",
+  #              family= 'sans', color = "red") +
+  #   geom_label_repel(aes(label=ifelse(color!="black", as.character(class_hyper),'')), box.padding = .2,
+  #                    point.padding = 0.01, segment.color = 'grey', color = "black"
+  #   ) +
+  #   xlim(-0.5,0.6) + ylim(-0.82,0.77) +
+  #   scale_color_manual(values = color_order,
+  #                      labels = c(
+  #                        "Enriched in hyper & depleted in hypo",
+  #                        "Enriched in hyper only",
+  #                        "Depleted in hypo only",
+  #                        "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)",
+  #                        "Depleted in hyper only",
+  #                        "Enriched in hypo only",
+  #                        "Enriched in hypo & depleted in hyper"
+  #                      ))
 
-  return(plot_)
+  return(for_ggplot_both)
 }

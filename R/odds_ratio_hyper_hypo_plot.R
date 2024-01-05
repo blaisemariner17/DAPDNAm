@@ -52,7 +52,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
       colnames(data_oi) <- class_oi
       rownames(data_oi) <- outcome_oi
-      data_oi
+      print(data_oi)
       odds_ratio <- oddsratio(data_oi)
       odds_ratio
 
@@ -99,7 +99,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
       colnames(data_oi) <- class_oi
       rownames(data_oi) <- outcome_oi
-      data_oi
+      print(data_oi)
       odds_ratio <- oddsratio(data_oi)
       odds_ratio
 

@@ -21,7 +21,9 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
                                                                     "BivalentTssEnh","RepressedPolycomb",
                                                                     #Heterochromatin
                                                                     "Repressed","ZNFgenesRepeats","QuiescenatLow","Heterochromatin"
-                                                       )
+                                                       ),
+                                                       theme_blaise <- theme(axis.text.x = element_text(angle=0),      plot.title = element_text(family = "sans", size = 24, hjust = 0.5, color="black", face='bold'),      plot.subtitle = element_text(family = "sans", size = 11, color="black"),      axis.text = element_text(family = "sans", size = 18, color="black"),       axis.title = element_text(family = "sans", size = 20, color="black"),       panel.border = element_blank(),      axis.line = element_line(colour = "black", linewidth = 1),       axis.ticks = element_line(colour = "black", linewidth = 1),       legend.key.size = unit(1.5, 'cm'),      legend.key = element_rect(fill=NA),      legend.text = element_text(family = "sans", size = 20),      legend.title = element_blank(),      legend.background = element_blank(),      legend.box.background = element_blank(),      legend.text.align =	0,      panel.background = element_blank(),      panel.grid.major = element_line(colour = "black"),      panel.grid.minor = element_blank())+ removeGrid()
+
 ) {
 
   percent_methylation <- methylation_all_chr / coverage_all_chr

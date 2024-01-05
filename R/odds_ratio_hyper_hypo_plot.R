@@ -54,11 +54,11 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       rownames(data_oi) <- outcome_oi
       data_oi
 
-      an.error.occured <- FALSE
-      tryCatch( { epitools::oddsratio(data_oi) }
-                , error = function(e) {an.error.occured <<- TRUE})
-
-      if (an.error.occured) {next}
+      # an.error.occured <- FALSE
+      # tryCatch( { epitools::oddsratio(data_oi) }
+      #           , error = function(e) {an.error.occured <<- TRUE})
+      #
+      # if (an.error.occured) {next}
 
       odds_ratio <- epitools::oddsratio(data_oi)
       odds_ratio
@@ -108,11 +108,11 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       rownames(data_oi) <- outcome_oi
       data_oi
 
-      an.error.occured <- FALSE
-      tryCatch( { epitools::oddsratio(data_oi) }
-                , error = function(e) {an.error.occured <<- TRUE})
-
-      if (an.error.occured) {next}
+      # an.error.occured <- FALSE
+      # tryCatch( { epitools::oddsratio(data_oi) }
+      #           , error = function(e) {an.error.occured <<- TRUE})
+      #
+      # if (an.error.occured) {next}
 
       odds_ratio <- epitools::oddsratio(data_oi)
 

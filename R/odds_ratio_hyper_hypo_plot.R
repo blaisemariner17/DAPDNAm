@@ -31,7 +31,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   if (exists("for_ggplot_hyper")){rm(for_ggplot_hyper)}
   res <- list()
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta > 0],]
-  for (col in colnames(region_metaData_fdr1_oi)){
+  for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
       next
     }
@@ -78,7 +78,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   if (exists("for_ggplot_hypo")){rm(for_ggplot_hypo)}
   res <- list()
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta < 0],]
-  for (col in colnames(region_metaData_fdr1_oi)){
+  for (col in colnames(region_metaData_fdr1_oi)colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
       next
     }

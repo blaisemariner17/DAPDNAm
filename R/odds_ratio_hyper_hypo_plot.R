@@ -5,7 +5,7 @@
 #' @param fdr_perc fdr percent cutoff
 #' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
 #' @param color_order the colors to be assigned to the plots in ggplot
-#' @return Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest
+#' @return Function returns dataframe of epitools::oddsratio calculations for hypo and hyper comparisons of interest
 #' @export odds_ratio_hyper_hypo_plot
 
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
@@ -55,12 +55,12 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       data_oi
 
       an.error.occured <- FALSE
-      tryCatch( { oddsratio(data_oi) }
+      tryCatch( { epitools::oddsratio(data_oi) }
                 , error = function(e) {an.error.occured <<- TRUE})
 
       if (an.error.occured) {next}
 
-      odds_ratio <- oddsratio(data_oi)
+      odds_ratio <- epitools::oddsratio(data_oi)
       odds_ratio
 
       # if (round(odds_ratio$p.value[2,2], digits = 10) < 0.05) { color = "red"} else {color = "black"}
@@ -109,13 +109,13 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       data_oi
 
       an.error.occured <- FALSE
-      tryCatch( { oddsratio(data_oi) }
+      tryCatch( { epitools::oddsratio(data_oi) }
                 , error = function(e) {an.error.occured <<- TRUE})
 
       if (an.error.occured) {next}
 
-      odds_ratio <- oddsratio(data_oi)
-      odds_ratio
+      odds_ratio <- epitools::oddsratio(data_oi)
+
 
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 10), "odds_ratio_log10" = round(log10(odds_ratio$measure[2,1]), digits = 3),
                          "lower" = round(log10(odds_ratio$measure[2,2]), digits = 3), "upper" = round(log10(odds_ratio$measure[2,3]), digits = 3))

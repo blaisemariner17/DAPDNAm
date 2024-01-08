@@ -37,7 +37,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
     if (col == "distance_nearest_gene_start") {
       next
     }
-    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))]){
+    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))] & 0 %in% region_metaData_fdr1_oi[,c(paste(col))]){
       class_oi <- c(paste0(col), paste0("not_", col))
       outcome_oi <- c("Hypermethylated with Age", "Not")
 

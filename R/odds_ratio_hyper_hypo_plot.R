@@ -70,11 +70,6 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       }
     } else {next}
   }
-  for_ggplot_hyper$padj <- round(p.adjust(for_ggplot_hyper$pval,method="BH"),digits = 4)
-  for_ggplot_hyper$color <- "black"
-  for_ggplot_hyper$color[for_ggplot_hyper$padj < 0.05] <- "red"
-  for_ggplot_hyper$class <- factor(for_ggplot_hyper$class,                                    # Factor levels in decreasing order
-                                   levels = for_ggplot_hyper$class[order(for_ggplot_hyper$odds_ratio_log10, decreasing = FALSE)])
 
   #hypo
   if (exists("for_ggplot_hypo")){rm(for_ggplot_hypo)}
@@ -84,7 +79,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
     if (col == "distance_nearest_gene_start") {
       next
     }
-    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))]){
+    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))] & 0 %in% region_metaData_fdr1_oi[,c(paste(col))]){
       class_oi <- c(paste0(col), paste0("not_", col))
       outcome_oi <- c("Hypomethylated with Age", "Not")
 
@@ -113,7 +108,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       } else {
         for_ggplot_hypo <- rbind(for_ggplot_hypo, res_)
       }
-    }
+    } else {next}
   }
 
   for_ggplot_hypo$padj <- round(p.adjust(for_ggplot_hypo$pval,method="BH"),digits = 4)

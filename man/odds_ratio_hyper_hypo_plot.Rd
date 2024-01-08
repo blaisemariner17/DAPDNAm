@@ -8,7 +8,8 @@ odds_ratio_hyper_hypo_plot(
   pqlseq_res,
   region_metaData = region_metaData,
   fdr_perc = 0.05,
-  omit_class = c()
+  omit_class = c(),
+  color_order = c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red")
 )
 }
 \arguments{

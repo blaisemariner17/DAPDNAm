@@ -37,7 +37,8 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
     if (col == "distance_nearest_gene_start") {
       next
     }
-    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))] & 0 %in% region_metaData_fdr1_oi[,c(paste(col))]){
+    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))] &
+        0 %in% region_metaData_fdr1_oi[,c(paste(col))]) {
       class_oi <- c(paste0(col), paste0("not_", col))
       outcome_oi <- c("Hypermethylated with Age", "Not")
 
@@ -75,11 +76,12 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   if (exists("for_ggplot_hypo")){rm(for_ggplot_hypo)}
   res <- list()
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta < 0],]
-  for (col in colnames(region_metaData_fdr1_oi)colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
+  for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
       next
     }
-    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))] & 0 %in% region_metaData_fdr1_oi[,c(paste(col))]){
+    if (1 %in% region_metaData_fdr1_oi[,c(paste(col))] &
+        0 %in% region_metaData_fdr1_oi[,c(paste(col))]) {
       class_oi <- c(paste0(col), paste0("not_", col))
       outcome_oi <- c("Hypomethylated with Age", "Not")
 

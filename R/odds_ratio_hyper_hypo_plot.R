@@ -68,7 +68,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       } else {
         for_ggplot_hyper <- rbind(for_ggplot_hyper, res_)
       }
-    }
+    } else {next}
   }
   for_ggplot_hyper$padj <- round(p.adjust(for_ggplot_hyper$pval,method="BH"),digits = 4)
   for_ggplot_hyper$color <- "black"

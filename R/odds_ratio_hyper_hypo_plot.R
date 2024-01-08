@@ -11,7 +11,9 @@
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
                                        region_metaData = region_metaData,
                                        fdr_perc = 0.05,
-                                       omit_class = c()
+                                       omit_class = c(),
+                                       color_order =c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red" )
+
 ) {
   pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
   pqlseq_res <- pqlseq_res[order(pqlseq_res$padj),]

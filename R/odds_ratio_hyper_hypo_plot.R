@@ -130,9 +130,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   for_ggplot_hypo$odds_ratio_log10_hypo <- for_ggplot_hypo$odds_ratio_log10
   #class
   for_ggplot_hypo$class_hypo <- for_ggplot_hypo$class
-  for_ggplot_hypo$color_hypo <- for_ggplot_hypo$color
   for_ggplot_hyper$class_hyper <- for_ggplot_hyper$class
-  for_ggplot_hyper$color_hyper <- for_ggplot_hyper$color
   #and rownames assignment
   rownames(for_ggplot_hypo) <- for_ggplot_hypo$class
   rownames(for_ggplot_hyper) <- for_ggplot_hyper$class

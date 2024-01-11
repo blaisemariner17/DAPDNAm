@@ -150,13 +150,13 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   for_ggplot_both$significance_label <- "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)"
 
-  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log10_hyper > 0] <- "Enriched in hyper only"
-  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log10_hypo < 0] <- "Depleted in hypo only"
-  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log10_hyper < 0] <- "Depleted in hyper only"
-  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log10_hypo > 0] <- "Enriched in hypo only"
-  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_hyper$padj_hypo < 0.05 &
+  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log10_hyper > 0] <- "Enriched in hyper only"
+  for_ggplot_both$significance_label[for_ggplot_both$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log10_hypo < 0] <- "Depleted in hypo only"
+  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log10_hyper < 0] <- "Depleted in hyper only"
+  for_ggplot_both$significance_label[for_ggplot_both$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log10_hypo > 0] <- "Enriched in hypo only"
+  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$padj_hypo < 0.05 &
                                        (for_ggplot_both$odds_ratio_log10_hyper < 0 & for_ggplot_both$odds_ratio_log10_hypo > 0)] <- "Enriched in hypo & depleted in hyper"
-  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_hyper$padj_hypo < 0.05 &
+  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$padj_hypo < 0.05 &
                                        (for_ggplot_both$odds_ratio_log10_hyper >0 & for_ggplot_both$odds_ratio_log10_hypo < 0)] <- "Enriched in hyper & depleted in hypo"
 
   for_ggplot_both$significance_label <- factor(for_ggplot_both$significance_label,

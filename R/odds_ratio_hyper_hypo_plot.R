@@ -56,7 +56,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       colnames(data_oi) <- class_oi
       rownames(data_oi) <- outcome_oi
       print(data_oi)
-      odds_ratio <- oddsratio(data_oi)
+      odds_ratio <- epitools::oddsratio(data_oi)
       odds_ratio
 
       # if (odds_ratio$p.value[2,2] < 0.05) { color = "red"} else {color = "black"}
@@ -113,29 +113,38 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
     } else {next}
   }
 
-  for_ggplot_hypo$padj <- round(p.adjust(for_ggplot_hypo$pval,method="BH"),digits = 4)
+  #padj
+  for_ggplot_hypo$padj_hypo <- round(p.adjust(for_ggplot_hypo$pval,method="BH"),digits = 10)
+  for_ggplot_hyper$padj_hyper <- round(p.adjust(for_ggplot_hyper$pval,method="BH"),digits = 10)
+
+  #color assignment
   for_ggplot_hypo$color <- "black"
   for_ggplot_hypo$color[for_ggplot_hypo$padj < 0.05] <- "red"
   for_ggplot_hypo$class <- factor(for_ggplot_hypo$class,                                    # Factor levels in decreasing order
                                   levels = for_ggplot_hypo$class[order(for_ggplot_hypo$odds_ratio_log10, decreasing = FALSE)])
-
+  for_ggplot_hyper$color <- "black"
+  for_ggplot_hyper$color[for_ggplot_hyper$padj < 0.05] <- "red"
+  for_ggplot_hyper$class <- factor(for_ggplot_hyper$class,                                    # Factor levels in decreasing order
+                                   levels = for_ggplot_hyper$class[order(for_ggplot_hyper$odds_ratio_log10, decreasing = FALSE)])
+  #oddsratio log10
   for_ggplot_hyper$odds_ratio_log10_hyper <- for_ggplot_hyper$odds_ratio_log10
-  for_ggplot_hyper$class_hyper <- for_ggplot_hyper$class
-  for_ggplot_hyper$color_hyper <- for_ggplot_hyper$color
-  rownames(for_ggplot_hyper) <- for_ggplot_hyper$class
-
   for_ggplot_hypo$odds_ratio_log10_hypo <- for_ggplot_hypo$odds_ratio_log10
+  #class
   for_ggplot_hypo$class_hypo <- for_ggplot_hypo$class
   for_ggplot_hypo$color_hypo <- for_ggplot_hypo$color
+  for_ggplot_hyper$class_hyper <- for_ggplot_hyper$class
+  for_ggplot_hyper$color_hyper <- for_ggplot_hyper$color
+  #and rownames assignment
   rownames(for_ggplot_hypo) <- for_ggplot_hypo$class
-
+  rownames(for_ggplot_hyper) <- for_ggplot_hyper$class
+  #get the classes that are in the other
   for_ggplot_hypo <- for_ggplot_hypo[rownames(for_ggplot_hypo) %in% rownames(for_ggplot_hyper),]
   for_ggplot_hyper <- for_ggplot_hyper[rownames(for_ggplot_hyper) %in% rownames(for_ggplot_hypo),]
 
   if(all(rownames(for_ggplot_hypo) == rownames(for_ggplot_hyper))==F){return(message("hypo results do not match hyper results"))}
 
-  for_ggplot_both <- cbind(for_ggplot_hyper[,c("class_hyper", "color_hyper", "odds_ratio_log10_hyper")],
-                           for_ggplot_hypo[,c("class_hypo", "color_hypo", "odds_ratio_log10_hypo")])
+  for_ggplot_both <- cbind(for_ggplot_hyper[,c("class_hyper", "padj_hyper", "color_hyper", "odds_ratio_log10_hyper")],
+                           for_ggplot_hypo[,c("class_hypo", "padj_hypo", "color_hypo", "odds_ratio_log10_hypo")])
 
   for_ggplot_both$color <- "black"
 

@@ -4,7 +4,7 @@
 #' @param region_metaData region metadata
 #' @param fdr_perc fdr percent cutoff
 #' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
-#' @param color_order the colors to be assigned to the plots in ggplot
+#' @param label_order the labels to be assigned to the plots in ggplot
 #' @return Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest
 #' @export odds_ratio_hyper_hypo_plot
 
@@ -12,7 +12,15 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
                                        region_metaData = region_metaData,
                                        fdr_perc = 0.05,
                                        omit_class = c(),
-                                       color_order =c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red" )
+                                       label_order = c(
+                                         "Enriched in hyper & depleted in hypo",
+                                         "Enriched in hyper only",
+                                         "Depleted in hypo only",
+                                         "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)",
+                                         "Depleted in hyper only",
+                                         "Enriched in hypo only",
+                                         "Enriched in hypo & depleted in hyper"
+                                       )
 
 ) {
   pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
@@ -117,15 +125,6 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   for_ggplot_hypo$padj_hypo <- round(p.adjust(for_ggplot_hypo$pval,method="BH"),digits = 10)
   for_ggplot_hyper$padj_hyper <- round(p.adjust(for_ggplot_hyper$pval,method="BH"),digits = 10)
 
-  #color assignment
-  for_ggplot_hypo$color <- "black"
-  for_ggplot_hypo$color[for_ggplot_hypo$padj < 0.05] <- "red"
-  for_ggplot_hypo$class <- factor(for_ggplot_hypo$class,                                    # Factor levels in decreasing order
-                                  levels = for_ggplot_hypo$class[order(for_ggplot_hypo$odds_ratio_log10, decreasing = FALSE)])
-  for_ggplot_hyper$color <- "black"
-  for_ggplot_hyper$color[for_ggplot_hyper$padj < 0.05] <- "red"
-  for_ggplot_hyper$class <- factor(for_ggplot_hyper$class,                                    # Factor levels in decreasing order
-                                   levels = for_ggplot_hyper$class[order(for_ggplot_hyper$odds_ratio_log10, decreasing = FALSE)])
   #oddsratio log10
   for_ggplot_hyper$odds_ratio_log10_hyper <- for_ggplot_hyper$odds_ratio_log10
   for_ggplot_hypo$odds_ratio_log10_hypo <- for_ggplot_hypo$odds_ratio_log10
@@ -141,26 +140,29 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   for_ggplot_hypo <- for_ggplot_hypo[rownames(for_ggplot_hypo) %in% rownames(for_ggplot_hyper),]
   for_ggplot_hyper <- for_ggplot_hyper[rownames(for_ggplot_hyper) %in% rownames(for_ggplot_hypo),]
 
+  for_ggplot_hyper <- for_ggplot_hyper[order(for_ggplot_hyper$class),]
+  for_ggplot_hypo <- for_ggplot_hypo[order(for_ggplot_hypo$class),]
+
   if(all(rownames(for_ggplot_hypo) == rownames(for_ggplot_hyper))==F){return(message("hypo results do not match hyper results"))}
 
-  for_ggplot_both <- cbind(for_ggplot_hyper[,c("class_hyper", "padj_hyper", "color_hyper", "odds_ratio_log10_hyper")],
-                           for_ggplot_hypo[,c("class_hypo", "padj_hypo", "color_hypo", "odds_ratio_log10_hypo")])
+  for_ggplot_both <- cbind(for_ggplot_hyper[,c("class_hyper", "padj_hyper", "odds_ratio_log10_hyper")],
+                           for_ggplot_hypo[,c("class_hypo", "padj_hypo", "odds_ratio_log10_hypo")])
 
-  for_ggplot_both$color <- "black"
+  for_ggplot_both$significance_label <- "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)"
 
-  for_ggplot_both$color[for_ggplot_both$color_hyper == "red" & for_ggplot_both$odds_ratio_log10_hyper > 0] <- "blue"
-  for_ggplot_both$color[for_ggplot_both$color_hypo == "red" & for_ggplot_both$odds_ratio_log10_hypo < 0] <- "darkgreen"
-  for_ggplot_both$color[for_ggplot_both$color_hyper == "red" & for_ggplot_both$odds_ratio_log10_hyper < 0] <- "darkorange"
-  for_ggplot_both$color[for_ggplot_both$color_hypo == "red" & for_ggplot_both$odds_ratio_log10_hypo > 0] <- "maroon"
-  for_ggplot_both$color[for_ggplot_both$color_hyper == "red" & for_ggplot_both$color_hypo == "red" &
-                          (for_ggplot_both$odds_ratio_log10_hyper < 0 & for_ggplot_both$odds_ratio_log10_hypo > 0)] <- "red"
-  for_ggplot_both$color[for_ggplot_both$color_hyper == "red" & for_ggplot_both$color_hypo == "red" &
-                          (for_ggplot_both$odds_ratio_log10_hyper >0 & for_ggplot_both$odds_ratio_log10_hypo < 0)] <- "purple"
+  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log10_hyper > 0] <- "Enriched in hyper only"
+  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log10_hypo < 0] <- "Depleted in hypo only"
+  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log10_hyper < 0] <- "Depleted in hyper only"
+  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log10_hypo > 0] <- "Enriched in hypo only"
+  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_hyper$padj_hypo < 0.05 &
+                                       (for_ggplot_both$odds_ratio_log10_hyper < 0 & for_ggplot_both$odds_ratio_log10_hypo > 0)] <- "Enriched in hypo & depleted in hyper"
+  for_ggplot_both$significance_label[for_ggplot_hyper$padj_hyper < 0.05 & for_ggplot_hyper$padj_hypo < 0.05 &
+                                       (for_ggplot_both$odds_ratio_log10_hyper >0 & for_ggplot_both$odds_ratio_log10_hypo < 0)] <- "Enriched in hyper & depleted in hypo"
 
-  for_ggplot_both$color <- factor(for_ggplot_both$color,
-                                  levels =color_order)
+  for_ggplot_both$significance_label <- factor(for_ggplot_both$significance_label,
+                                               levels =label_order)
 
-  for_ggplot_both <- for_ggplot_both[order(for_ggplot_both$color),]
+  for_ggplot_both <- for_ggplot_both[order(for_ggplot_both$significance_label),]
 
   # theme_blaise <- theme(plot.title.position = "plot", axis.text.x = element_text(angle=0),      plot.title = element_text(family = "sans", size = 24, hjust = 0.5, color="black", face='bold'),      plot.subtitle = element_text(family = "sans", size = 11, color="black"), axis.text = element_text(family = "sans", size = 18, color="black"),axis.title.y = element_markdown(family = "sans", size = 20), axis.title.x = element_markdown(family = "sans", size = 20),       panel.border = element_blank(),      axis.line = element_line(colour = "black", linewidth = 1),       axis.ticks = element_line(colour = "black", linewidth = 1),       legend.key.size = unit(1.5, 'cm'),      legend.key = element_rect(fill=NA),      legend.text = element_text(family = "sans", size = 20),      legend.title = element_blank(),      legend.background = element_blank(),      legend.box.background = element_blank(),      legend.text.align =	0,      panel.background = element_blank(),      panel.grid.major = element_line(colour = "black"),      panel.grid.minor = element_blank())+ removeGrid()
   #

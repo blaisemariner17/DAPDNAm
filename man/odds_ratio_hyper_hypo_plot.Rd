@@ -9,7 +9,11 @@ odds_ratio_hyper_hypo_plot(
   region_metaData = region_metaData,
   fdr_perc = 0.05,
   omit_class = c(),
-  color_order = c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red")
+  label_order = c("Enriched in hyper & depleted in hypo", "Enriched in hyper only",
+    "Depleted in hypo only",
+    "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)",
+    "Depleted in hyper only", "Enriched in hypo only",
+    "Enriched in hypo & depleted in hyper")
 )
 }
 \arguments{
@@ -21,7 +25,7 @@ odds_ratio_hyper_hypo_plot(
 
 \item{omit_class}{what classes to omit from the scatterplot. e.g. c("SINE","LINE")}
 
-\item{color_order}{the colors to be assigned to the plots in ggplot}
+\item{label_order}{the labels to be assigned to the plots in ggplot}
 }
 \value{
 Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest

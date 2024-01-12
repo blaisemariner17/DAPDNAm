@@ -107,7 +107,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       colnames(data_oi) <- class_oi
       rownames(data_oi) <- outcome_oi
       print(data_oi)
-      odds_ratio <- oddsratio(data_oi)
+      odds_ratio <- epitools::oddsratio(data_oi)
       odds_ratio
 
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log10" = round(log10(odds_ratio$measure[2,1]), digits = 3),

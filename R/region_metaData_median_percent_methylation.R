@@ -54,7 +54,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
               plot.margin = margin(0, 0, 0, 0, "cm")
         )
       plot_
-      if (col == "QuiescenatLow") {
+      if (col == col_oi[length(col_oi)]) {
         plot_ <- plot_ + xlab("Median fraction methylated") + theme(axis.text.x=element_text(family = "sans", size = 18, color="black"),
                                                                     axis.line.x = element_line(colour = "black", linewidth = 1),
                                                                     axis.title.x = element_text(family = "sans", size = 24, hjust = 0.5, color="black")

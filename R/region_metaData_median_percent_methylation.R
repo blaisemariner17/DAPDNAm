@@ -31,9 +31,9 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
 
   plots <- list()
   for (col in col_oi){#colnames(region_metaData)){
-    if (col == "gene_bool"){
-      next
-    }
+    # if (col == "gene_bool"){
+    #   next
+    # }
     if (T){#1 %in% region_metaData[,c(paste(col))]){
       print(col)
       region_metaData_oi <- region_metaData[region_metaData[,c(paste(col))] == 1,]

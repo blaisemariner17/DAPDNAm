@@ -5,12 +5,14 @@
 #' @param region_metaData region metaData
 #' @param col_oi columns of interest of the region metaData
 #' @param theme_blaise ggplot theme for plotting
+#' @param include_y_axis_labels if TRUE will remove the y axis title
 #' @return Function returns a list of plots
 #' @export region_metaData_generation
 
 region_metaData_median_percent_methylation <- function(coverage_all_chr,
                                                        methylation_all_chr,
                                                        region_metaData,
+                                                       include_y_axis_labels = FALSE,
                                                        col_oi = c( "Promoter","exon","intron","upstream_utr","downstram_utr",
                                                                     "CpG_shore","CpG_island",#"CpG_shelf",
                                                                     "LINE","SINE",
@@ -49,25 +51,21 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
         xlim(c(0,1))+
         theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.title.y = element_text(angle = 0, hjust = -1, vjust = 0.5),
+              axis.title.y = element_markdown(angle = 0, hjust = -1, vjust = 0.5),
               axis.title.x = element_blank(), plot.title = element_blank(),
-              plot.margin = margin(0, 0, 0, 0, "cm")
+              plot.margin = margin(0, 0, 0, 0, "cm"),
+              axis.line.y=element_blank()
         ) +coord_cartesian(clip="off")
       plot_
       if (col == col_oi[length(col_oi)]) {
         plot_ <- plot_ + xlab("Median fraction methylated") + theme(axis.text.x=element_text(family = "sans", size = 18, color="black"),
                                                                     axis.line.x = element_line(colour = "black", linewidth = 1),
-                                                                    axis.title.x = element_text(family = "sans", size = 24, hjust = 0.5, color="black"),
-                                                                    axis.line.y=element_blank()
+                                                                    axis.title.x = element_text(family = "sans", size = 24, hjust = 0.5, color="black")
         )
-      } else if (col == col_oi[1]) {
-        plot_ <- plot_ + theme(axis.line.x = element_blank())
-        } else {
-        plot_ <- plot_ + theme(axis.line.x = element_blank(),
-                               axis.line.y=element_blank()
-                               )
+      } else {
+        plot_ <- plot_ + theme(axis.line.x = element_blank()                               )
       }
-
+      if (include_y_axis_labels == F){plot_ <- plot_ + theme(axis.title.y = element_blank())}
       plots[[col]] <- plot_
     }
   }

@@ -65,7 +65,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
       } else {
         plot_ <- plot_ + theme(axis.line.x = element_blank()                               )
       }
-      if (include_y_axis_labels == F){plot_ <- plot_ + theme(axis.title.y = element_blank())}
+      if (include_y_axis_labels){plot_ <- plot_ + theme(axis.title.y = element_blank())}
       plots[[col]] <- plot_
     }
   }

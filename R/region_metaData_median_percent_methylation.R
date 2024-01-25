@@ -46,7 +46,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
         ylab(paste0(col))+#, " (n = ", nrow(for_ggplot), ")"))+
         ggtitle("") +
         theme_blaise +
-        xlim(c(0,1.1))+
+        xlim(c(0,1.05))+
         theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
               axis.title.y = element_markdown(angle = 0, hjust = 1, vjust = 0.5),

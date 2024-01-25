@@ -12,7 +12,7 @@
 region_metaData_median_percent_methylation <- function(coverage_all_chr,
                                                        methylation_all_chr,
                                                        region_metaData,
-                                                       include_y_axis_labels = FALSE,
+                                                       include_y_axis_labels = TRUE,
                                                        col_oi = c( "Promoter","exon","intron","upstream_utr","downstram_utr",
                                                                     "CpG_shore","CpG_island",#"CpG_shelf",
                                                                     "LINE","SINE",

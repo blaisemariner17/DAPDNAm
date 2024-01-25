@@ -5,14 +5,12 @@
 #' @param region_metaData region metaData
 #' @param col_oi columns of interest of the region metaData
 #' @param theme_blaise ggplot theme for plotting
-#' @param include_y_axis_labels if TRUE will remove the y axis title
 #' @return Function returns a list of plots
 #' @export region_metaData_generation
 
 region_metaData_median_percent_methylation <- function(coverage_all_chr,
                                                        methylation_all_chr,
                                                        region_metaData,
-                                                       include_y_axis_labels = TRUE,
                                                        col_oi = c( "Promoter","exon","intron","upstream_utr","downstram_utr",
                                                                     "CpG_shore","CpG_island",#"CpG_shelf",
                                                                     "LINE","SINE",
@@ -45,7 +43,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
       plot_ <- ggplot(for_ggplot, aes(x = data)) +
         geom_density(fill = "lightgrey") +
         xlab("")+
-        ylab(paste0(col, " (n = ", nrow(for_ggplot), ")"))+
+        ylab(paste0(col))+#, " (n = ", nrow(for_ggplot), ")"))+
         ggtitle("") +
         theme_blaise +
         xlim(c(0,1))+
@@ -65,7 +63,6 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
       } else {
         plot_ <- plot_ + theme(axis.line.x = element_blank()                               )
       }
-      if (include_y_axis_labels == FALSE){plot_ <- plot_ + theme(axis.title.y = element_blank())}
       plots[[col]] <- plot_
     }
   }

@@ -8,7 +8,6 @@ region_metaData_median_percent_methylation(
   coverage_all_chr,
   methylation_all_chr,
   region_metaData,
-  include_y_axis_labels = FALSE,
   col_oi = c("Promoter", "exon", "intron", "upstream_utr", "downstram_utr", "CpG_shore",
     "CpG_island", "LINE", "SINE", "ActiveTSS", "WeakTSS", "FlankingActiveTSS1",
     "FlankingActiveTSS2", "ActiveStrongEnhancer", "ActiveWeakEnhancer",
@@ -35,8 +34,6 @@ region_metaData_median_percent_methylation(
 \item{methylation_all_chr}{region methylation}
 
 \item{region_metaData}{region metaData}
-
-\item{include_y_axis_labels}{if TRUE will remove the y axis title}
 
 \item{col_oi}{columns of interest of the region metaData}
 

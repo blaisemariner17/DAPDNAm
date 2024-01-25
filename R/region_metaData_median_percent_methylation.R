@@ -51,8 +51,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
               axis.title.y = element_markdown(angle = 0, hjust = 1, vjust = 0.5),
               axis.title.x = element_blank(), plot.title = element_blank(),
-              plot.margin = margin(0, 0, 0, 0, "cm"),
-              axis.line.y=element_blank()
+              plot.margin = margin(0, 0, 0, 0, "cm")
         ) +coord_cartesian(clip="off")
       plot_
       if (col == col_oi[length(col_oi)]) {

@@ -4,14 +4,30 @@
 \alias{filtering_region_and_coverage}
 \title{generate region, methylation, and coverage data of a bsseq object. can be run in parallel with a list of bsseq obects (e.g. by chromosomes)}
 \usage{
-filtering_region_and_coverage(dap_chr_oi, lower_bound = 0.1, upper_bound = 0.9)
+filtering_region_and_coverage(
+  dap_chr_oi,
+  maxgap = 250,
+  at_least_n_sites_per_region = 5,
+  at_least_X_coverage_of_a_region = 5,
+  in_at_least_X_samples = 200,
+  lower_bound = 0.1,
+  upper_bound = 0.9
+)
 }
 \arguments{
 \item{dap_chr_oi}{the bsseq object to be passed into the function-- can be done in parallel as a list with mclapply}
 
-\item{lower_bound}{omit regions with less than X mean percent methylation}
+\item{maxgap}{keyword arg for region definition for regionFinder3}
 
-\item{upper_bound}{omit regions with greater than X mean percent methylation}
+\item{at_least_n_sites_per_region}{lower bound (inclusive) of CpG sites for a region to be considered in this analysis (default = 5)}
+
+\item{at_least_X_coverage_of_a_region}{used in concert with in_at_least_X_samples (default 5x coverage in 200 samples)}
+
+\item{in_at_least_X_samples}{used in concert with at_least_X_coverage_of_a_region (default 5x coverage in 200 samples)}
+
+\item{lower_bound}{omit regions with less than X mean percent methylation (default = 0.1, inclusive)}
+
+\item{upper_bound}{omit regions with greater than X mean percent methylation (default = 0.9, inclusive)}
 }
 \value{
 Function returns region, methylation, and coverage information for the regions sought by regionFinder3

@@ -13,7 +13,8 @@ odds_ratio_hyper_hypo_plot(
     "Depleted in hypo only",
     "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)",
     "Depleted in hyper only", "Enriched in hypo only",
-    "Enriched in hypo & depleted in hyper")
+    "Enriched in hypo & depleted in hyper", "Enriched in hyper & hypo",
+    "Depleted in hyper & hypo")
 )
 }
 \arguments{

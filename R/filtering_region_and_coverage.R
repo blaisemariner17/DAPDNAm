@@ -48,7 +48,7 @@ filtering_region_and_coverage <- function(dap_chr_oi,
 
   perc_meth <- methylation_regions_oi / coverage_regions_oi
   perc_meth <- perc_meth[rowMeans(perc_meth, na.rm = TRUE) >= lower_bound & rowMeans(perc_meth, na.rm = TRUE) <= upper_bound,]
-  regions_oi <- regions_all_chr[rownames(regions_all_chr) %in% rownames(perc_meth),]
+  regions_oi <- regions[rownames(regions) %in% rownames(perc_meth),]
   coverage_regions_oi <- coverage_regions_oi[rownames(coverage_regions_oi) %in% rownames(perc_meth),]
   methylation_regions_oi <- methylation_regions_oi[rownames(methylation_regions_oi) %in% rownames(perc_meth),]
 

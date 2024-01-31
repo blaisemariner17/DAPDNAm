@@ -35,7 +35,7 @@ filtering_region_and_coverage <- function(dap_chr_oi,
 
   rownames(coverage_regions_oi) <- rownames(regions)
 
-  coverage_regions_oi <- coverage_regions_oi[rowSums(coverage_regions_oi >= at_least_X_coverage_of_a_region) > in_at_least_X_samples, ]
+  coverage_regions_oi <- coverage_regions_oi[rowSums(coverage_regions_oi >= at_least_X_coverage_of_a_region) >= in_at_least_X_samples, ]
 
   methylation_regions_oi <- bsseq::getCoverage(dap_chr_oi, type = "M", regions = regions,
                                                what="perRegionTotal", withDimnames = TRUE)

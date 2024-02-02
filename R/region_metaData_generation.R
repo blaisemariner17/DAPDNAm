@@ -104,7 +104,7 @@ region_metaData_generation <- function(regions,
                            'seqnames', 'start', 'end', 'genoLeft', 'strand'	,
                            'repName', 'class', 'repFamily', 'repStart', 'repEnd',	'repLeft',	'id')
 
-  gtf_trans$id <- paste0(gtf_trans$repClass, "_", gtf_trans$repFamily, "_", gtf_trans$id )
+  gtf_trans$id <- paste0(gtf_trans$class, "_", gtf_trans$repFamily, "_", gtf_trans$id )
 
   gtf_trans <- gtf_trans[gtf_trans$class %in% c("LINE", "SINE", "LTR",
                                                 "Satellite", "tRNA",

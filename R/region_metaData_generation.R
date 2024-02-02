@@ -236,15 +236,15 @@ region_metaData_generation <- function(regions,
       if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1}
       if (TRUE %in% grepl("LINE", hit$class[hit$id == id])){
         LINE <- 1
-        LINE_id <-  paste(hit$id[hit$class == "LINE"], collapse = " & ")
+        LINE_id <-  paste(unique(hit$id[hit$class == "LINE"]), collapse = " & ")
       }
       if (TRUE %in% grepl("SINE", hit$class[hit$id == id])) {
         SINE <- 1
-        SINE_id <-  paste(hit$id[hit$class == "SINE"], collapse = " & ")
+        SINE_id <-  paste(unique(hit$id[hit$class == "SINE"]), collapse = " & ")
       }
       if ("Promoter" %in% hit$class[hit$id == id]) {
         Promoter <- 1
-        Promoter_id <- id
+        Promoter_id <- paste(unique(id), = ' & ')
       }
 
       #### chromatin states
@@ -273,7 +273,7 @@ region_metaData_generation <- function(regions,
 
       hit_intron_check <- hit[hit$id == id,]
       if ("gene" %in% hit_intron_check$class){
-        gene_id <- paste(hit_intron_check$id[hit_intron_check$class == "gene"], collapse = " & ")
+        gene_id <- paste(unique(hit_intron_check$id[hit_intron_check$class == "gene"]), collapse = " & ")
         gene_bool <- 1
         if ("exon" %in% chr_oi_all$class[chr_oi_all$id == id]) {
           if (sum(grepl("exon", chr_oi_all$class[chr_oi_all$id == id])) == 1){

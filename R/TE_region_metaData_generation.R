@@ -48,10 +48,10 @@ TE_region_metaData_generation <- function(regions,
     if ("SINE" %in% hit$class){sine = 1; sine_id <- unique(hit$SINE_id)} else {sine = 0}
 
     if (i == 1){
-      region_metaData <- data.frame("region" = region,"LINE" = line,"SINE" = sine,"LINE_id" = line_id,"SINE_id" = sine_id)
+      region_metaData <- data.frame("region" = region,"LINE" = line,"SINE" = sine,"LINE_id" = paste(line_id, collapse = " & "),"SINE_id" = paste(sine_id, collapse = " & "))
       i = 2
     } else {
-      region_metaData <- rbind(region_metaData, data.frame("region" = region,"LINE" = line,"SINE" = sine,"LINE_id" = line_id,"SINE_id" = sine_id))
+      region_metaData <- rbind(region_metaData, data.frame("region" = region,"LINE" = line,"SINE" = sine,"LINE_id" = paste(line_id, collapse = " & "),"SINE_id" = paste(sine_id, collapse = " & ")))
     }
   }
 

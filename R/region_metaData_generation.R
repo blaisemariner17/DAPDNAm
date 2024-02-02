@@ -100,8 +100,12 @@ region_metaData_generation <- function(regions,
   gtf_cpgisl <- rbind(gtf_cpgisl, gtf_cpgshores, gtf_cpgshelves)
 
   #### now let's look at the annotations from the transposon annotation provided
-  gtf_trans <- gtf_trans[,c(6, 7, 8, 12, 13)]
-  colnames(gtf_trans) <- c("seqnames", "start", "end", "class", "id")
+  colnames(gtf_trans) <- c('bin', 'swScore', 'milliDiv', 'milliDel', 'milliIns'	,
+                           'seqnames', 'start', 'end', 'genoLeft', 'strand'	,
+                           'repName', 'class', 'repFamily', 'repStart', 'repEnd',	'repLeft',	'id')
+
+  gtf_trans$id <- paste0(tf_trans$repClass, "_", gtf_trans$repFamily, "_", gtf_trans$id )
+
   gtf_trans <- gtf_trans[gtf_trans$class %in% c("LINE", "SINE", "LTR",
                                                 "Satellite", "tRNA",
                                                 "snRNA", "rRNA", "scRNA", "srpRNA",
@@ -170,6 +174,7 @@ region_metaData_generation <- function(regions,
 
     colnames(promoter_gtf_oi) <- c("seqnames", "start", "end", "class", "id")
     colnames(gtf_cpgisl) <- c("seqnames", "start", "end", "class", "id")
+    gtf_trans <- gtf_trans[,c("seqnames", "start", "end", "class", "id")]
     colnames(gtf_trans) <- c("seqnames", "start", "end", "class", "id")
     colnames(chr_oi_gtf) <- c("seqnames", "start", "end", "class", "id")
 
@@ -230,11 +235,11 @@ region_metaData_generation <- function(regions,
       if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1}
       if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1}
       if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1}
-      if ("LINE" %in% hit$class[hit$id == id]) {
+      if (grepl("LINE", hit$class[hit$id == id]){
         LINE <- 1
         LINE_id <-  paste(hit$id[hit$class == "LINE"], collapse = " & ")
       }
-      if ("SINE" %in% hit$class[hit$id == id]) {
+      if (grepl("SINE", hit$class[hit$id == id]) {
         SINE <- 1
         SINE_id <-  paste(hit$id[hit$class == "SINE"], collapse = " & ")
       }

@@ -26,6 +26,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
 ) {
   pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
+  region_metaData <- region_metaData[region_metaData$region %in% rownames(pqlseq_res),]
   pqlseq_res <- pqlseq_res[order(pqlseq_res$padj),]
   pqlseq_res$name <- rownames(pqlseq_res)
 

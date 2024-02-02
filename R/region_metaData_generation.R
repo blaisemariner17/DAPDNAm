@@ -244,7 +244,7 @@ region_metaData_generation <- function(regions,
       }
       if ("Promoter" %in% hit$class[hit$id == id]) {
         Promoter <- 1
-        Promoter_id <- paste(unique(id), = ' & ')
+        Promoter_id <- paste(unique(id), collapse = ' & ')
       }
 
       #### chromatin states

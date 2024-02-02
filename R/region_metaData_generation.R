@@ -239,7 +239,7 @@ region_metaData_generation <- function(regions,
         LINE <- 1
         LINE_id <-  paste(hit$id[hit$class == "LINE"], collapse = " & ")
       }
-      if (grepl("SINE", hit$class[hit$id == id]) {
+      if (grepl("SINE", hit$class[hit$id == id])) {
         SINE <- 1
         SINE_id <-  paste(hit$id[hit$class == "SINE"], collapse = " & ")
       }

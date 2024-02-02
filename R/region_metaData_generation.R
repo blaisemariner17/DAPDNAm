@@ -2,7 +2,6 @@
 #'
 #' @param regions regions of interest
 #' @param gtf gene annotation file
-#' @param gtf_trans transposon annotation file
 #' @param gtf_cpgisl CpG island annotation file
 #' @param chromatin_state_bed_file bed file of the chromatin state annotation
 #' @param n.cores numer of cores
@@ -11,7 +10,6 @@
 
 region_metaData_generation_old <- function(regions,
                                        n.cores,
-                                       gtf_trans = gtf_trans,
                                        gtf = rtracklayer::import('../../GENOME-ANNOTATION-FILE/UU_Cfam_GSD_1.0_ROSY.refSeq.ensformat.gtf'),
                                        gtf_cpgisl = gtf_cpgisl,
                                        chromatin_state_bed_file = bed_file
@@ -99,19 +97,6 @@ region_metaData_generation_old <- function(regions,
   gtf_cpgisl <- gtf_cpgisl[,c("seqnames", "start", "end","id", "class")]
   gtf_cpgisl <- rbind(gtf_cpgisl, gtf_cpgshores, gtf_cpgshelves)
 
-  #### now let's look at the annotations from the transposon annotation provided
-  colnames(gtf_trans) <- c('bin', 'swScore', 'milliDiv', 'milliDel', 'milliIns'	,
-                           'seqnames', 'start', 'end', 'genoLeft', 'strand'	,
-                           'repName', 'class', 'repFamily', 'repStart', 'repEnd',	'repLeft',	'id')
-
-  gtf_trans$id <- paste0(gtf_trans$class, "_", gtf_trans$repFamily, "_", gtf_trans$id )
-
-  gtf_trans <- gtf_trans[gtf_trans$class %in% c("LINE", "SINE", "LTR",
-                                                "Satellite", "tRNA",
-                                                "snRNA", "rRNA", "scRNA", "srpRNA",
-                                                #added 23-12-29
-                                                "Simple_repeat", "Low_complexity", "DNA", "RC"),]
-
   #### now let's look at the chromatin states
   chromatin_states <- rtracklayer::import(chromatin_state_bed_file, format = "bed")
 
@@ -179,9 +164,8 @@ region_metaData_generation_old <- function(regions,
 
                                chr_oi_all <- rbind(chr_oi_gtf,
                                                    promoter_gtf_oi,
-                                                   gtf_cpgisl[gtf_cpgisl$seqnames == chromosome,],
-                                                   gtf_trans[gtf_trans$seqnames == chromosome,]
-                               )
+                                                   gtf_cpgisl[gtf_cpgisl$seqnames == chromosome,]
+                                                   )
 
                                rangesA <- split(IRanges(start, end), chromosome)
                                rangesB <- split(IRanges(chr_oi_all$start, chr_oi_all$end), chromosome)
@@ -200,10 +184,6 @@ region_metaData_generation_old <- function(regions,
                                upstream_utr <- 0
                                exon <- 0
                                intron <- 0
-                               LINE <- 0
-                               LINE_id <- 0
-                               SINE <- 0
-                               SINE_id <- 0
                                Cpg_shelf <- 0
                                CpG_shore <- 0
                                CpG_island <- 0
@@ -234,15 +214,7 @@ region_metaData_generation_old <- function(regions,
                                  if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1}
                                  if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1}
                                  if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1}
-                                 if (TRUE %in% grepl("LINE", hit$class[hit$id == id])){
-                                   LINE <- 1
-                                   LINE_id <-  paste(unique(hit$id[hit$class == "LINE"]), collapse = " & ")
-                                 }
-                                 if (TRUE %in% grepl("SINE", hit$class[hit$id == id])) {
-                                   SINE <- 1
-                                   SINE_id <-  paste(unique(hit$id[hit$class == "SINE"]), collapse = " & ")
-                                 }
-                                 if ("Promoter" %in% hit$class[hit$id == id]) {
+                                if ("Promoter" %in% hit$class[hit$id == id]) {
                                    Promoter <- 1
                                    Promoter_id <- paste(unique(id), collapse = ' & ')
                                  }
@@ -308,10 +280,6 @@ region_metaData_generation_old <- function(regions,
                                                        "intron" = intron,
                                                        "upstream_utr" = upstream_utr,
                                                        "downstram_utr" = downstram_utr,
-                                                       "LINE" = LINE,
-                                                       "LINE_id" = LINE_id,
-                                                       "SINE" = SINE,
-                                                       "SINE_id" = SINE_id,
                                                        "CpG_shelf" = Cpg_shelf,
                                                        "CpG_shore" = CpG_shore,
                                                        "CpG_island" = CpG_island,
@@ -334,22 +302,5 @@ region_metaData_generation_old <- function(regions,
                              }
   print(Sys.time() - time_start)
   parallel::stopCluster(cl = my.cluster)
-
-  region_metaData$LINE1 <- 0
-  region_metaData$LINE1[grepl("L1", region_metaData$LINE_id)] <- 1
-  region_metaData$LINE2 <- 0
-  region_metaData$LINE2[grepl("L2", region_metaData$LINE_id)] <- 1
-  region_metaData$LINE3 <- 0
-  region_metaData$LINE3[grepl("L3", region_metaData$LINE_id)] <- 1
-  region_metaData$LINE_CR1 <- 0
-  region_metaData$LINE_CR1[grepl("CR1", region_metaData$LINE_id)] <- 1
-
-  region_metaData$SINEC <- 0
-  region_metaData$SINEC[grepl("SINEC", region_metaData$SINE_id)] <- 1
-  region_metaData$SINE_MIR <- 0
-  region_metaData$SINE_MIR[grepl("MIR", region_metaData$SINE_id)] <- 1
-  region_metaData$SINE_tRNA <- 0
-  region_metaData$SINE_tRNA[grepl("tRNA", region_metaData$SINE_id)] <- 1
-
   return(region_metaData)
 }

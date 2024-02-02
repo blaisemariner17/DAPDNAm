@@ -235,7 +235,7 @@ region_metaData_generation <- function(regions,
       if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1}
       if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1}
       if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1}
-      if (grepl("LINE", hit$class[hit$id == id]){
+      if (grepl("LINE", hit$class[hit$id == id])){
         LINE <- 1
         LINE_id <-  paste(hit$id[hit$class == "LINE"], collapse = " & ")
       }

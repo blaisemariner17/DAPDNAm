@@ -175,7 +175,6 @@ region_metaData_generation <- function(regions,
     colnames(promoter_gtf_oi) <- c("seqnames", "start", "end", "class", "id")
     colnames(gtf_cpgisl) <- c("seqnames", "start", "end", "class", "id")
     gtf_trans <- gtf_trans[,c("seqnames", "start", "end", "class", "id")]
-    colnames(gtf_trans) <- c("seqnames", "start", "end", "class", "id")
     colnames(chr_oi_gtf) <- c("seqnames", "start", "end", "class", "id")
 
     chr_oi_all <- rbind(chr_oi_gtf,
@@ -235,11 +234,11 @@ region_metaData_generation <- function(regions,
       if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1}
       if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1}
       if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1}
-      if (grepl("LINE", hit$class[hit$id == id])){
+      if (TRUE %in% grepl("LINE", hit$class[hit$id == id])){
         LINE <- 1
         LINE_id <-  paste(hit$id[hit$class == "LINE"], collapse = " & ")
       }
-      if (grepl("SINE", hit$class[hit$id == id])) {
+      if (TRUE %in% grepl("SINE", hit$class[hit$id == id])) {
         SINE <- 1
         SINE_id <-  paste(hit$id[hit$class == "SINE"], collapse = " & ")
       }

@@ -159,7 +159,6 @@ region_metaData_generation <- function(regions,
 
                                colnames(promoter_gtf_oi) <- c("seqnames", "start", "end", "class", "id")
                                colnames(gtf_cpgisl) <- c("seqnames", "start", "end", "class", "id")
-                               gtf_trans <- gtf_trans[,c("seqnames", "start", "end", "class", "id")]
                                colnames(chr_oi_gtf) <- c("seqnames", "start", "end", "class", "id")
 
                                chr_oi_all <- rbind(chr_oi_gtf,

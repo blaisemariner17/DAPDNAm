@@ -6,9 +6,9 @@
 #' @param chromatin_state_bed_file bed file of the chromatin state annotation
 #' @param n.cores numer of cores
 #' @return Function returns region metadata of interest
-#' @export region_metaData_generation_old
+#' @export region_metaData_generation
 
-region_metaData_generation_old <- function(regions,
+region_metaData_generation <- function(regions,
                                        n.cores,
                                        gtf = rtracklayer::import('../../GENOME-ANNOTATION-FILE/UU_Cfam_GSD_1.0_ROSY.refSeq.ensformat.gtf'),
                                        gtf_cpgisl = gtf_cpgisl,

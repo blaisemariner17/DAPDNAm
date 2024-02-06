@@ -11,6 +11,8 @@ TE_region_metaData_generation <- function(regions,
                                        sw_score_cutoff = 225
 ) {
   chromosome <- unique(regions$chr)
+  if (length(chromosome)>1){stop("Run this function in parralell or one chromosome at a time by filtering the regions first.")}
+
   colnames(transposons_annotation) <- c('bin', 'swScore', 'milliDiv', 'milliDel', 'milliIns'	,
                            'seqnames', 'start', 'end', 'genoLeft', 'strand'	,
                            'repName', 'class', 'repFamily', 'repStart', 'repEnd',	'repLeft',	'id')

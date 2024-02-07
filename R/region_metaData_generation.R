@@ -17,6 +17,18 @@ region_metaData_generation <- function(regions,
   chromosome <- unique(regions$chr)
   if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}
 
+  region = 0
+  gene_id=0
+  intron_gene=0
+  gene_bool=0
+  Promoter=0
+  Promoter_id=0
+  exon=0
+  intron=0
+  Cpg_shelf=0
+  CpG_shore=0
+  CpG_island=0
+
   #chromatin state annotation
   chromatin_states_annotation <- chromatin_states_annotation[chromatin_states_annotation$seqnames == chromosome,]
 

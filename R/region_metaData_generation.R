@@ -105,7 +105,7 @@ region_metaData_generation <- function(regions,
 
   i = 1
   for (region in rownames(regions)){
-    ph <- str_split(region, fixed("_"))
+    ph <- stringr::str_split(region, fixed("_"))
     chromosome <- ph[[1]][1]
     start <-  as.numeric(ph[[1]][2])
     end <-  as.numeric(ph[[1]][3])

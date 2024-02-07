@@ -128,7 +128,7 @@ region_metaData_generation <- function(regions,
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- all_compiled_annotations[ov[[1]],]
     if(nrow(hit) > 0){
-      for (i in 1:nrow(hit)){
+      for (id in unique(hit$id)){
         if ("CpG_island" %in% hit$id[hit$class == id]) {CpG_island <- 1}
         if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1}
         if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1}

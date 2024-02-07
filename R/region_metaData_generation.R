@@ -128,7 +128,7 @@ region_metaData_generation <- function(regions,
       }
     }
 
-    hit_intron_check <- hit[hit$id = id,]
+    hit_intron_check <- hit[hit$id == id,]
     if ("gene" %in% hit_intron_check$class){
       gene_id <- paste(unique(hit_intron_check$id[hit_intron_check$class == "gene"]), collapse = " & ")
       gene_bool <- 1

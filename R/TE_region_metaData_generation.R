@@ -34,13 +34,13 @@ TE_region_metaData_generation <- function(regions,
   i = 1
   for (region in rownames(regions)) {
 
-    ph <- str_split(region, fixed("_"))
+    ph <- stringr::str_split(region, stringr::fixed("_"))
     chromosome <- ph[[1]][1]
     start <-  as.numeric(ph[[1]][2])
     end <-  as.numeric(ph[[1]][3])
 
-    rangesA <- split(IRanges(start, end), chromosome)
-    rangesB <- split(IRanges(transposons_annotation$start, transposons_annotation$end), chromosome)
+    rangesA <- split(IRanges::IRanges(start, end), chromosome)
+    rangesB <- split(IRanges::IRanges(transposons_annotation$start, transposons_annotation$end), chromosome)
 
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- transposons_annotation[ov[[1]],]
@@ -72,6 +72,9 @@ TE_region_metaData_generation <- function(regions,
   region_metaData$SINE_MIR[grepl("MIR", region_metaData$SINE_id)] <- 1
   region_metaData$SINE_tRNA <- 0
   region_metaData$SINE_tRNA[grepl("tRNA", region_metaData$SINE_id)] <- 1
+
+  region_metaData$TE <- 0
+  region_metaData$TE[region_metaData$LINE == 1 | region_metaData$SINE == 1] <- 1
 
   return(region_metaData)
 }

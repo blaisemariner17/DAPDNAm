@@ -17,18 +17,6 @@ region_metaData_generation <- function(regions,
   chromosome <- unique(regions$chr)
   if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}
 
-  region = 0
-  gene_id=0
-  intron_gene=0
-  gene_bool=0
-  Promoter=0
-  Promoter_id=0
-  exon=0
-  intron=0
-  Cpg_shelf=0
-  CpG_shore=0
-  CpG_island=0
-
   #chromatin state annotation
   chromatin_states_annotation <- chromatin_states_annotation[chromatin_states_annotation$seqnames == chromosome,]
 
@@ -127,17 +115,25 @@ region_metaData_generation <- function(regions,
 
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- all_compiled_annotations[ov[[1]],]
+
+    if ("CpG_island" %in% hit$id[hit$class == id]) {CpG_island <- 1} else {CpG_island <- 0}
+    if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1} else {CpG_shore <- 0}
+    if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1} else {CpG_shelf <- 0}
+    if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1} else {Simple_repeat <- 0}
+    if ("Promoter" %in% hit$class[hit$id == id]) {
+      Promoter <- 1
+      Promoter_id <- paste(unique(id), collapse = ' & ')
+    } else {Promoter <- 0}
+
+    gene_id <- 0
+    gene_bool <- 0
+    exon <- 0
+    intron <- 0
+    intron_gene <- 0
+    upstream_utr <- 0
+    downstream_utr <- 0
+
     if(nrow(hit) > 0){
-      for (id in unique(hit$id)){
-        if ("CpG_island" %in% hit$id[hit$class == id]) {CpG_island <- 1}
-        if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1}
-        if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1}
-        if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1}
-        if ("Promoter" %in% hit$class[hit$id == id]) {
-          Promoter <- 1
-          Promoter_id <- paste(unique(id), collapse = ' & ')
-        }
-      }
       hit_intron_check <- hit[hit$id == id,]
       if ("gene" %in% hit_intron_check$class){
         gene_id <- paste(unique(hit_intron_check$id[hit_intron_check$class == "gene"]), collapse = " & ")
@@ -193,6 +189,5 @@ region_metaData_generation <- function(regions,
                                ))
     }
   }
-
   return(region_metaData)
 }

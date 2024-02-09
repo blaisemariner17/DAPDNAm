@@ -69,11 +69,11 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       rownames(data_oi) <- outcome_oi
       print(data_oi)
       odds_ratio <- epitools::oddsratio(data_oi)
-      odds_ratio
+      #odds_ratio
 
       # if (odds_ratio$p.value[2,2] < 0.05) { color = "red"} else {color = "black"}
 
-      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
+      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 5), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
       res[[col]] <- res_
       if (exists("for_ggplot_hyper") == FALSE){

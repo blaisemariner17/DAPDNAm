@@ -116,11 +116,11 @@ region_metaData_generation <- function(regions,
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- all_compiled_annotations[ov[[1]],]
 
-    if ("CpG_island" %in% hit$id[hit$class == id]) {CpG_island <- 1} else {CpG_island <- 0}
-    if ("CpG_shore" %in% hit$id[hit$id == id]) {CpG_shore <- 1} else {CpG_shore <- 0}
-    if ("CpG_shelf" %in% hit$id[hit$id == id]) {CpG_shelf <- 1} else {CpG_shelf <- 0}
-    if ("Simple_repeat" %in% hit$class[hit$id == id]) {Simple_repeat <- 1} else {Simple_repeat <- 0}
-    if ("Promoter" %in% hit$class[hit$id == id]) {
+    if ("CpG_island" %in% hit$id[hit$class]) {CpG_island <- 1} else {CpG_island <- 0}
+    if ("CpG_shore" %in% hit$id[hit$id]) {CpG_shore <- 1} else {CpG_shore <- 0}
+    if ("CpG_shelf" %in% hit$id[hit$id]) {CpG_shelf <- 1} else {CpG_shelf <- 0}
+    if ("Simple_repeat" %in% hit$class[hit$id]) {Simple_repeat <- 1} else {Simple_repeat <- 0}
+    if ("Promoter" %in% hit$class[hit$id]) {
       Promoter <- 1
       Promoter_id <- paste(unique(id), collapse = ' & ')
     } else {Promoter <- 0}
@@ -134,27 +134,29 @@ region_metaData_generation <- function(regions,
     downstream_utr <- 0
 
     if(nrow(hit) > 0){
-      hit_intron_check <- hit[hit$id == id,]
-      if ("gene" %in% hit_intron_check$class){
-        gene_id <- paste(unique(hit_intron_check$id[hit_intron_check$class == "gene"]), collapse = " & ")
-        gene_bool <- 1
-        if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {
-          if (sum(grepl("exon", all_compiled_annotations$class[all_compiled_annotations$id == id])) == 1){
-            intron_gene <- "no"
-          } else {intron_gene <- "yes"}
-        } else {intron_gene <- "no"}
-        if ("exon" %in% hit_intron_check$class){
-          exon <- 1
-          next
-        }
-        if ("start_codon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {
-          start_codon <- all_compiled_annotations$start[all_compiled_annotations$id == id & all_compiled_annotations$class == "start_codon"][1]
-          stop_codon <- all_compiled_annotations$start[all_compiled_annotations$id == id & all_compiled_annotations$class == "stop_codon"][1]
-          # what region of the gene is it in if it is not in the exon? have to account for the instances the gene is on the negative or the positive strand here and if the annotation file even documents exon or intron
-          if (start_codon < stop_codon) {
-            if (end < start_codon) {upstream_utr <- 1} else if (start > stop_codon) {downstram_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
-          } else if (start_codon > stop_codon) {
-            if (start > start_codon) {upstream_utr <- 1} else if (end < stop_codon) {downstram_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
+      for (id in unique(hit$id)){
+        hit_intron_check <- hit[hit$id == id,]
+        if ("gene" %in% hit_intron_check$class){
+          gene_id <- paste(unique(hit_intron_check$id[hit_intron_check$class == "gene"]), collapse = " & ")
+          gene_bool <- 1
+          if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {
+            if (sum(grepl("exon", all_compiled_annotations$class[all_compiled_annotations$id == id])) == 1){
+              intron_gene <- "no"
+            } else {intron_gene <- "yes"}
+          } else {intron_gene <- "no"}
+          if ("exon" %in% hit_intron_check$class){
+            exon <- 1
+            next
+          }
+          if ("start_codon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {
+            start_codon <- all_compiled_annotations$start[all_compiled_annotations$id == id & all_compiled_annotations$class == "start_codon"][1]
+            stop_codon <- all_compiled_annotations$start[all_compiled_annotations$id == id & all_compiled_annotations$class == "stop_codon"][1]
+            # what region of the gene is it in if it is not in the exon? have to account for the instances the gene is on the negative or the positive strand here and if the annotation file even documents exon or intron
+            if (start_codon < stop_codon) {
+              if (end < start_codon) {upstream_utr <- 1} else if (start > stop_codon) {downstram_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
+            } else if (start_codon > stop_codon) {
+              if (start > start_codon) {upstream_utr <- 1} else if (end < stop_codon) {downstram_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
+            }
           }
         }
       }

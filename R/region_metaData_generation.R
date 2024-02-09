@@ -72,7 +72,7 @@ region_metaData_generation <- function(regions,
   rangesB <- IRanges::IRanges(gtf_cpgshores$start, gtf_cpgshores$end)
 
   #which regionsB overlap w no regionA regions
-  not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')>0
+  not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')==0
 
   gtf_cpgshores <- gtf_cpgshores[not_ov,]
   gtf_cpgshores$class <- "CpG_shore"
@@ -83,7 +83,7 @@ region_metaData_generation <- function(regions,
   rangesB <- IRanges::IRanges(gtf_cpgshelves$start, gtf_cpgshelves$end)
 
   #which regionsB overlap w no regionA regions
-  not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')>0
+  not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')==0
 
   gtf_cpgshelves <- gtf_cpgshelves[not_ov,]
   gtf_cpgshelves$class <- "CpG_shelf"
@@ -112,6 +112,7 @@ region_metaData_generation <- function(regions,
     rangesA <- IRanges::IRanges(start, end)
     rangesB <- IRanges::IRanges(all_compiled_annotations$start, all_compiled_annotations$end)
 
+    #which regionsB overlap w regionA
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- all_compiled_annotations[ov,]
 

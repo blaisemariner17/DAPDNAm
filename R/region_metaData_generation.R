@@ -106,7 +106,6 @@ region_metaData_generation <- function(regions,
   i = 1
   for (region in rownames(regions)){
     ph <- stringr::str_split(region, stringr::fixed("_"))
-    chromosome <- ph[[1]][1]
     start <-  as.numeric(ph[[1]][2])
     end <-  as.numeric(ph[[1]][3])
 
@@ -123,16 +122,17 @@ region_metaData_generation <- function(regions,
     intron_gene <- 0
     upstream_utr <- 0
     downstream_utr <- 0
+    Promoter <- 0
     Promoter_id <- 0
 
-    if ("CpG_island" %in% hit$id[hit$class]) {CpG_island <- 1} else {CpG_island <- 0}
-    if ("CpG_shore" %in% hit$id[hit$id]) {CpG_shore <- 1} else {CpG_shore <- 0}
-    if ("CpG_shelf" %in% hit$id[hit$id]) {CpG_shelf <- 1} else {CpG_shelf <- 0}
-    if ("Simple_repeat" %in% hit$class[hit$id]) {Simple_repeat <- 1} else {Simple_repeat <- 0}
-    if ("Promoter" %in% hit$class[hit$id]) {
+    if ("CpG_island" %in% hit$class) {CpG_island <- 1} else {CpG_island <- 0}
+    if ("CpG_shore" %in% hit$class) {CpG_shore <- 1} else {CpG_shore <- 0}
+    if ("CpG_shelf" %in% hit$class) {CpG_shelf <- 1} else {CpG_shelf <- 0}
+    if ("Simple_repeat" %in% hit$class) {Simple_repeat <- 1} else {Simple_repeat <- 0}
+    if ("Promoter" %in% hit$class) {
       Promoter <- 1
-      Promoter_id <- paste(unique(id), collapse = ' & ')
-    } else {Promoter <- 0}
+      Promoter_id <- paste(unique(hit$id[hit$class == "Promoter"]), collapse = ' & ')
+    }
 
     if(nrow(hit) > 0){
       for (id in unique(hit$id)){

@@ -11,7 +11,7 @@ TE_region_metaData_generation <- function(regions,
                                        sw_score_cutoff = 225
 ) {
   chromosome <- unique(regions$chr)
-  if (length(chromosome)>1){stop("Run this function in parralell or one chromosome at a time by filtering the regions first.")}
+  if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}
 
   colnames(transposons_annotation) <- c('bin', 'swScore', 'milliDiv', 'milliDel', 'milliIns'	,
                            'seqnames', 'start', 'end', 'genoLeft', 'strand'	,
@@ -35,15 +35,14 @@ TE_region_metaData_generation <- function(regions,
   for (region in rownames(regions)) {
 
     ph <- stringr::str_split(region, stringr::fixed("_"))
-    chromosome <- ph[[1]][1]
     start <-  as.numeric(ph[[1]][2])
     end <-  as.numeric(ph[[1]][3])
 
-    rangesA <- split(IRanges::IRanges(start, end), chromosome)
-    rangesB <- split(IRanges::IRanges(transposons_annotation$start, transposons_annotation$end), chromosome)
+    rangesA <- IRanges::IRanges(start, end)
+    rangesB <- IRanges::IRanges(transposons_annotation$start, transposons_annotation$end)
 
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
-    hit <- transposons_annotation[ov[[1]],]
+    hit <- transposons_annotation[ov,]
     sine_id <- 0
     line_id <- 0
     if ("LINE" %in% hit$class){line = 1; line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0}

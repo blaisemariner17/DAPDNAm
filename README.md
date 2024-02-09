@@ -1,5 +1,5 @@
-# DAPDNAM
-A github R package with functions and workflows for the processing of Dog <inc>D</inc>NA <inc>m</inc>ethylation data for the <inc>D</inc>og </inc>A</inc>ging <inc>P</inc>roject (DAP; dogagingproject.org)
+# DAPDNAm
+A GitHub R package with functions and workflows for the processing of Dog <ins>D</ins>NA <ins>m</ins>ethylation data for the <ins>D</ins>og </ins>A</ins>ging <ins>P</ins>roject (DAP; dogagingproject.org)
 
 ### Terms and definitions:
 

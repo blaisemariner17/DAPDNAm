@@ -9,9 +9,9 @@
 #' @export region_metaData_generation
 
 region_metaData_generation <- function(regions,
-                                       genome_gene_annotation = rtracklayer::import('../../GENOME-ANNOTATION-FILE/UU_Cfam_GSD_1.0_ROSY.refSeq.ensformat.gtf'),
+                                       genome_gene_annotation,
                                        cpgisland_annotation,
-                                       chromatin_states_annotation =  rtracklayer::import(chromatin_state_bed_file, format = "bed")
+                                       chromatin_states_annotation
 ) {
 
   chromosome <- unique(regions$chr)
@@ -116,6 +116,15 @@ region_metaData_generation <- function(regions,
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- all_compiled_annotations[ov[[1]],]
 
+    gene_id <- 0
+    gene_bool <- 0
+    exon <- 0
+    intron <- 0
+    intron_gene <- 0
+    upstream_utr <- 0
+    downstream_utr <- 0
+    PromoterId <- 0
+
     if ("CpG_island" %in% hit$id[hit$class]) {CpG_island <- 1} else {CpG_island <- 0}
     if ("CpG_shore" %in% hit$id[hit$id]) {CpG_shore <- 1} else {CpG_shore <- 0}
     if ("CpG_shelf" %in% hit$id[hit$id]) {CpG_shelf <- 1} else {CpG_shelf <- 0}
@@ -124,14 +133,6 @@ region_metaData_generation <- function(regions,
       Promoter <- 1
       Promoter_id <- paste(unique(id), collapse = ' & ')
     } else {Promoter <- 0}
-
-    gene_id <- 0
-    gene_bool <- 0
-    exon <- 0
-    intron <- 0
-    intron_gene <- 0
-    upstream_utr <- 0
-    downstream_utr <- 0
 
     if(nrow(hit) > 0){
       for (id in unique(hit$id)){

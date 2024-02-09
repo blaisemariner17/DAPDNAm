@@ -45,6 +45,7 @@ TE_region_metaData_generation <- function(regions,
     hit <- transposons_annotation[ov,]
     sine_id <- 0
     line_id <- 0
+
     if ("LINE" %in% hit$class){line = 1; line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0}
     if ("SINE" %in% hit$class){sine = 1; sine_id <- unique(hit$SINE_id[hit$SINE_id!=0])} else {sine = 0}
 

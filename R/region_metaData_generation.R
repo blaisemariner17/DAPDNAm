@@ -68,24 +68,24 @@ region_metaData_generation <- function(regions,
   gtf_cpgshelves <- rbind(gtf_cpgshelfup, gtf_cpgshelfdown)
 
   #determine if there is a cpg island in a shore and remove the shore if so
-  rangesA <- split(IRanges::IRanges(cpgisland_annotation$start, cpgisland_annotation$end), chromosome)
-  rangesB <- split(IRanges::IRanges(gtf_cpgshores$start, gtf_cpgshores$end), chromosome)
+  rangesA <- IRanges::IRanges(cpgisland_annotation$start, cpgisland_annotation$end)
+  rangesB <- IRanges::IRanges(gtf_cpgshores$start, gtf_cpgshores$end)
 
   #which regionsB overlap w no regionA regions
   not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')>0
 
-  gtf_cpgshores <- gtf_cpgshores[not_ov[[1]],]
+  gtf_cpgshores <- gtf_cpgshores[not_ov,]
   gtf_cpgshores$class <- "CpG_shore"
 
   #determine if there is a cpg shore in a shelf and remove the shelf if so
 
-  rangesA <- split(IRanges::IRanges(gtf_cpgshores$start, gtf_cpgshores$end), chromosome)
-  rangesB <- split(IRanges::IRanges(gtf_cpgshelves$start, gtf_cpgshelves$end), chromosome)
+  rangesA <- IRanges::IRanges(gtf_cpgshores$start, gtf_cpgshores$end)
+  rangesB <- IRanges::IRanges(gtf_cpgshelves$start, gtf_cpgshelves$end)
 
   #which regionsB overlap w no regionA regions
   not_ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')>0
 
-  gtf_cpgshelves <- gtf_cpgshelves[not_ov[[1]],]
+  gtf_cpgshelves <- gtf_cpgshelves[not_ov,]
   gtf_cpgshelves$class <- "CpG_shelf"
 
   #combine all the cpg annotations
@@ -93,7 +93,7 @@ region_metaData_generation <- function(regions,
   cpgisland_annotation <- rbind(cpgisland_annotation, gtf_cpgshores, gtf_cpgshelves)
 
   #gene body annotation
-  gene_body_annotation <- as.data.frame(genome_gene_annotation[seqnames(genome_gene_annotation) == chromosome,])
+  gene_body_annotation <- as.data.frame(genome_gene_annotation[GenomeInfoDb::seqnames(genome_gene_annotation) == chromosome,])
   gene_body_annotation <- gene_body_annotation[,c("seqnames", "start", "end", "type", "gene_id")]
   colnames(gene_body_annotation) <- c("seqnames", "start", "end", "class", "id")
 
@@ -110,11 +110,11 @@ region_metaData_generation <- function(regions,
     start <-  as.numeric(ph[[1]][2])
     end <-  as.numeric(ph[[1]][3])
 
-    rangesA <- split(IRanges::IRanges(start, end), chromosome)
-    rangesB <- split(IRanges::IRanges(all_compiled_annotations$start, all_compiled_annotations$end), chromosome)
+    rangesA <- IRanges::IRanges(start, end)
+    rangesB <- IRanges::IRanges(all_compiled_annotations$start, all_compiled_annotations$end)
 
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
-    hit <- all_compiled_annotations[ov[[1]],]
+    hit <- all_compiled_annotations[ov,]
 
     gene_id <- 0
     gene_bool <- 0
@@ -123,7 +123,7 @@ region_metaData_generation <- function(regions,
     intron_gene <- 0
     upstream_utr <- 0
     downstream_utr <- 0
-    PromoterId <- 0
+    Promoter_id <- 0
 
     if ("CpG_island" %in% hit$id[hit$class]) {CpG_island <- 1} else {CpG_island <- 0}
     if ("CpG_shore" %in% hit$id[hit$id]) {CpG_shore <- 1} else {CpG_shore <- 0}
@@ -171,7 +171,7 @@ region_metaData_generation <- function(regions,
                                     "Promoter_id" = Promoter_id,
                                     "exon" = exon,
                                     "intron" = intron,
-                                    "CpG_shelf" = Cpg_shelf,
+                                    "CpG_shelf" = CpG_shelf,
                                     "CpG_shore" = CpG_shore,
                                     "CpG_island" = CpG_island
                                     )

@@ -11,7 +11,7 @@
 #' @export filtering_region_and_coverage
 
 filtering_region_and_coverage <- function(dap_chr_oi,
-                                          maxgap = 250,
+                                          maxgap = 50,
                                           at_least_n_sites_per_region = 1,
                                           at_least_X_coverage_of_a_region = 5,
                                           in_at_least_X_samples = 200,

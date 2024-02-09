@@ -186,7 +186,7 @@ region_metaData_generation <- function(regions,
                                           "Promoter_id" = Promoter_id,
                                           "exon" = exon,
                                           "intron" = intron,
-                                          "CpG_shelf" = Cpg_shelf,
+                                          "CpG_shelf" = CpG_shelf,
                                           "CpG_shore" = CpG_shore,
                                           "CpG_island" = CpG_island
                                ))

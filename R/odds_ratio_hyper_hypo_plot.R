@@ -5,7 +5,7 @@
 #' @param fdr_perc fdr percent cutoff
 #' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
 #' @param label_order the labels to be assigned to the plots in ggplot
-#' @return Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest
+#' @return Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest. It searches through all the region_metadata columns for columns with 0 and 1 in them and does it automatically
 #' @export odds_ratio_hyper_hypo_plot
 
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,

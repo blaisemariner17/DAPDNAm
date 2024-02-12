@@ -45,6 +45,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   #firs, we
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta > 0],]
+  i = 1
   for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
       next
@@ -75,8 +76,9 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 5), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
-      if (col ==colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
+      if (i == 1){
         odds_ratio_results_hyper <- res_
+        i = 2
       } else {
         odds_ratio_results_hyper <- rbind(odds_ratio_results_hyper, res_)
       }
@@ -85,6 +87,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   #hypo
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta < 0],]
+  i = 1
   for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
       next
@@ -113,8 +116,9 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
-      if (col == colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
+      if (i == 1){
         odds_ratio_results_hypo <- res_
+        i = 2
       } else {
         odds_ratio_results_hypo <- rbind(odds_ratio_results_hypo, res_)
       }

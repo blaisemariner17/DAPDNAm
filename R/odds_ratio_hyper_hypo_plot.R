@@ -25,12 +25,14 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
                                        )
 
 ) {
+  # make sure you only have the regions that have converged
   pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
   region_metaData <- region_metaData[region_metaData$region %in% rownames(pqlseq_res),]
 
   pqlseq_res <- pqlseq_res[order(pqlseq_res$padj),]
   pqlseq_res$name <- rownames(pqlseq_res)
 
+  # generate the fdr percentage for odds ratio calculation
   pqlseq_res$count <- 1:nrow(pqlseq_res)
   pqlseq_res$fdr <- pqlseq_res$count * pqlseq_res$padj
   pqlseq_res$fdr_perc <- pqlseq_res$fdr / pqlseq_res$count
@@ -41,7 +43,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   if (all(region_metaData_fdr1$region == rownames(pqlseq_res_fdr1)) == FALSE) {return(message("region_metadata does not match pqlseq_res"))}
 
-  #pos beta
+  #firs, we
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta > 0],]
   for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
@@ -74,9 +76,9 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 5), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
       if (col == col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
-        for_ggplot_hyper <- res_
+        odds_ratio_results_hyper <- res_
       } else {
-        for_ggplot_hyper <- rbind(for_ggplot_hyper, res_)
+        odds_ratio_results_hyper <- rbind(odds_ratio_results_hyper, res_)
       }
     } else {next}
   }
@@ -112,37 +114,37 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
       if (col == colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
-        for_ggplot_hypo <- res_
+        odds_ratio_results_hypo <- res_
       } else {
-        for_ggplot_hypo <- rbind(for_ggplot_hypo, res_)
+        odds_ratio_results_hypo <- rbind(odds_ratio_results_hypo, res_)
       }
     } else {next}
   }
 
   #padj
-  for_ggplot_hypo$padj_hypo <- round(p.adjust(for_ggplot_hypo$pval,method="BH"),digits = 10)
-  for_ggplot_hyper$padj_hyper <- round(p.adjust(for_ggplot_hyper$pval,method="BH"),digits = 10)
+  odds_ratio_results_hypo$padj_hypo <- round(p.adjust(odds_ratio_results_hypo$pval,method="BH"),digits = 10)
+  odds_ratio_results_hyper$padj_hyper <- round(p.adjust(odds_ratio_results_hyper$pval,method="BH"),digits = 10)
 
   #oddsratio log2
-  for_ggplot_hyper$odds_ratio_log2_hyper <- for_ggplot_hyper$odds_ratio_log2
-  for_ggplot_hypo$odds_ratio_log2_hypo <- for_ggplot_hypo$odds_ratio_log2
+  odds_ratio_results_hyper$odds_ratio_log2_hyper <- odds_ratio_results_hyper$odds_ratio_log2
+  odds_ratio_results_hypo$odds_ratio_log2_hypo <- odds_ratio_results_hypo$odds_ratio_log2
   #class
-  for_ggplot_hypo$class_hypo <- for_ggplot_hypo$class
-  for_ggplot_hyper$class_hyper <- for_ggplot_hyper$class
+  odds_ratio_results_hypo$class_hypo <- odds_ratio_results_hypo$class
+  odds_ratio_results_hyper$class_hyper <- odds_ratio_results_hyper$class
   #and rownames assignment
-  rownames(for_ggplot_hypo) <- for_ggplot_hypo$class
-  rownames(for_ggplot_hyper) <- for_ggplot_hyper$class
+  rownames(odds_ratio_results_hypo) <- odds_ratio_results_hypo$class
+  rownames(odds_ratio_results_hyper) <- odds_ratio_results_hyper$class
   #get the classes that are in the other
-  for_ggplot_hypo <- for_ggplot_hypo[rownames(for_ggplot_hypo) %in% rownames(for_ggplot_hyper),]
-  for_ggplot_hyper <- for_ggplot_hyper[rownames(for_ggplot_hyper) %in% rownames(for_ggplot_hypo),]
+  odds_ratio_results_hypo <- odds_ratio_results_hypo[rownames(odds_ratio_results_hypo) %in% rownames(odds_ratio_results_hyper),]
+  odds_ratio_results_hyper <- odds_ratio_results_hyper[rownames(odds_ratio_results_hyper) %in% rownames(odds_ratio_results_hypo),]
 
-  for_ggplot_hyper <- for_ggplot_hyper[order(for_ggplot_hyper$class),]
-  for_ggplot_hypo <- for_ggplot_hypo[order(for_ggplot_hypo$class),]
+  odds_ratio_results_hyper <- odds_ratio_results_hyper[order(odds_ratio_results_hyper$class),]
+  odds_ratio_results_hypo <- odds_ratio_results_hypo[order(odds_ratio_results_hypo$class),]
 
-  if(all(rownames(for_ggplot_hypo) == rownames(for_ggplot_hyper))==F){return(message("hypo results do not match hyper results"))}
+  if(all(rownames(odds_ratio_results_hypo) == rownames(odds_ratio_results_hyper))==F){return(message("hypo results do not match hyper results"))}
 
-  odds_ratio_results <- cbind(for_ggplot_hyper[,c("class_hyper", "padj_hyper", "odds_ratio_log2_hyper")],
-                           for_ggplot_hypo[,c("class_hypo", "padj_hypo", "odds_ratio_log2_hypo")])
+  odds_ratio_results <- cbind(odds_ratio_results_hyper[,c("class_hyper", "padj_hyper", "odds_ratio_log2_hyper")],
+                           odds_ratio_results_hypo[,c("class_hypo", "padj_hypo", "odds_ratio_log2_hypo")])
 
   odds_ratio_results$significance_label <- "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)"
 

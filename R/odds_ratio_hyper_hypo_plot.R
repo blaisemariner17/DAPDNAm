@@ -75,7 +75,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 5), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
-      if (col == col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
+      if (col ==colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
         odds_ratio_results_hyper <- res_
       } else {
         odds_ratio_results_hyper <- rbind(odds_ratio_results_hyper, res_)

@@ -7,7 +7,7 @@
 TE_region_metaData_generation(
   regions,
   transposons_annotation,
-  sw_score_cutoff = 225
+  sw_score_cutoff = 0
 )
 }
 \arguments{

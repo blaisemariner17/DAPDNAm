@@ -29,7 +29,7 @@ odds_ratio_hyper_hypo_plot(
 \item{label_order}{the labels to be assigned to the plots in ggplot}
 }
 \value{
-Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest
+Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest. It searches through all the region_metadata columns for columns with 0 and 1 in them and does it automatically
 }
 \description{
 plot the odds ratio scatter plot for enriched and depleted regions from the hyper and hypo methylated regions of interest

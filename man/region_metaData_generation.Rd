@@ -6,23 +6,21 @@
 \usage{
 region_metaData_generation(
   regions,
-  n.cores,
-  gtf =
-    rtracklayer::import("../../GENOME-ANNOTATION-FILE/UU_Cfam_GSD_1.0_ROSY.refSeq.ensformat.gtf"),
-  gtf_cpgisl = gtf_cpgisl,
-  chromatin_state_bed_file = bed_file
+  genome_gene_annotation,
+  cpgisland_annotation,
+  chromatin_states_annotation
 )
 }
 \arguments{
 \item{regions}{regions of interest}
 
+\item{genome_gene_annotation}{gene annotation file}
+
+\item{cpgisland_annotation}{CpG island annotation file}
+
+\item{chromatin_states_annotation}{chromatin state annotation (not currently used)}
+
 \item{n.cores}{numer of cores}
-
-\item{gtf}{gene annotation file}
-
-\item{gtf_cpgisl}{CpG island annotation file}
-
-\item{chromatin_state_bed_file}{bed file of the chromatin state annotation}
 }
 \value{
 Function returns region metadata of interest

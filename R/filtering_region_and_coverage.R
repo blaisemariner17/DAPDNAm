@@ -24,6 +24,7 @@ filtering_region_and_coverage <- function(dap_chr_oi,
                                    chr = as.character(GenomeInfoDb::seqnames(dap_chr_oi)),
                                    positions = BiocGenerics::start(dap_chr_oi), maxGap = maxgap,
                                    verbose = FALSE)[["up"]]
+
   rownames(regions) <- paste(regions$chr, regions$start, regions$end, sep = "_")
 
 

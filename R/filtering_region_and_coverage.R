@@ -28,7 +28,7 @@ filtering_region_and_coverage <- function(dap_chr_oi,
 
 
   regions <- regions[regions$n >= at_least_n_sites_per_region,]
-  regions$length <- regions$end - regions$start
+  regions$length <- regions$end - regions$start + 1
 
   coverage_regions_oi <- bsseq::getCoverage(dap_chr_oi, type = "Cov", regions = regions,
                                             what="perRegionTotal", withDimnames = TRUE)

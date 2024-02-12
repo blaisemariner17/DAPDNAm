@@ -42,8 +42,6 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   if (all(region_metaData_fdr1$region == rownames(pqlseq_res_fdr1)) == FALSE) {return(message("region_metadata does not match pqlseq_res"))}
 
   #pos beta
-  if (exists("for_ggplot_hyper")){rm(for_ggplot_hyper)}
-  res <- list()
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta > 0],]
   for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
@@ -75,8 +73,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 5), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
-      res[[col]] <- res_
-      if (exists("for_ggplot_hyper") == FALSE){
+      if (col == col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
         for_ggplot_hyper <- res_
       } else {
         for_ggplot_hyper <- rbind(for_ggplot_hyper, res_)
@@ -85,8 +82,6 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   }
 
   #hypo
-  if (exists("for_ggplot_hypo")){rm(for_ggplot_hypo)}
-  res <- list()
   region_metaData_fdr1_oi <- region_metaData_fdr1[region_metaData_fdr1$region %in% rownames(pqlseq_res_fdr1)[pqlseq_res_fdr1$beta < 0],]
   for (col in colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class]){
     if (col == "distance_nearest_gene_start") {
@@ -112,12 +107,11 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       rownames(data_oi) <- outcome_oi
       print(data_oi)
       odds_ratio <- epitools::oddsratio(data_oi)
-      odds_ratio
+      #odds_ratio
 
       res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
                          "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
-      res[[col]] <- res_
-      if (exists("for_ggplot_hypo") == FALSE){
+      if (col == colnames(region_metaData_fdr1_oi)[!colnames(region_metaData_fdr1_oi) %in% omit_class][1]){
         for_ggplot_hypo <- res_
       } else {
         for_ggplot_hypo <- rbind(for_ggplot_hypo, res_)
@@ -147,62 +141,28 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   if(all(rownames(for_ggplot_hypo) == rownames(for_ggplot_hyper))==F){return(message("hypo results do not match hyper results"))}
 
-  for_ggplot_both <- cbind(for_ggplot_hyper[,c("class_hyper", "padj_hyper", "odds_ratio_log2_hyper")],
+  odds_ratio_results <- cbind(for_ggplot_hyper[,c("class_hyper", "padj_hyper", "odds_ratio_log2_hyper")],
                            for_ggplot_hypo[,c("class_hypo", "padj_hypo", "odds_ratio_log2_hypo")])
 
-  for_ggplot_both$significance_label <- "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)"
+  odds_ratio_results$significance_label <- "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)"
 
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log2_hyper > 0] <- "Enriched in hyper only"
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log2_hypo < 0] <- "Depleted in hypo only"
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$odds_ratio_log2_hyper < 0] <- "Depleted in hyper only"
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hypo < 0.05 & for_ggplot_both$odds_ratio_log2_hypo > 0] <- "Enriched in hypo only"
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$padj_hypo < 0.05 &
-                                       (for_ggplot_both$odds_ratio_log2_hyper < 0 & for_ggplot_both$odds_ratio_log2_hypo > 0)] <- "Enriched in hypo & depleted in hyper"
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$padj_hypo < 0.05 &
-                                       (for_ggplot_both$odds_ratio_log2_hyper >0 & for_ggplot_both$odds_ratio_log2_hypo < 0)] <- "Enriched in hyper & depleted in hypo"
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$padj_hypo < 0.05 &
-                                       for_ggplot_both$odds_ratio_log2_hyper >0 & for_ggplot_both$odds_ratio_log2_hypo >0] <- "Enriched in hyper & hypo"
-  for_ggplot_both$significance_label[for_ggplot_both$padj_hyper < 0.05 & for_ggplot_both$padj_hypo < 0.05 &
-                                       for_ggplot_both$odds_ratio_log2_hyper <0 & for_ggplot_both$odds_ratio_log2_hypo <0] <- "Depleted in hyper & hypo"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hyper < 0.05 & odds_ratio_results$odds_ratio_log2_hyper > 0] <- "Enriched in hyper only"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hypo < 0.05 & odds_ratio_results$odds_ratio_log2_hypo < 0] <- "Depleted in hypo only"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hyper < 0.05 & odds_ratio_results$odds_ratio_log2_hyper < 0] <- "Depleted in hyper only"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hypo < 0.05 & odds_ratio_results$odds_ratio_log2_hypo > 0] <- "Enriched in hypo only"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hyper < 0.05 & odds_ratio_results$padj_hypo < 0.05 &
+                                       (odds_ratio_results$odds_ratio_log2_hyper < 0 & odds_ratio_results$odds_ratio_log2_hypo > 0)] <- "Enriched in hypo & depleted in hyper"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hyper < 0.05 & odds_ratio_results$padj_hypo < 0.05 &
+                                       (odds_ratio_results$odds_ratio_log2_hyper >0 & odds_ratio_results$odds_ratio_log2_hypo < 0)] <- "Enriched in hyper & depleted in hypo"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hyper < 0.05 & odds_ratio_results$padj_hypo < 0.05 &
+                                       odds_ratio_results$odds_ratio_log2_hyper >0 & odds_ratio_results$odds_ratio_log2_hypo >0] <- "Enriched in hyper & hypo"
+  odds_ratio_results$significance_label[odds_ratio_results$padj_hyper < 0.05 & odds_ratio_results$padj_hypo < 0.05 &
+                                       odds_ratio_results$odds_ratio_log2_hyper <0 & odds_ratio_results$odds_ratio_log2_hypo <0] <- "Depleted in hyper & hypo"
 
-  for_ggplot_both$significance_label <- factor(for_ggplot_both$significance_label,
-                                               levels =label_order)
+  odds_ratio_results$significance_label <- factor(odds_ratio_results$significance_label,
+                                               levels = label_order)
 
-  for_ggplot_both <- for_ggplot_both[order(for_ggplot_both$significance_label),]
+  odds_ratio_results <- odds_ratio_results[order(odds_ratio_results$significance_label),]
 
-  # theme_blaise <- theme(plot.title.position = "plot", axis.text.x = element_text(angle=0),      plot.title = element_text(family = "sans", size = 24, hjust = 0.5, color="black", face='bold'),      plot.subtitle = element_text(family = "sans", size = 11, color="black"), axis.text = element_text(family = "sans", size = 18, color="black"),axis.title.y = element_markdown(family = "sans", size = 20), axis.title.x = element_markdown(family = "sans", size = 20),       panel.border = element_blank(),      axis.line = element_line(colour = "black", linewidth = 1),       axis.ticks = element_line(colour = "black", linewidth = 1),       legend.key.size = unit(1.5, 'cm'),      legend.key = element_rect(fill=NA),      legend.text = element_text(family = "sans", size = 20),      legend.title = element_blank(),      legend.background = element_blank(),      legend.box.background = element_blank(),      legend.text.align =	0,      panel.background = element_blank(),      panel.grid.major = element_line(colour = "black"),      panel.grid.minor = element_blank())+ removeGrid()
-  #
-  # plot_ <- ggplot(for_ggplot_both[!for_ggplot_both$class_hyper %in% omit_class,],
-  #                 aes(x = odds_ratio_log2_hypo, y = odds_ratio_log2_hyper, label = class_hyper, color = color)) +
-  #   geom_hline(yintercept = 0, color = "darkgrey", linetype = "dashed") +
-  #   geom_vline(xintercept = 0, color = "darkgrey", linetype = "dashed") +
-  #   geom_point(size = 3) +
-  #   ylab("hypermethylation log<sub>10</sub>(odds ratio)")+
-  #   xlab("hypomethylation log<sub>10</sub>(odds ratio)")+
-  #   theme_blaise +
-  #   theme(plot.caption = element_markdown(size = 14), legend.position = c(0.8, 0.82),
-  #         legend.key.height = unit(1, 'line'),
-  #         legend.key.width = unit(1, 'line'),
-  #         legend.text = element_markdown(size = 12)
-  #   )+
-  #   geom_label(x = -0.25, y = 0.65, label = "Significantly enriched in hypermethylated regions \n and significantly depleted in hypomethylated regions",
-  #              family= 'sans', color = "purple") +
-  #   geom_label(x = 0.4, y = -0.65, label = "Significantly enriched in hypomethylated regions \n and significantly depleted in hypermethylated regions",
-  #              family= 'sans', color = "red") +
-  #   geom_label_repel(aes(label=ifelse(color!="black", as.character(class_hyper),'')), box.padding = .2,
-  #                    point.padding = 0.01, segment.color = 'grey', color = "black"
-  #   ) +
-  #   xlim(-0.5,0.6) + ylim(-0.82,0.77) +
-  #   scale_color_manual(values = color_order,
-  #                      labels = c(
-  #                        "Enriched in hyper & depleted in hypo",
-  #                        "Enriched in hyper only",
-  #                        "Depleted in hypo only",
-  #                        "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)",
-  #                        "Depleted in hyper only",
-  #                        "Enriched in hypo only",
-  #                        "Enriched in hypo & depleted in hyper"
-  #                      ))
-
-  return(for_ggplot_both)
+  return(odds_ratio_results)
 }

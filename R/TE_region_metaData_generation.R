@@ -38,11 +38,23 @@ TE_region_metaData_generation <- function(regions,
     start <-  as.numeric(ph[[1]][2])
     end <-  as.numeric(ph[[1]][3])
 
+    # this is
     rangesA <- IRanges::IRanges(start, end)
     rangesB <- IRanges::IRanges(transposons_annotation$start, transposons_annotation$end)
 
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- transposons_annotation[ov,]
+    #expand the search of the region to assess if there is a nearby annotation in an effort to improve our region annotation
+    if (nrow(hit) == 0){
+      rangesA <- IRanges::IRanges(start-1000, end+1000)
+      ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
+      hit <- transposons_annotation[ov,]
+    }
+    if (nrow(hit) == 0){
+      rangesA <- IRanges::IRanges(start-2000, end+2000)
+      ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
+      hit <- transposons_annotation[ov,]
+    }
     sine_id <- 0
     line_id <- 0
 

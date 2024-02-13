@@ -21,10 +21,10 @@ region_metaData_generation <- function(regions,
 
   promoter_annotation_neg <- promoter_annotation[promoter_annotation$strand == "-",]
   promoter_annotation_neg$promoter_start <- promoter_annotation_neg$end
-  promoter_annotation_neg$promoter_end <- promoter_annotation_neg$end + 2000
+  promoter_annotation_neg$promoter_end <- promoter_annotation_neg$end + 2500
 
   promoter_annotation_pos <- promoter_annotation[promoter_annotation$strand == "+",]
-  promoter_annotation_pos$promoter_start <- promoter_annotation_pos$start - 2000
+  promoter_annotation_pos$promoter_start <- promoter_annotation_pos$start - 2500
   promoter_annotation_pos$promoter_end <- promoter_annotation_pos$start
 
   promoter_annotation <- rbind(promoter_annotation_pos, promoter_annotation_neg)
@@ -109,18 +109,6 @@ region_metaData_generation <- function(regions,
     #which regionsB overlap w regionA
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- all_compiled_annotations[ov,]
-
-    #expand our search, if necessary
-    if (nrow(hit) == 0){
-      rangesA <- IRanges::IRanges(start-1000, end+1000)
-      ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
-      hit <- all_compiled_annotations[ov,]
-    }
-    if (nrow(hit) == 0){
-      rangesA <- IRanges::IRanges(start-2000, end+2000)
-      ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
-      hit <- all_compiled_annotations[ov,]
-    }
 
     gene_id <- 0
     gene_bool <- 0

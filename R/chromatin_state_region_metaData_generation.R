@@ -13,7 +13,7 @@ chromatin_state_region_metaData_generation <- function(regions,
   if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}
 
   #chromatin state annotation
-  chromatin_states_annotation <- chromatin_states_annotation[chromatin_states_annotation$seqnames == chromosome,]
+  chromatin_states_annotation <- chromatin_states_annotation[chromatin_states_annotation@seqnames == chromosome,]
 
   i = 1
   for (region in rownames(regions)) {

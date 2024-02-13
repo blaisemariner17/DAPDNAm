@@ -42,7 +42,7 @@ TE_region_metaData_generation <- function(regions,
     hit <- transposons_annotation[ov,]
     #expand the search of the region to assess if there is a nearby annotation in an effort to improve our region annotation
     if (nrow(hit) == 0){
-      rangesA <- IRanges::IRanges(start-1000, end+1000)
+      rangesA <- IRanges::IRanges(start-500, end+500)
       ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
       hit <- transposons_annotation[ov,]
     }

@@ -3,12 +3,14 @@
 #' @param regions regions of interest
 #' @param transposons_annotation TE annotation file
 #' @param sw_score_cutoff the minimum sw score that will be queried here
+#' @param expanded_search_if_nec expanding the search if necessary for region overlaps
 #' @return Function returns region metadata of interest
 #' @export TE_region_metaData_generation
 
 TE_region_metaData_generation <- function(regions,
                                        transposons_annotation,
-                                       sw_score_cutoff = 225
+                                       sw_score_cutoff = 225,
+                                       expanded_search_if_nec = 500
 ) {
   chromosome <- unique(regions$chr)
   if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}
@@ -42,7 +44,7 @@ TE_region_metaData_generation <- function(regions,
     hit <- transposons_annotation[ov,]
     #expand the search of the region to assess if there is a nearby annotation in an effort to improve our region annotation
     if (nrow(hit) == 0){
-      rangesA <- IRanges::IRanges(start-500, end+500)
+      rangesA <- IRanges::IRanges(start-expanded_search_if_nec, end+expanded_search_if_nec)
       ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
       hit <- transposons_annotation[ov,]
     }

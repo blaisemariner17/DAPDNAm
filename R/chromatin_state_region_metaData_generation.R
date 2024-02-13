@@ -7,8 +7,7 @@
 #' @export chromatin_state_region_metaData_generation
 
 chromatin_state_region_metaData_generation <- function(regions,
-                                       genome_gene_annotation,
-                                       cpgisland_annotation
+                                                       chromatin_states_annotation
 ) {
   chromosome <- unique(regions$chr)
   if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}

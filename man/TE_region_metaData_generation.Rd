@@ -2,7 +2,7 @@
 % Please edit documentation in R/TE_region_metaData_generation.R
 \name{TE_region_metaData_generation}
 \alias{TE_region_metaData_generation}
-\title{generate region metadata from regions of interest given provided annotation files}
+\title{generate transposable element region metadata from regions of interest given provided annotation files}
 \usage{
 TE_region_metaData_generation(
   regions,
@@ -21,5 +21,5 @@ TE_region_metaData_generation(
 Function returns region metadata of interest
 }
 \description{
-generate region metadata from regions of interest given provided annotation files
+generate transposable element region metadata from regions of interest given provided annotation files
 }

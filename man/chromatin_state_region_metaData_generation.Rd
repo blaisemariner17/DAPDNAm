@@ -6,8 +6,7 @@
 \usage{
 chromatin_state_region_metaData_generation(
   regions,
-  genome_gene_annotation,
-  cpgisland_annotation
+  chromatin_states_annotation
 )
 }
 \arguments{

@@ -1,4 +1,4 @@
-#'generate region metadata from regions of interest given provided annotation files
+#'generate transposable element region metadata from regions of interest given provided annotation files
 #'
 #' @param regions regions of interest
 #' @param transposons_annotation TE annotation file
@@ -18,11 +18,7 @@ TE_region_metaData_generation <- function(regions,
                            'repName', 'class', 'repFamily', 'repStart', 'repEnd',	'repLeft',	'id')
   transposons_annotation <- transposons_annotation[transposons_annotation$seqnames == chromosome,]
   transposons_annotation <- transposons_annotation[transposons_annotation$swScore > sw_score_cutoff,]
-  transposons_annotation <- transposons_annotation[transposons_annotation$class %in% c("LINE", "SINE", "LTR",
-                                                "Satellite", "tRNA",
-                                                "snRNA", "rRNA", "scRNA", "srpRNA",
-                                                #added 23-12-29
-                                                "Simple_repeat", "Low_complexity", "DNA", "RC"),]
+
   transposons_annotation$LINE_id <- 0
   transposons_annotation$SINE_id <- 0
   transposons_annotation$LINE_id[transposons_annotation$class == "LINE"] <- paste0(transposons_annotation$class[transposons_annotation$class == "LINE"], "_",

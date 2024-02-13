@@ -120,12 +120,12 @@ region_metaData_generation <- function(regions,
     if (nrow(hit) == 0){
       rangesA <- IRanges::IRanges(start-1000, end+1000)
       ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
-      hit <- transposons_annotation[ov,]
+      hit <- all_compiled_annotations[ov,]
     }
     if (nrow(hit) == 0){
       rangesA <- IRanges::IRanges(start-2000, end+2000)
       ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
-      hit <- transposons_annotation[ov,]
+      hit <- all_compiled_annotations[ov,]
     }
 
     gene_id <- 0

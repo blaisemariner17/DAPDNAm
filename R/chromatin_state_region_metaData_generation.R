@@ -1,8 +1,8 @@
-#'generate region metadata from regions of interest given provided annotation files
+#'generate chromatin region metadata from regions of interest given provided annotation file
 #'
 #' @param regions regions of interest
 #' @param chromatin_states_annotation chromatin states annotation
-#' @param n.cores numer of cores
+#' @param n.cores number of cores
 #' @return Function returns region metadata of interest
 #' @export chromatin_state_region_metaData_generation
 

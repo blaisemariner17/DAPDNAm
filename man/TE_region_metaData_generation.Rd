@@ -7,7 +7,8 @@
 TE_region_metaData_generation(
   regions,
   transposons_annotation,
-  sw_score_cutoff = 0
+  sw_score_cutoff = 225,
+  expanded_search_if_nec = 500
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ TE_region_metaData_generation(
 \item{transposons_annotation}{TE annotation file}
 
 \item{sw_score_cutoff}{the minimum sw score that will be queried here}
+
+\item{expanded_search_if_nec}{expanding the search if necessary for region overlaps}
 }
 \value{
 Function returns region metadata of interest

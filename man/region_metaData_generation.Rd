@@ -7,8 +7,7 @@
 region_metaData_generation(
   regions,
   genome_gene_annotation,
-  cpgisland_annotation,
-  chromatin_states_annotation
+  cpgisland_annotation
 )
 }
 \arguments{
@@ -17,8 +16,6 @@ region_metaData_generation(
 \item{genome_gene_annotation}{gene annotation file}
 
 \item{cpgisland_annotation}{CpG island annotation file}
-
-\item{chromatin_states_annotation}{chromatin state annotation (not currently used)}
 
 \item{n.cores}{numer of cores}
 }

@@ -50,11 +50,6 @@ TE_region_metaData_generation <- function(regions,
       ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
       hit <- transposons_annotation[ov,]
     }
-    if (nrow(hit) == 0){
-      rangesA <- IRanges::IRanges(start-2000, end+2000)
-      ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
-      hit <- transposons_annotation[ov,]
-    }
     sine_id <- 0
     line_id <- 0
 

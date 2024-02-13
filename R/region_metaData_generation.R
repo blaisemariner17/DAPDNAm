@@ -3,22 +3,17 @@
 #' @param regions regions of interest
 #' @param genome_gene_annotation gene annotation file
 #' @param cpgisland_annotation CpG island annotation file
-#' @param chromatin_states_annotation chromatin state annotation (not currently used)
 #' @param n.cores numer of cores
 #' @return Function returns region metadata of interest
 #' @export region_metaData_generation
 
 region_metaData_generation <- function(regions,
                                        genome_gene_annotation,
-                                       cpgisland_annotation,
-                                       chromatin_states_annotation
+                                       cpgisland_annotation
 ) {
 
   chromosome <- unique(regions$chr)
   if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}
-
-  #chromatin state annotation
-  chromatin_states_annotation <- chromatin_states_annotation[chromatin_states_annotation$seqnames == chromosome,]
 
   #building the promoter annotation
   promoter_annotation <- data.frame(genome_gene_annotation[genome_gene_annotation$type == "gene",])
@@ -99,8 +94,7 @@ region_metaData_generation <- function(regions,
 
   all_compiled_annotations <- rbind(gene_body_annotation,
                       promoter_annotation,
-                      cpgisland_annotation,
-                      chromatin_states_annotation
+                      cpgisland_annotation
   )
 
   i = 1

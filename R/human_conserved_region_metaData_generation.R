@@ -9,6 +9,7 @@ human_conserved_region_metaData_generation <- function(regions,
                                        conserved_annotation
 ) {
   chromosome <- unique(regions$chr)
+  conserved_annotation <- conserved_annotation[conserved_annotation$seqnames == chromosome,]
   if (length(chromosome)>1){stop("Run this function in parallel or one chromosome at a time.")}
 
   i = 1

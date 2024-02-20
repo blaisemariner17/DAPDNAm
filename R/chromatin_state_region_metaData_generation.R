@@ -28,22 +28,22 @@ chromatin_state_region_metaData_generation <- function(regions,
     ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
     hit <- chromatin_states_annotation[ov,]
 
-    if ("Chromatin_state_promoter" %in% hit$name){Chromatin_state_promoter = 1} else {Chromatin_state_promoter = 0}
-    if ("Chromatin_state_enhancer" %in% hit$name){Chromatin_state_enhancer = 1} else {Chromatin_state_enhancer = 0}
-    if ("Chromatin_state_polycomb" %in% hit$name){Chromatin_state_polycomb = 1} else {Chromatin_state_polycomb = 0}
-    if ("Chromatin_state_heterochromatin" %in% hit$name){Chromatin_state_heterochromatin = 1} else {Chromatin_state_heterochromatin = 0}
-    if ("Chromatin_state_quies" %in% hit$name){Chromatin_state_quies = 1} else {Chromatin_state_quies = 0}
+    if ("ChrSt_promoter" %in% hit$name){Chromatin_state_promoter = 1} else {Chromatin_state_promoter = 0}
+    if ("ChrSt_enhancer" %in% hit$name){Chromatin_state_enhancer = 1} else {Chromatin_state_enhancer = 0}
+    if ("ChrSt_polycomb" %in% hit$name){Chromatin_state_polycomb = 1} else {Chromatin_state_polycomb = 0}
+    if ("ChrSt_heterochromatin" %in% hit$name){Chromatin_state_heterochromatin = 1} else {Chromatin_state_heterochromatin = 0}
+    if ("ChrSt_quies" %in% hit$name){Chromatin_state_quies = 1} else {Chromatin_state_quies = 0}
 
     if (i == 1){
-      region_metaData <- data.frame("region" = region, "Chromatin_state_promoter" = Chromatin_state_promoter,
-                                    "Chromatin_state_enhancer" = Chromatin_state_enhancer, "Chromatin_state_polycomb" = Chromatin_state_polycomb,
-                                    "Chromatin_state_heterochromatin" = Chromatin_state_heterochromatin, "Chromatin_state_quies" = Chromatin_state_quies
+      region_metaData <- data.frame("region" = region, "ChrSt_promoter" = Chromatin_state_promoter,
+                                    "ChrSt_enhancer" = ChrSt_enhancer, "ChrSt_polycomb" = Chromatin_state_polycomb,
+                                    "ChrSt_heterochromatin" = Chromatin_state_heterochromatin, "ChrSt_quies" = Chromatin_state_quies
                                     )
       i = 2
     } else {
-      region_metaData <- rbind(region_metaData, data.frame("region" = region, "Chromatin_state_promoter" = Chromatin_state_promoter,
-                                                           "Chromatin_state_enhancer" = Chromatin_state_enhancer, "Chromatin_state_polycomb" = Chromatin_state_polycomb,
-                                                           "Chromatin_state_heterochromatin" = Chromatin_state_heterochromatin, "Chromatin_state_quies" = Chromatin_state_quies
+      region_metaData <- rbind(region_metaData, data.frame("region" = region, "ChrSt_promoter" = Chromatin_state_promoter,
+                                                           "ChrSt_enhancer" = ChrSt_enhancer, "ChrSt_polycomb" = Chromatin_state_polycomb,
+                                                           "ChrSt_heterochromatin" = Chromatin_state_heterochromatin, "ChrSt_quies" = Chromatin_state_quies
       ))
     }
   }

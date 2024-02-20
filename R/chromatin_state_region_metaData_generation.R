@@ -36,13 +36,13 @@ chromatin_state_region_metaData_generation <- function(regions,
 
     if (i == 1){
       region_metaData <- data.frame("region" = region, "ChrSt_promoter" = Chromatin_state_promoter,
-                                    "ChrSt_enhancer" = ChrSt_enhancer, "ChrSt_polycomb" = Chromatin_state_polycomb,
+                                    "ChrSt_enhancer" = Chromatin_state_enhancer, "ChrSt_polycomb" = Chromatin_state_polycomb,
                                     "ChrSt_heterochromatin" = Chromatin_state_heterochromatin, "ChrSt_quies" = Chromatin_state_quies
                                     )
       i = 2
     } else {
       region_metaData <- rbind(region_metaData, data.frame("region" = region, "ChrSt_promoter" = Chromatin_state_promoter,
-                                                           "ChrSt_enhancer" = ChrSt_enhancer, "ChrSt_polycomb" = Chromatin_state_polycomb,
+                                                           "ChrSt_enhancer" = Chromatin_state_enhancer, "ChrSt_polycomb" = Chromatin_state_polycomb,
                                                            "ChrSt_heterochromatin" = Chromatin_state_heterochromatin, "ChrSt_quies" = Chromatin_state_quies
       ))
     }

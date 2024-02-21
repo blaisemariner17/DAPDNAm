@@ -26,11 +26,11 @@ TE_region_metaData_generation <- function(regions,
   transposons_annotation$LINE_id <- 0
   transposons_annotation$SINE_id <- 0
   transposons_annotation$LINE_id[transposons_annotation$class == "LINE"] <- paste0(transposons_annotation$class[transposons_annotation$class == "LINE"], "_",
-                                           transposons_annotation$repFamily[transposons_annotation$class == "LINE"], "_",
-                                           transposons_annotation$id[transposons_annotation$class == "LINE"])
+                                           transposons_annotation$repFamily[transposons_annotation$class == "LINE"])
   transposons_annotation$SINE_id[transposons_annotation$class == "SINE"] <- paste0(transposons_annotation$class[transposons_annotation$class == "SINE"], "_",
-                                           transposons_annotation$repFamily[transposons_annotation$class == "SINE"], "_",
-                                           transposons_annotation$id[transposons_annotation$class == "SINE"])
+                                           transposons_annotation$repFamily[transposons_annotation$class == "SINE"])
+  transposons_annotation$DNA_id[transposons_annotation$class == "DNA"] <- paste0(transposons_annotation$class[transposons_annotation$class == "DNA"], "_",
+                                                                                   transposons_annotation$repFamily[transposons_annotation$class == "DNA"])
   i = 1
   for (region in rownames(regions)) {
 
@@ -51,7 +51,7 @@ TE_region_metaData_generation <- function(regions,
       hit <- transposons_annotation[ov,]
     }
 
-    if ("DNA" %in% hit$class){dna = 1} else {dna = 0}
+    if ("DNA" %in% hit$class){dna = 1; dna_id <- unique(hit$DNA_id[hit$DNA_id !=0])} else {dna = 0; dna_id = 0}
     if ("LTE" %in% hit$class){ltr = 1} else {ltr = 0}
     if ("LINE" %in% hit$class){line = 1; line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0; line_id <- 0}
     if ("SINE" %in% hit$class){sine = 1; sine_id <- unique(hit$SINE_id[hit$SINE_id!=0])} else {sine = 0; sine_id <- 0}
@@ -62,7 +62,9 @@ TE_region_metaData_generation <- function(regions,
                                     "LTR" = ltr,
                                     "LINE" = line,"SINE" = sine,
                                     "LINE_id" = paste(line_id, collapse = " & "),
-                                    "SINE_id" = paste(sine_id, collapse = " & "))
+                                    "SINE_id" = paste(sine_id, collapse = " & ")),
+                                    "DNA_id" = paste(dna_id, collapse = " & "))
+
       i = 2
     } else {
       region_metaData <- rbind(region_metaData, data.frame("region" = region,

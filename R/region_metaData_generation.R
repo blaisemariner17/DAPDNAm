@@ -149,9 +149,9 @@ region_metaData_generation <- function(regions,
           stop_codon <- all_compiled_annotations$start[all_compiled_annotations$id == id & all_compiled_annotations$class == "stop_codon"][1]
           # what region of the gene is it in if it is not in the exon? have to account for the instances the gene is on the negative or the positive strand here and if the annotation file even documents exon or intron
           if (start_codon < stop_codon) {
-            if (end < start_codon) {upstream_utr <- 1} else if (start > stop_codon) {downstram_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
+            if (end < start_codon) {upstream_utr <- 1} else if (start > stop_codon) {downstream_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
           } else if (start_codon > stop_codon) {
-            if (start > start_codon) {upstream_utr <- 1} else if (end < stop_codon) {downstram_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
+            if (start > start_codon) {upstream_utr <- 1} else if (end < stop_codon) {downstream_utr <- 1} else if ("exon" %in% all_compiled_annotations$class[all_compiled_annotations$id == id]) {intron <- 1}
           }
         }
       }
@@ -164,6 +164,7 @@ region_metaData_generation <- function(regions,
                                     "gene_bool" = gene_bool,
                                     "Promoter" = Promoter,
                                     "Promoter_id" = Promoter_id,
+                                    "downstream_utr" = downstream_utr,
                                     "exon" = exon,
                                     "intron" = intron,
                                     "CpG_shelf" = CpG_shelf,
@@ -179,6 +180,7 @@ region_metaData_generation <- function(regions,
                                           "gene_bool" = gene_bool,
                                           "Promoter" = Promoter,
                                           "Promoter_id" = Promoter_id,
+                                          "downstream_utr" = downstream_utr,
                                           "exon" = exon,
                                           "intron" = intron,
                                           "CpG_shelf" = CpG_shelf,

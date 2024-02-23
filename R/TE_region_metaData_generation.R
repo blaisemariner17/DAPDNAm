@@ -62,7 +62,7 @@ TE_region_metaData_generation <- function(regions,
                                     "LTR" = ltr,
                                     "LINE" = line,"SINE" = sine,
                                     "LINE_id" = paste(line_id, collapse = " & "),
-                                    "SINE_id" = paste(sine_id, collapse = " & ")),
+                                    "SINE_id" = paste(sine_id, collapse = " & "),
                                     "DNA_id" = paste(dna_id, collapse = " & "))
 
       i = 2

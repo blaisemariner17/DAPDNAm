@@ -58,7 +58,7 @@ TE_region_metaData_generation <- function(regions,
 
     if (i == 1){
       region_metaData <- data.frame("region" = region,
-                                    "DNA transposon" = dna,
+                                    "DNA_transposon" = dna,
                                     "LTR" = ltr,
                                     "LINE" = line,"SINE" = sine,
                                     "LINE_id" = paste(line_id, collapse = " & "),
@@ -68,7 +68,7 @@ TE_region_metaData_generation <- function(regions,
       i = 2
     } else {
       region_metaData <- rbind(region_metaData, data.frame("region" = region,
-                                                           "DNA transposon"= dna,
+                                                           "DNA_transposon"= dna,
                                                            "LTR" = ltr,
                                                            "LINE" = line,"SINE" = sine,
                                                            "LINE_id" = paste(line_id, collapse = " & "),
@@ -95,11 +95,11 @@ TE_region_metaData_generation <- function(regions,
     region_metaData$SINE_tRNA[grepl("tRNA", region_metaData$SINE_id)] <- 1
   }
 
-  region_metaData$TE <- 0
-  region_metaData$TE[region_metaData$LINE == 1 | region_metaData$SINE == 1 | region_metaData$DNA == 1| region_metaData$LTR == 1] <- 1
-
   region_metaData$Retrotransposon <- 0
   region_metaData$Retrotransposon[region_metaData$LINE == 1 | region_metaData$SINE == 1 | region_metaData$LTR == 1] <- 1
+
+  region_metaData$TE <- 0
+  region_metaData$TE[region_metaData$Retrotransposon == 1 | region_metaData$DNA_transposon == 1] <- 1
 
   return(region_metaData)
 }

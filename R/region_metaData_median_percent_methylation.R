@@ -36,7 +36,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
     # }
     ylab_ = col
     if (col == "Promoter"){ylab_ = "promoter"}
-    if (col == "gene_bool"){ylab_ = "gene"}
+    if (col == "gene_bool"){ylab_ = "gene body"}
     if (col == "CpG_island"){ylab_ = "CpG island"}
     if (col == "CpG_shore"){ylab_ = "CpG shore"}
     if (col == "CpG_shelf"){ylab_ = "CpG shelf"}

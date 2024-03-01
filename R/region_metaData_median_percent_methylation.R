@@ -34,7 +34,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
     # if (col == "gene_bool"){
     #   next
     # }
-
+    ylab_ = col
     if (col == "Promoter"){ylab_ = "promoter"}
     if (col == "gene_bool"){ylab_ = "gene"}
     if (col == "CpG_island"){ylab_ = "CpG island"}
@@ -43,7 +43,6 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
     if (col == "ChrSt_enhancer"){ylab_ = "enhancer"}
     if (col == "ChrSt_polycomb"){ylab_ = "polycomb"}
     if (col == "ChrSt_heterochromatin"){ylab_ = "heterochromatin"}
-    if (col == "TE"){ylab_ = "transposable element"}
 
     if (T){#1 %in% region_metaData[,c(paste(col))]){
       print(col)

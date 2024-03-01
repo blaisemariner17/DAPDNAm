@@ -54,7 +54,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
       plot_ <- ggplot(for_ggplot, aes(x = data)) +
         geom_density(fill = "lightgrey") +
         xlab("")+
-        ylab(paste0(col, " (n = ", nrow(for_ggplot), ")"))+
+        ylab(paste0(ylab_, " (n = ", nrow(for_ggplot), ")"))+
         ggtitle("") +
         theme_blaise +
         xlim(c(0,1.05))+

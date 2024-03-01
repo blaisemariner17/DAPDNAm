@@ -42,6 +42,7 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
     if (col == "CpG_shelf"){ylab_ = "CpG shelf"}
     if (col == "ChrSt_enhancer"){ylab_ = "enhancer"}
     if (col == "ChrSt_polycomb"){ylab_ = "polycomb"}
+    if (col == "ChrSt_quies"){ylab_ = "quiescent"}
     if (col == "ChrSt_heterochromatin"){ylab_ = "heterochromatin"}
 
     if (T){#1 %in% region_metaData[,c(paste(col))]){

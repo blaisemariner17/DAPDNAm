@@ -128,7 +128,12 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   #padj
   odds_ratio_results_hypo$padj_hypo <- round(p.adjust(odds_ratio_results_hypo$pval,method="BH"),digits = 10)
   odds_ratio_results_hyper$padj_hyper <- round(p.adjust(odds_ratio_results_hyper$pval,method="BH"),digits = 10)
-
+  #lower
+  odds_ratio_results_hyper$lower_hyper <- odds_ratio_results_hyper$lower
+  odds_ratio_results_hypo$lower_hypo <- odds_ratio_results_hypo$lower
+  #upper
+  odds_ratio_results_hyper$upper_hyper <- odds_ratio_results_hyper$upper
+  odds_ratio_results_hypo$upper_hypo <- odds_ratio_results_hypo$upper
   #oddsratio log2
   odds_ratio_results_hyper$odds_ratio_log2_hyper <- odds_ratio_results_hyper$odds_ratio_log2
   odds_ratio_results_hypo$odds_ratio_log2_hypo <- odds_ratio_results_hypo$odds_ratio_log2
@@ -147,8 +152,8 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
   if(all(rownames(odds_ratio_results_hypo) == rownames(odds_ratio_results_hyper))==F){return(message("hypo results do not match hyper results"))}
 
-  odds_ratio_results <- cbind(odds_ratio_results_hyper[,c("class_hyper", "padj_hyper", "odds_ratio_log2_hyper")],
-                           odds_ratio_results_hypo[,c("class_hypo", "padj_hypo", "odds_ratio_log2_hypo")])
+  odds_ratio_results <- cbind(odds_ratio_results_hyper[,c("class_hyper", "padj_hyper", "odds_ratio_log2_hyper", "upper_hyper", "lower_hyper")],
+                           odds_ratio_results_hypo[,c("class_hypo", "padj_hypo", "odds_ratio_log2_hypo", "upper_hypo", "lower_hypo")])
 
   odds_ratio_results$significance_label <- "No significance (p<sub>adj</sub> > 0.05, Fisher Exact test)"
 

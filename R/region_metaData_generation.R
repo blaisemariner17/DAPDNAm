@@ -119,6 +119,7 @@ region_metaData_generation <- function(regions,
     downstream_utr <- 0
     Promoter <- 0
     Promoter_id <- 0
+    Promoter_and_TE_upstream <- 0
 
     if ("CpG_island" %in% hit$class) {CpG_island <- 1} else {CpG_island <- 0}
     if ("CpG_shore" %in% hit$class) {CpG_shore <- 1} else {CpG_shore <- 0}

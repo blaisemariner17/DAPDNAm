@@ -55,9 +55,9 @@ region_metaData_median_percent_methylation <- function(coverage_all_chr,
         ) +coord_cartesian(clip="off")
       plot_
       if (col == col_oi[length(col_oi)]) {
-        plot_ <- plot_ + xlab("Median fraction methylated") + theme(axis.text.x=element_text(family = "sans", size = 18, color="black"),
+        plot_ <- plot_ + xlab("Median fraction methylated") + theme(axis.text.x=element_text(family = "sans", color="black"),
                                                                     axis.line.x = element_line(colour = "black", linewidth = 1),
-                                                                    axis.title.x = element_text(family = "sans", size = 24, hjust = 0.5, color="black")
+                                                                    axis.title.x = element_text(family = "sans", hjust = 0.5, color="black")
         )
       } else {
         plot_ <- plot_ + theme(axis.line.x = element_blank()                               )

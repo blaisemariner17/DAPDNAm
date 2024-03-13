@@ -27,22 +27,22 @@ filtering_region_and_coverage <- function(dap_chr_oi,
                                      chr = as.character(GenomeInfoDb::seqnames(dap_chr_oi)),
                                      positions = BiocGenerics::start(dap_chr_oi), maxGap = maxgap,
                                      verbose = FALSE)[["up"]]
+    rownames(regions) <- paste(regions$chr, regions$start, regions$end, sep = "_")
+    regions <- regions[regions$n >= at_least_n_sites_per_region,]
+    regions$length <- regions$end - regions$start + 1
+
   } else {
     regions <- regions_manual_input
   }
-
-  rownames(regions) <- paste(regions$chr, regions$start, regions$end, sep = "_")
-
-
-  regions <- regions[regions$n >= at_least_n_sites_per_region,]
-  regions$length <- regions$end - regions$start + 1
 
   coverage_regions_oi <- bsseq::getCoverage(dap_chr_oi, type = "Cov", regions = regions,
                                             what="perRegionTotal", withDimnames = TRUE)
 
   rownames(coverage_regions_oi) <- rownames(regions)
 
-  coverage_regions_oi <- coverage_regions_oi[rowSums(coverage_regions_oi >= at_least_X_coverage_of_a_region) >= in_at_least_X_samples, ]
+  if (is.null(regions_manual_input)){
+    coverage_regions_oi <- coverage_regions_oi[rowSums(coverage_regions_oi >= at_least_X_coverage_of_a_region) >= in_at_least_X_samples, ]
+  }
 
   methylation_regions_oi <- bsseq::getCoverage(dap_chr_oi, type = "M", regions = regions,
                                                what="perRegionTotal", withDimnames = TRUE)
@@ -51,13 +51,17 @@ filtering_region_and_coverage <- function(dap_chr_oi,
 
   methylation_regions_oi <- methylation_regions_oi[rownames(methylation_regions_oi) %in% rownames(coverage_regions_oi),]
 
-  regions_oi <- regions[rownames(regions) %in% rownames(methylation_regions_oi),]
+  if (is.null(regions_manual_input)){
+    regions_oi <- regions[rownames(regions) %in% rownames(methylation_regions_oi),]
 
-  perc_meth <- methylation_regions_oi / coverage_regions_oi
-  perc_meth <- perc_meth[matrixStats::rowMedians(perc_meth, na.rm = TRUE) >= lower_bound & matrixStats::rowMedians(perc_meth, na.rm = TRUE) <= upper_bound,]
-  regions_oi <- regions[rownames(regions) %in% rownames(perc_meth),]
-  coverage_regions_oi <- coverage_regions_oi[rownames(coverage_regions_oi) %in% rownames(perc_meth),]
-  methylation_regions_oi <- methylation_regions_oi[rownames(methylation_regions_oi) %in% rownames(perc_meth),]
+    perc_meth <- methylation_regions_oi / coverage_regions_oi
+    perc_meth <- perc_meth[matrixStats::rowMedians(perc_meth, na.rm = TRUE) >= lower_bound & matrixStats::rowMedians(perc_meth, na.rm = TRUE) <= upper_bound,]
+    regions_oi <- regions[rownames(regions) %in% rownames(perc_meth),]
+    coverage_regions_oi <- coverage_regions_oi[rownames(coverage_regions_oi) %in% rownames(perc_meth),]
+    methylation_regions_oi <- methylation_regions_oi[rownames(methylation_regions_oi) %in% rownames(perc_meth),]
+  } else {
+    regions_oi <- regions
+  }
 
   return_ <- list(regions_oi, coverage_regions_oi, methylation_regions_oi)
   names(return_)=c("regions", "coverage", "methylation")

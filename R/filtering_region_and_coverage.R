@@ -7,6 +7,7 @@
 #' @param in_at_least_X_samples used in concert with at_least_X_coverage_of_a_region (default 5x coverage in 200 samples)
 #' @param upper_bound omit regions with greater than X mean percent methylation (default = 0.9, inclusive)
 #' @param lower_bound omit regions with less than X mean percent methylation (default = 0.1, inclusive)
+#' @param regions_manual_input provide own regions if you want, optional
 #' @return Function returns region, methylation, and coverage information for the regions sought by regionFinder3
 #' @export filtering_region_and_coverage
 
@@ -16,14 +17,19 @@ filtering_region_and_coverage <- function(dap_chr_oi,
                                           at_least_X_coverage_of_a_region = 10,
                                           in_at_least_X_samples = 200,
                                           lower_bound = 0.1,
-                                          upper_bound = 0.9){
+                                          upper_bound = 0.9,
+                                          regions_manual_input = NULL){
 
-  #get the regions
-  regions <- bsseq:::regionFinder3(x = as.integer(rep(1,
-                                                      length(dap_chr_oi))),
-                                   chr = as.character(GenomeInfoDb::seqnames(dap_chr_oi)),
-                                   positions = BiocGenerics::start(dap_chr_oi), maxGap = maxgap,
-                                   verbose = FALSE)[["up"]]
+  if (is.null(regions_manual_input)){
+    #get the regions
+    regions <- bsseq:::regionFinder3(x = as.integer(rep(1,
+                                                        length(dap_chr_oi))),
+                                     chr = as.character(GenomeInfoDb::seqnames(dap_chr_oi)),
+                                     positions = BiocGenerics::start(dap_chr_oi), maxGap = maxgap,
+                                     verbose = FALSE)[["up"]]
+  } else {
+    regions <- regions_manual_input
+  }
 
   rownames(regions) <- paste(regions$chr, regions$start, regions$end, sep = "_")
 

@@ -11,7 +11,8 @@ filtering_region_and_coverage(
   at_least_X_coverage_of_a_region = 10,
   in_at_least_X_samples = 200,
   lower_bound = 0.1,
-  upper_bound = 0.9
+  upper_bound = 0.9,
+  regions_manual_input = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ filtering_region_and_coverage(
 \item{lower_bound}{omit regions with less than X mean percent methylation (default = 0.1, inclusive)}
 
 \item{upper_bound}{omit regions with greater than X mean percent methylation (default = 0.9, inclusive)}
+
+\item{regions_manual_input}{provide own regions if you want, optional}
 }
 \value{
 Function returns region, methylation, and coverage information for the regions sought by regionFinder3

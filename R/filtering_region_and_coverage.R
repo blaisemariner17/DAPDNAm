@@ -32,7 +32,7 @@ filtering_region_and_coverage <- function(dap_chr_oi,
     regions$length <- regions$end - regions$start + 1
 
   } else {
-    regions <- regions_manual_input
+    regions <- regions_manual_input[startsWith(rownames(regions_manual_input), prefix = paste0(seqnames(dap_chr_oi),"_")),]
   }
 
   coverage_regions_oi <- bsseq::getCoverage(dap_chr_oi, type = "Cov", regions = regions,

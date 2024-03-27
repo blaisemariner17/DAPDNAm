@@ -53,6 +53,12 @@ TE_region_metaData_generation <- function(regions,
 
     if ("DNA" %in% hit$class){dna = 1; dna_id <- unique(hit$DNA_id[hit$DNA_id !=0])} else {dna = 0; dna_id = 0}
     if ("LTE" %in% hit$class){ltr = 1} else {ltr = 0}
+    if ("rRNA" %in% hit$class){rRNA = 1} else {rRNA = 0}
+    if ("tRNA" %in% hit$class){tRNA = 1} else {tRNA = 0}
+    if ("Satellite" %in% hit$class){Satellite = 1} else {Satellite = 0}
+    if ("Simple_repeat" %in% hit$class){Simple_repeat = 1} else {Simple_repeat = 0}
+    if ("Low_complexity" %in% hit$class){Low_complexity = 1} else {Low_complexity = 0}
+    if ("Unknown" %in% hit$class){Unknown = 1} else {Unknown = 0}
     if ("LINE" %in% hit$class){line = 1; line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0; line_id <- 0}
     if ("SINE" %in% hit$class){sine = 1; sine_id <- unique(hit$SINE_id[hit$SINE_id!=0])} else {sine = 0; sine_id <- 0}
 
@@ -63,7 +69,14 @@ TE_region_metaData_generation <- function(regions,
                                     "LINE" = line,"SINE" = sine,
                                     "LINE_id" = paste(line_id, collapse = " & "),
                                     "SINE_id" = paste(sine_id, collapse = " & "),
-                                    "DNA_id" = paste(dna_id, collapse = " & "))
+                                    "DNA_id" = paste(dna_id, collapse = " & "),
+                                    "rRNA" = paste(rRNA, collapse = " & "),
+                                    "tRNA" = paste(tRNA, collapse = " & "),
+                                    "Satellite" = paste(Satellite, collapse = " & "),
+                                    "Simple_repeat" = paste(Simple_repeat, collapse = " & "),
+                                    "Low_complexity" = paste(Low_complexity, collapse = " & "),
+                                    "Unknown" = paste(Unknown, collapse = " & ")
+                                    )
 
       i = 2
     } else {
@@ -73,7 +86,15 @@ TE_region_metaData_generation <- function(regions,
                                                            "LINE" = line,"SINE" = sine,
                                                            "LINE_id" = paste(line_id, collapse = " & "),
                                                            "SINE_id" = paste(sine_id, collapse = " & "),
-                                                           "DNA_id" = paste(dna_id, collapse = " & ")))
+                                                           "DNA_id" = paste(dna_id, collapse = " & "),
+                                                           "rRNA" = paste(rRNA, collapse = " & "),
+                                                           "tRNA" = paste(tRNA, collapse = " & "),
+                                                           "Satellite" = paste(Satellite, collapse = " & "),
+                                                           "Simple_repeat" = paste(Simple_repeat, collapse = " & "),
+                                                           "Low_complexity" = paste(Low_complexity, collapse = " & "),
+                                                           "Unknown" = paste(Unknown, collapse = " & ")
+                                                           )
+                               )
     }
   }
 

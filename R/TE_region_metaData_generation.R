@@ -26,11 +26,11 @@ TE_region_metaData_generation <- function(regions,
   transposons_annotation$LINE_id <- 0
   transposons_annotation$SINE_id <- 0
   transposons_annotation$LINE_id[transposons_annotation$class == "LINE"] <- paste0(transposons_annotation$class[transposons_annotation$class == "LINE"], "_",
-                                           transposons_annotation$repFamily[transposons_annotation$class == "LINE"], "_", transposons_annotation$id[transposons_annotation$class == "LINE"])
+                                           transposons_annotation$repFamily[transposons_annotation$class == "LINE"], "_", transposons_annotation$repName[transposons_annotation$class == "LINE"])
   transposons_annotation$SINE_id[transposons_annotation$class == "SINE"] <- paste0(transposons_annotation$class[transposons_annotation$class == "SINE"], "_",
-                                           transposons_annotation$repFamily[transposons_annotation$class == "SINE"], "_", transposons_annotation$id[transposons_annotation$class == "SINE"])
+                                           transposons_annotation$repFamily[transposons_annotation$class == "SINE"], "_", transposons_annotation$repName[transposons_annotation$class == "SINE"])
   transposons_annotation$DNA_id[transposons_annotation$class == "DNA"] <- paste0(transposons_annotation$class[transposons_annotation$class == "DNA"], "_",
-                                                                                   transposons_annotation$repFamily[transposons_annotation$class == "DNA"], "_", transposons_annotation$id[transposons_annotation$class == "DNA"])
+                                                                                   transposons_annotation$repFamily[transposons_annotation$class == "DNA"], "_", transposons_annotation$repName[transposons_annotation$class == "DNA"])
   i = 1
   for (region in rownames(regions)) {
 

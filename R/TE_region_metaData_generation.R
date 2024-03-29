@@ -62,9 +62,9 @@ TE_region_metaData_generation <- function(regions,
     if ("LINE" %in% hit$class){line = 1; line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0; line_id <- 0}
     if ("SINE" %in% hit$class){sine = 1; sine_id <- unique(hit$SINE_id[hit$SINE_id!=0])} else {sine = 0; sine_id <- 0}
 
-    if (grepl("L1_Ca", line_id) | grepl("L1M", line_id) ){l1_young <- 1}else{l1_young<-0}
-    if (grepl("L1", line_id)){l1 <- 1}else{l1<-0}
-    if (grepl("L2", line_id)){l2 <- 1}else{l1<-0}
+    if (grepl("L1_Ca", paste(line_id, collapse = " & ")) | grepl("L1M", paste(line_id, collapse = " & ")) ){l1_young <- 1}else{l1_young<-0}
+    if (grepl("L1", paste(line_id, collapse = " & "))){l1 <- 1}else{l1<-0}
+    if (grepl("L2", paste(line_id, collapse = " & "))){l2 <- 1}else{l1<-0}
 
     if (i == 1){
       region_metaData <- data.frame("region" = region,

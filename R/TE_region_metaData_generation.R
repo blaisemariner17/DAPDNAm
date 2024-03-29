@@ -62,11 +62,19 @@ TE_region_metaData_generation <- function(regions,
     if ("LINE" %in% hit$class){line = 1; line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0; line_id <- 0}
     if ("SINE" %in% hit$class){sine = 1; sine_id <- unique(hit$SINE_id[hit$SINE_id!=0])} else {sine = 0; sine_id <- 0}
 
+    if (grepl("L1_Ca", line_id) | grepl("L1M", line_id) ){l1_young <- 1}else{l1_young<-0}
+    if (grepl("L1", line_id)){l1 <- 1}else{l1<-0}
+    if (grepl("L2", line_id)){l2 <- 1}else{l1<-0}
+
     if (i == 1){
       region_metaData <- data.frame("region" = region,
                                     "DNA_transposon" = dna,
                                     "LTR" = ltr,
-                                    "LINE" = line,"SINE" = sine,
+                                    "LINE" = line,
+                                    "LINE1young" = l1_young,
+                                    "LINE1" = l1,
+                                    "LINE2" = l2,
+                                    "SINE" = sine,
                                     "LINE_id" = paste(line_id, collapse = " & "),
                                     "SINE_id" = paste(sine_id, collapse = " & "),
                                     "DNA_id" = paste(dna_id, collapse = " & "),
@@ -83,7 +91,11 @@ TE_region_metaData_generation <- function(regions,
       region_metaData <- rbind(region_metaData, data.frame("region" = region,
                                                            "DNA_transposon"= dna,
                                                            "LTR" = ltr,
-                                                           "LINE" = line,"SINE" = sine,
+                                                           "LINE" = line,
+                                                           "LINE1young" = l1_young,
+                                                           "LINE1" = l1,
+                                                           "LINE2" = l2,
+                                                           "SINE" = sine,
                                                            "LINE_id" = paste(line_id, collapse = " & "),
                                                            "SINE_id" = paste(sine_id, collapse = " & "),
                                                            "DNA_id" = paste(dna_id, collapse = " & "),

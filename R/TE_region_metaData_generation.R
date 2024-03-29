@@ -64,7 +64,7 @@ TE_region_metaData_generation <- function(regions,
 
     if (grepl("L1_Ca", paste(line_id, collapse = " & ")) | grepl("L1M", paste(line_id, collapse = " & ")) ){l1_young <- 1}else{l1_young<-0}
     if (grepl("L1", paste(line_id, collapse = " & "))){l1 <- 1}else{l1<-0}
-    if (grepl("L2", paste(line_id, collapse = " & "))){l2 <- 1}else{l1<-0}
+    if (grepl("L2", paste(line_id, collapse = " & "))){l2 <- 1}else{l2<-0}
 
     if (i == 1){
       region_metaData <- data.frame("region" = region,

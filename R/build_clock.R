@@ -12,9 +12,8 @@ build_clock <- function(alph,
                         metaData,
                         region_metaData,
                         perc_meth,
-                        test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"],
-                        seed = 100
-) {
+                        test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
+                        ) {
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData
 
@@ -36,7 +35,6 @@ build_clock <- function(alph,
 
   # Remove test subject(s)
   # SAMP indexes from 1 to N samples
-  set.seed(seed)
   SAMP <- test_samples
   train <- epi[, -SAMP]
   test <- epi[, SAMP]

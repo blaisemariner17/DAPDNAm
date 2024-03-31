@@ -18,7 +18,7 @@ build_clock <- function(alph,
   all_info <- metaData
 
   lids <- colnames(perc_meth)
-  meta <- all_info[,c("lid_pid", "Age_at_sample","dog_id", "Cohort")]
+  meta <- all_info[,c("lid_pid", "Age_at_sample","dog_id", "Cohort", "Breed_size")]
 
   # Convert the 'Age_at_sample' column to numeric
   meta$Age_at_sample <- as.numeric(meta$Age_at_sample)

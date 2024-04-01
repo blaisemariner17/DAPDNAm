@@ -23,6 +23,8 @@ TE_region_metaData_generation <- function(regions,
   transposons_annotation <- transposons_annotation[transposons_annotation$seqnames == chromosome,]
   transposons_annotation <- transposons_annotation[transposons_annotation$swScore > sw_score_cutoff,]
 
+  transposons_annotation$length <- transposons_annotation$end - transposons_annotation$start
+
   transposons_annotation$LINE_id <- 0
   transposons_annotation$SINE_id <- 0
   transposons_annotation$LINE_id[transposons_annotation$class == "LINE"] <- paste0(transposons_annotation$class[transposons_annotation$class == "LINE"], "_",
@@ -51,7 +53,9 @@ TE_region_metaData_generation <- function(regions,
       hit <- transposons_annotation[ov,]
     }
 
-    if ("DNA" %in% hit$class){dna = 1; dna_id <- unique(hit$DNA_id[hit$DNA_id !=0])} else {dna = 0; dna_id = 0}
+    length_ = 0
+
+    if ("DNA" %in% hit$class){dna = 1; length_ <- paste(unique(hit$length[hit$DNA_id!=0]), collapse = " & "); dna_id <- unique(hit$DNA_id[hit$DNA_id !=0])} else {dna = 0; dna_id = 0}
     if ("LTE" %in% hit$class){ltr = 1} else {ltr = 0}
     if ("rRNA" %in% hit$class){rRNA = 1} else {rRNA = 0}
     if ("tRNA" %in% hit$class){tRNA = 1} else {tRNA = 0}
@@ -59,8 +63,8 @@ TE_region_metaData_generation <- function(regions,
     if ("Simple_repeat" %in% hit$class){Simple_repeat = 1} else {Simple_repeat = 0}
     if ("Low_complexity" %in% hit$class){Low_complexity = 1} else {Low_complexity = 0}
     if ("Unknown" %in% hit$class){Unknown = 1} else {Unknown = 0}
-    if ("LINE" %in% hit$class){line = 1; line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0; line_id <- 0}
-    if ("SINE" %in% hit$class){sine = 1; sine_id <- unique(hit$SINE_id[hit$SINE_id!=0])} else {sine = 0; sine_id <- 0}
+    if ("LINE" %in% hit$class){line = 1; length_ <- paste(unique(hit$length[hit$LINE_id!=0]), collapse = " & "); line_id <- unique(hit$LINE_id[hit$LINE_id!=0])} else {line = 0; line_id <- 0}
+    if ("SINE" %in% hit$class){sine = 1; length_ <- paste(unique(hit$length[hit$SINE_id!=0]), collapse = " & "); sine_id <- unique(hit$SINE_id[hit$SINE_id!=0])} else {sine = 0; sine_id <- 0}
 
     if (grepl("L1_Ca", paste(line_id, collapse = " & ")) | grepl("L1M", paste(line_id, collapse = " & ")) ){l1_young <- 1}else{l1_young<-0}
     if (grepl("L1", paste(line_id, collapse = " & "))){l1 <- 1}else{l1<-0}
@@ -78,6 +82,7 @@ TE_region_metaData_generation <- function(regions,
                                     "LINE_id" = paste(line_id, collapse = " & "),
                                     "SINE_id" = paste(sine_id, collapse = " & "),
                                     "DNA_id" = paste(dna_id, collapse = " & "),
+                                    "length_LINESINEDNA" = length_,
                                     "rRNA" = paste(rRNA, collapse = " & "),
                                     "tRNA" = paste(tRNA, collapse = " & "),
                                     "Satellite" = paste(Satellite, collapse = " & "),
@@ -99,6 +104,7 @@ TE_region_metaData_generation <- function(regions,
                                                            "LINE_id" = paste(line_id, collapse = " & "),
                                                            "SINE_id" = paste(sine_id, collapse = " & "),
                                                            "DNA_id" = paste(dna_id, collapse = " & "),
+                                                           "length_DNALINESINE" = length_,
                                                            "rRNA" = paste(rRNA, collapse = " & "),
                                                            "tRNA" = paste(tRNA, collapse = " & "),
                                                            "Satellite" = paste(Satellite, collapse = " & "),

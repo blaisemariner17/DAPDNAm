@@ -20,6 +20,8 @@ build_clock <- function(alph,
   lids <- colnames(perc_meth)
   meta <- all_info[,c("lid_pid", "Age_at_sample","dog_id", "Cohort", "Breed_size", "Sex")]
 
+  n_regions <- nrow(perc_meth)
+
   # Convert the 'Age_at_sample' column to numeric
   meta$Age_at_sample <- as.numeric(meta$Age_at_sample)
 
@@ -91,7 +93,8 @@ build_clock <- function(alph,
   return_[["metaData"]] <- meta
   return_[["region_metaData"]] <- reg_meta
   return_[["clock_results"]] <- data.frame("alpha" = alph,
-                                           "MSE:" = mse)
+                                           "MSE:" = mse,
+                                           "n_regions" = n_regions)
 
   return(return_)
 }

@@ -94,7 +94,9 @@ build_clock <- function(alph,
   return_[["region_metaData"]] <- reg_meta
   return_[["clock_results"]] <- data.frame("alpha" = alph,
                                            "MSE:" = mse,
-                                           "n_regions" = n_regions)
+                                           "n_regions" = n_regions,
+                                           "training_samples" = sum(!test_samples),
+                                           "testing_samples" = sum(test_samples))
 
   return(return_)
 }

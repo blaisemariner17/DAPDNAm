@@ -116,24 +116,6 @@ TE_region_metaData_generation <- function(regions,
     }
   }
 
-  if (return_classes){
-    region_metaData$LINE1 <- 0
-    region_metaData$LINE1[grepl("L1", region_metaData$LINE_id)] <- 1
-    region_metaData$LINE2 <- 0
-    region_metaData$LINE2[grepl("L2", region_metaData$LINE_id)] <- 1
-    region_metaData$LINE3 <- 0
-    region_metaData$LINE3[grepl("L3", region_metaData$LINE_id)] <- 1
-    region_metaData$LINE_CR1 <- 0
-    region_metaData$LINE_CR1[grepl("CR1", region_metaData$LINE_id)] <- 1
-
-    region_metaData$SINEC <- 0
-    region_metaData$SINEC[grepl("SINEC", region_metaData$SINE_id)] <- 1
-    region_metaData$SINE_MIR <- 0
-    region_metaData$SINE_MIR[grepl("MIR", region_metaData$SINE_id)] <- 1
-    region_metaData$SINE_tRNA <- 0
-    region_metaData$SINE_tRNA[grepl("tRNA", region_metaData$SINE_id)] <- 1
-  }
-
   region_metaData$Retrotransposon <- 0
   region_metaData$Retrotransposon[region_metaData$LINE == 1 | region_metaData$SINE == 1 | region_metaData$LTR == 1] <- 1
 

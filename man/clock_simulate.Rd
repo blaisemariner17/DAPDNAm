@@ -5,7 +5,7 @@
 \title{clock simulations}
 \usage{
 clock_simulate(
-  alphs_oi,
+  alph,
   metaData,
   region_metaData,
   perc_meth,
@@ -14,12 +14,12 @@ clock_simulate(
   region_metaData_prmtr,
   perc_meth_prmtr,
   region_metaData_cpgisl,
-  perc_meth_cpgisl
+  perc_meth_cpgisl,
+  test_samples = colnames(perc_meth) \%in\% metaData$lid_pid[metaData$dog_id \%in\%
+    sample(unique(metaData$dog_id), 100)]
 )
 }
 \arguments{
-\item{alphs_oi}{alphas to use for glmnet}
-
 \item{metaData}{sample metaData}
 
 \item{region_metaData}{region metaData}
@@ -37,6 +37,10 @@ clock_simulate(
 \item{region_metaData_cpgisl}{promoter region metaData}
 
 \item{perc_meth_cpgisl}{imputed promoter percent methylation matrix}
+
+\item{alphs_oi}{alphas to use for glmnet}
+
+\item{sampling}{the sampling of dog_ids to use to test the clock}
 }
 \value{
 Function returns a list of the simulated clock results

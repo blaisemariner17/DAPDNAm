@@ -10,6 +10,7 @@
 #' @param perc_meth_prmtr imputed promoter percent methylation matrix
 #' @param region_metaData_cpgisl promoter region metaData
 #' @param perc_meth_cpgisl imputed promoter percent methylation matrix
+#' @param test_samples the sampling of dog_ids to use to test the clock
 #' @return Function returns a list of the simulated clock results
 #' @export clock_simulate
 
@@ -22,48 +23,47 @@ clock_simulate <- function(alph,
                            region_metaData_prmtr,
                            perc_meth_prmtr,
                            region_metaData_cpgisl,
-                           perc_meth_cpgisl
+                           perc_meth_cpgisl,
+                           test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$dog_id %in% sample(unique(metaData$dog_id), 100)]
 ) {
   # print(i)
   sampling <- sample(rownames(perc_meth), as.integer(nrow(perc_meth_te)))
   perc_meth_rand <- perc_meth[rownames(perc_meth) %in% sampling,]
   region_metaData_rand <- region_metaData[region_metaData$region %in% sampling,]
 
-  sampling <- sample(unique(metaData$dog_id), 100)
-
   list_res <- DAPDNAm::build_clock(alph,
                                    metaData,
                                    region_metaData,
                                    perc_meth,
-                                   test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
+                                   test_samples = test_samples
   )
 
   list_res_TE <- DAPDNAm::build_clock(alph,
                                       metaData,
                                       region_metaData_te,
                                       perc_meth_te,
-                                      test_samples = colnames(perc_meth_te) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
+                                      test_samples = test_samples
   )
 
   list_res_PR <- DAPDNAm::build_clock(alph,
                                       metaData,
                                       region_metaData_prmtr,
                                       perc_meth_prmtr,
-                                      test_samples = colnames(perc_meth_prmtr) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
+                                      test_samples = test_samples
   )
 
   list_res_CpGIs <- DAPDNAm::build_clock(alph,
                                          metaData,
                                          region_metaData_cpgisl,
                                          perc_meth_cpgisl,
-                                         test_samples = colnames(perc_meth_cpgisl) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
+                                         test_samples = test_samples
   )
 
   list_res_rand <- DAPDNAm::build_clock(alph,
                                         metaData,
                                         region_metaData_rand,
                                         perc_meth_rand,
-                                        test_samples = colnames(perc_meth_rand) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
+                                        test_samples = test_samples
   )
 
   list_res[['metaData']]$regions <- "All"

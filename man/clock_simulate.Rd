@@ -14,7 +14,8 @@ clock_simulate(
   region_metaData_prmtr,
   perc_meth_prmtr,
   region_metaData_cpgisl,
-  perc_meth_cpgisl
+  perc_meth_cpgisl,
+  sampling = NULL
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ clock_simulate(
 \item{region_metaData_cpgisl}{promoter region metaData}
 
 \item{perc_meth_cpgisl}{imputed promoter percent methylation matrix}
+
+\item{sampling}{manual sampling if u want}
 
 \item{alphs_oi}{alphas to use for glmnet}
 }

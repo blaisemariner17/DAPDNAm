@@ -10,6 +10,7 @@
 #' @param perc_meth_prmtr imputed promoter percent methylation matrix
 #' @param region_metaData_cpgisl promoter region metaData
 #' @param perc_meth_cpgisl imputed promoter percent methylation matrix
+#' @param sampling manual sampling if u want
 #' @return Function returns a list of the simulated clock results
 #' @export clock_simulate
 

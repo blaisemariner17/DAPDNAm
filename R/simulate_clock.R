@@ -31,7 +31,7 @@ clock_simulate <- function(alph,
   perc_meth_rand <- perc_meth[rownames(perc_meth) %in% sampling,]
   region_metaData_rand <- region_metaData[region_metaData$region %in% sampling,]
 
-  if (sampling == NULL){
+  if (is.null(sampling)){
     sampling <- sample(unique(metaData$dog_id), as.integer(.1*length(unique(metaData$dog_id))))
   }
 

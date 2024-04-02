@@ -10,8 +10,7 @@ build_clock(
   region_metaData,
   perc_meth,
   test_samples = colnames(perc_meth) \%in\% metaData$lid_pid[metaData$Cohort !=
-    "precision_1"],
-  seed = 100
+    "precision_1"]
 )
 }
 \arguments{

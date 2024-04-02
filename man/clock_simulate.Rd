@@ -14,9 +14,7 @@ clock_simulate(
   region_metaData_prmtr,
   perc_meth_prmtr,
   region_metaData_cpgisl,
-  perc_meth_cpgisl,
-  test_samples = colnames(perc_meth) \%in\% metaData$lid_pid[metaData$dog_id \%in\%
-    sample(unique(metaData$dog_id), 100)]
+  perc_meth_cpgisl
 )
 }
 \arguments{
@@ -37,8 +35,6 @@ clock_simulate(
 \item{region_metaData_cpgisl}{promoter region metaData}
 
 \item{perc_meth_cpgisl}{imputed promoter percent methylation matrix}
-
-\item{test_samples}{the sampling of dog_ids to use to test the clock}
 
 \item{alphs_oi}{alphas to use for glmnet}
 }

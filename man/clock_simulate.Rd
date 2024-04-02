@@ -38,9 +38,9 @@ clock_simulate(
 
 \item{perc_meth_cpgisl}{imputed promoter percent methylation matrix}
 
-\item{alphs_oi}{alphas to use for glmnet}
+\item{test_samples}{the sampling of dog_ids to use to test the clock}
 
-\item{sampling}{the sampling of dog_ids to use to test the clock}
+\item{alphs_oi}{alphas to use for glmnet}
 }
 \value{
 Function returns a list of the simulated clock results

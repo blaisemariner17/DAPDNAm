@@ -22,14 +22,17 @@ clock_simulate <- function(alph,
                            region_metaData_prmtr,
                            perc_meth_prmtr,
                            region_metaData_cpgisl,
-                           perc_meth_cpgisl
+                           perc_meth_cpgisl,
+                           sampling = NULL
 ) {
   # print(i)
   sampling <- sample(rownames(perc_meth), as.integer(nrow(perc_meth_te)))
   perc_meth_rand <- perc_meth[rownames(perc_meth) %in% sampling,]
   region_metaData_rand <- region_metaData[region_metaData$region %in% sampling,]
 
-  sampling <- sample(unique(metaData$dog_id), as.integer(.1*length(unique(metaData$dog_id))))
+  if (sampling == NULL){
+    sampling <- sample(unique(metaData$dog_id), as.integer(.1*length(unique(metaData$dog_id))))
+  }
 
   list_res <- DAPDNAm::build_clock(alph,
                                    metaData,

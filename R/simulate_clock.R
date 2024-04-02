@@ -89,7 +89,8 @@ clock_simulate <- function(alph,
   list_res_rand[['clock_results']]$regions <- "Random"
 
   all_res_list <- list()
-  # all_res_list[["metaData"]] <- rbind(list_res[['metaData']], list_res_TE[['metaData']],list_res_PR[['metaData']], list_res_CpGIs[['metaData']],list_res_rand[['metaData']])
+  all_res_list[["metaData"]] <- rbind(list_res[['metaData']], list_res_TE[['metaData']],list_res_PR[['metaData']], list_res_CpGIs[['metaData']],list_res_rand[['metaData']])
+  all_res_list[["metaData"]]$alpha <- alph
   # all_res_list[["region_metaData"]] <- rbind(list_res[['region_metaData']], list_res_TE[['region_metaData']],list_res_PR[['region_metaData']], list_res_CpGIs[['region_metaData']],list_res_rand[['region_metaData']])
   all_res_list[["clock_results"]] <- rbind(list_res[['clock_results']], list_res_TE[['clock_results']],list_res_PR[['clock_results']], list_res_CpGIs[['clock_results']],list_res_rand[['clock_results']])
 

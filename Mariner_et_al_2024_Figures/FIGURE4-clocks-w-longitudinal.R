@@ -21,7 +21,6 @@ library_list <- c(
   "ggrepel",
   "ggbeeswarm",
   "ggsignif"
-  
 )
 lapply(library_list, require, character.only = TRUE)
 theme_blaise <- theme(plot.title.position = "plot", axis.text.x = element_text(angle=0),      plot.title = element_text(family = "sans", size = 14, hjust = 0.5, color="black", face='bold'),      plot.subtitle = element_text(family = "sans", size = 11, color="black"),      
@@ -54,6 +53,10 @@ region_metaData <- readRDS(paste0("../metadata_regions/metaData_regions_maxgap_"
 coverage_all_chr <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData$region,]
 methylation_all_chr <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData$region,]
 
+pqlseq_res <- read_rds("../pqlseq_results/pqlseq_res_maxgap250.rds")
+pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
+dim(pqlseq_res)
+
 if (! "DAPDNAm" %in% installed.packages()){devtools::install_github("blaisemariner17/DAPDNAm", force = TRUE)}
 
 # load in packages needed
@@ -65,84 +68,77 @@ region_metaData <- read_rds("../metadata_regions/metaData_regions_maxgap_250.rds
 all(colnames(methylation_all_chr) == colnames(coverage_all_chr))
 all(rownames(methylation_all_chr) == rownames(coverage_all_chr))
 
-perc_meth <- methylation_all_chr / coverage_all_chr
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth)) {
-  row_of_interest <- perc_meth[row_,]
-  if (sum(is.na(perc_meth[row_,])) == ncol(perc_meth)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth[row_,])))
+impute_mice_par <- function(perc_meth){
+  for (row in rownames(perc_meth)){
+    if(row == rownames(perc_meth)[1]){
+      tempData <- mice::mice(t(perc_meth[c(1,2),]))
+      perc_meth[c(paste(row)),] <- complete(tempData,1)[,paste(row)]
+    }else{
+      tempData <- mice::mice(t(perc_meth[c(paste(rownames(perc_meth)[1]),paste(row)),]))
+      perc_meth[c(paste(row)),] <- complete(tempData,1)[,paste(row)]
+    }
+  }
+  return(perc_meth)
 }
-perc_meth <- perc_meth[-c(rm_row),]
+
+read_in_perc_meth=F
+if (read_in_perc_meth){
+  perc_meth <- read_rds("../LongDat/perc_meth_imputed.rds")
+} else {
+  
+  perc_meth <- methylation_all_chr / coverage_all_chr
+  
+  rm_row <- c()
+  for (row_ in 1:nrow(perc_meth)) {
+    row_of_interest <- perc_meth[row_,]
+    if (sum(is.na(perc_meth[row_,])) == ncol(perc_meth)){rm_row <- append(rm_row, row_)}
+  }
+  perc_meth <- perc_meth[-c(rm_row),]
+
+  chrs <- paste0("chr", c(1:38,"X"))
+  perc_meth_list <- list()
+  for(chr in chrs){
+    chr_ <- paste0(chr,"_")
+    perc_meth_list[[paste(chr)]] <- perc_meth[startsWith(rownames(perc_meth), chr_),]
+  }
+  perc_meth_list_imputed <- mclapply(
+    perc_meth_list,
+    impute_mice_par,
+    mc.cores = 5
+  )
+  
+  for (chr in chrs){
+    if (chr == chrs[1]){
+      perc_meth <- perc_meth_list[[paste(chr)]]
+    }else{
+      perc_meth <- rbind(perc_meth, perc_meth_list[[paste(chr)]])
+    }
+  }
+  write_rds(perc_meth, "../LongDat/perc_meth_imputed.rds") 
+  rm(perc_meth_list_imputed)
+  rm(perc_meth_list)
+}
+
+# na_bysamples <- c()
+# for (col in colnames(perc_meth)){
+#   tot_ <- sum(is.na(perc_meth[,paste(col)]))
+#   na_bysamples <- append(na_bysamples,tot_)
+# }
+# hist(na_bysamples)
+# 
+# na_byregion <- c()
+# for (row_ in rownames(perc_meth)){
+#   tot_ <- sum(is.na(perc_meth[paste(row_),]))
+#   na_byregion <- append(na_byregion,tot_)
+# }
+# hist(na_byregion)
 
 #### Promoter regions ####
-region_metaData_prmtr <- region_metaData[region_metaData$Promoter == 1,]
-coverage_all_chr_prmtr <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData_prmtr$region,]
-methylation_all_chr_prmtr <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData_prmtr$region,]
-all(colnames(methylation_all_chr_prmtr) == colnames(coverage_all_chr_prmtr))
-all(rownames(methylation_all_chr_prmtr) == rownames(coverage_all_chr_prmtr))
-perc_meth_prmtr <- methylation_all_chr_prmtr / coverage_all_chr_prmtr
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth_prmtr)) {
-  row_of_interest <- perc_meth_prmtr[row_,]
-  if (sum(is.na(perc_meth_prmtr[row_,])) == ncol(perc_meth_prmtr)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth_prmtr[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth_prmtr[row_,])))
-}
-perc_meth_prmtr <- perc_meth_prmtr[-c(rm_row),]
-
+perc_meth_prmtr_ <- perc_meth[rownames(perc_meth) %in% region_metaData$region[region_metaData$Promoter == 1],]
 #### CpG Is regions ####
-region_metaData_cpgisl <- region_metaData[region_metaData$CpG_island == 1,]
-coverage_all_chr_cpgisl <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData_cpgisl$region,]
-methylation_all_chr_cpgisl <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData_cpgisl$region,]
-all(colnames(methylation_all_chr_cpgisl) == colnames(coverage_all_chr_cpgisl))
-all(rownames(methylation_all_chr_cpgisl) == rownames(coverage_all_chr_cpgisl))
-perc_meth_cpgisl <- methylation_all_chr_cpgisl / coverage_all_chr_cpgisl
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth_cpgisl)) {
-  row_of_interest <- perc_meth_cpgisl[row_,]
-  if (sum(is.na(perc_meth_cpgisl[row_,])) == ncol(perc_meth_cpgisl)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth_cpgisl[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth_cpgisl[row_,])))
-}
-perc_meth_cpgisl <- perc_meth_cpgisl[-c(rm_row),]
-
-
+perc_meth_cpgisl <- perc_meth[rownames(perc_meth) %in% region_metaData$region[region_metaData$CpG_island == 1],]
 #### TE regions #####
-region_metaData_te <- region_metaData[region_metaData$TE == 1,]
-coverage_all_chr_te <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData_te$region,]
-methylation_all_chr_te <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData_te$region,]
-all(colnames(methylation_all_chr_te) == colnames(coverage_all_chr_te))
-all(rownames(methylation_all_chr_te) == rownames(coverage_all_chr_te))
-perc_meth_te <- methylation_all_chr_te / coverage_all_chr_te
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth_te)) {
-  row_of_interest <- perc_meth_te[row_,]
-  if (sum(is.na(perc_meth_te[row_,])) == ncol(perc_meth_te)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth_te[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth_te[row_,])))
-}
-perc_meth_te <- perc_meth_te[-c(rm_row),]
+perc_meth_te <- perc_meth[rownames(perc_meth) %in% region_metaData$region[region_metaData$TE == 1],]
 
 set.seed(100)
 alphs_oi <- list(0.05,0.1,0.15,0.2,0.25,
@@ -151,7 +147,8 @@ alphs_oi <- list(0.05,0.1,0.15,0.2,0.25,
 
 time_start <- Sys.time()
 print(time_start)
-for (i in 1:25){
+for (i in 1:10){
+  print(i)
   all_res_list_ <- parallel::mclapply(alphs_oi, 
                                      DAPDNAm::clock_simulate,
                                      metaData, 
@@ -171,386 +168,291 @@ for (i in 1:25){
   } else {
     for (alph in alphs_oi){
       all_res_list[[paste(alph)]][['metaData']] <- rbind(all_res_list[[paste(alph)]][['metaData']],all_res_list_[[paste(alph)]][['metaData']])
-      all_res_list[[paste(alph)]][["region_metaData"]] <- rbind(all_res_list[[paste(alph)]][["region_metaData"]],all_res_list_[[paste(alph)]][["region_metaData"]])
+      # all_res_list[[paste(alph)]][["region_metaData"]] <- rbind(all_res_list[[paste(alph)]][["region_metaData"]],all_res_list_[[paste(alph)]][["region_metaData"]])
       all_res_list[[paste(alph)]][["clock_results"]] <- rbind(all_res_list[[paste(alph)]][["clock_results"]],all_res_list_[[paste(alph)]][["clock_results"]])
     }
   }
+  print(Sys.time()- time_start)
 }
-print(time_start - Sys.time())
 
 for (alph in alphs_oi){
+  print(alph)
   if (alph == alphs_oi[1]){
-    all_res_metaData <- all_res_list[[paste(alph)]][['metaData']]
-    all_res_region_metaData <- all_res_list[[paste(alph)]][['region_metaData']]
     all_res_clock <- all_res_list[[paste(alph)]][['clock_results']]
+    all_res_metaData <- all_res_list[[paste(alph)]][['metaData']]
   } else {
-    all_res_metaData <- rbind(all_res_metaData,all_res_list[[paste(alph)]][['metaData']])
-    all_res_region_metaData <- rbind(all_res_region_metaData,all_res_list[[paste(alph)]][['region_metaData']])
     all_res_clock <- rbind(all_res_clock,all_res_list[[paste(alph)]][['clock_results']])
+    all_res_metaData <- rbind(all_res_metaData,all_res_list[[paste(alph)]][['metaData']])
   }
 }
 
-write_rds(x = all_res_metaData, file = "../LongDat/all_res_simulation_metaData.rds")
-write_rds(x = all_res_region_metaData, file = "../LongDat/all_res_simulation_region_metaData.rds")
+# write_rds(x = all_res_metaData, file = "../LongDat/all_res_simulation_metaData.rds")
+# write_rds(x = all_res_region_metaData, file = "../LongDat/all_res_simulation_region_metaData.rds")
 write_rds(x = all_res_clock, file = "../LongDat/all_res_simulation_clock.rds")
+write_rds(x = all_res_metaData, file = "../LongDat/all_res_simulation_metaData.rds")
+
+all_res_clock <- read_rds("../LongDat/all_res_simulation_clock.rds")
+all_res_metaData <- read_rds("../LongDat/all_res_simulation_metaData.rds")
 
 #### plotting ####
 all_res <- all_res_clock
-all_res$MSE. <- all_res$MSE.
 
-all_res$label_gg <- paste0(all_res$regions, " regions (", all_res$n_regions, ")")
+all_res$label_gg <- gsub("_"," ",paste0(all_res$regions, " regions (", all_res$n_regions, ")"))
 
 all_res_sum <- WLSplot::data_summary(all_res, groupnames = c("label_gg", "alpha"), varname = "MSE.")
 
 colnames(all_res_sum) <- c("label_gg", "alpha", "MSE", "sd", "se")
 
-plot6 <- ggplot(all_res_sum, aes(x = alpha, y = MSE, color = label_gg))+
+plot1 <- ggplot(all_res_sum[all_res_sum$label_gg != "Random regions (12487)",], aes(x = alpha, y = MSE, color = label_gg))+
   geom_point(size = 3)+
   geom_line()+
   geom_errorbar(aes(ymin = MSE - se, ymax = MSE+se), width=0.02)+
-  ggtitle(paste0("MSE calculations from ", i, " simulations"))+
+  ggtitle(paste0("each dot represents ", i, " clock simulations"))+
   xlab("alpha")+
   ylab("Clock's mean standard error")+
-  scale_color_manual(values = c("black", "darkred","darkorange", "darkblue", "darkgreen"))+
+  scale_color_manual(
+    values = c("black","red", "darkgreen", "darkblue", "darkorange"),
+  )+
   theme_blaise+
-  labs(tag = "D")
-plot6
+  labs(tag = "A")
 
-if (list_res[['clock_results']]$MSE. <= min(list_res[['clock_results']]$MSE., all_res$MSE.[all_res$regions == "All"])){
-  plot1 <- ggplot(list_res[["metaData"]], aes(x = Age_at_sample, y = predicted, color = dog_id))+
-    geom_abline(slope=1, color = "black")+
-    geom_point()+
-    geom_line()+
-    ggtitle(paste0("All regions \n alpha: ", alph, " MSE: ", round(list_res[["clock_results"]]$MSE., digits = 3)))+
-    ylab("Epigenetic age")+
-    xlab("Age at sample collection")+
-    theme_blaise + theme(legend.position = 'none')+# c(0.25, 0.82))+
-    xlim(c(0,as.integer(max(list_res[["metaData"]]$Age_at_sample))+1))+
-    ylim(c(0,as.integer(max(list_res[["metaData"]]$Age_at_sample))+1))+
-    labs(tag = "A")
-}
-if (list_res_TE[['clock_results']]$MSE. <= min(list_res_TE[['clock_results']]$MSE., all_res$MSE.[all_res$regions == "TE"])){
-  plot2 <- ggplot(list_res_TE[["metaData"]], aes(x = Age_at_sample, y = predicted, color = dog_id))+
-    geom_abline(slope=1, color = "black")+
-    geom_point()+
-    geom_line()+
-    ggtitle(paste0("TE regions \n alpha: ", alph, " MSE: ", round(list_res_TE[["clock_results"]]$MSE., digits = 3)))+
-    ylab("Epigenetic age")+
-    xlab("Age at sample collection")+
-    theme_blaise + theme(legend.position = 'none')+#c(0.25, 0.82))+
-    xlim(c(0,as.integer(max(list_res_TE[["metaData"]]$Age_at_sample))+1))+
-    ylim(c(0,as.integer(max(list_res_TE[["metaData"]]$Age_at_sample))+1))+
-    labs(tag = "B")
-}
-if (list_res_PR[['clock_results']]$MSE. <= min(list_res_PR[['clock_results']]$MSE., all_res$MSE.[all_res$regions == "Promoter"])){
-  plot3 <- ggplot(list_res_PR[["metaData"]], aes(x = Age_at_sample, y = predicted, color = dog_id))+
-    geom_abline(slope=1, color = "black")+
-    geom_point()+
-    geom_line()+
-    ggtitle(paste0("Promoter regions \n alpha: ", alph, " MSE: ", round(list_res_PR[["clock_results"]]$MSE., digits = 3)))+
-    ylab("Epigenetic age")+
-    xlab("Age at sample collection")+
-    theme_blaise + theme(legend.position = 'none')+#c(0.25, 0.82))+
-    xlim(c(0,as.integer(max(list_res_PR[["metaData"]]$Age_at_sample))+1))+
-    ylim(c(0,as.integer(max(list_res_PR[["metaData"]]$Age_at_sample))+1))+
-    labs(tag = "C")
-}
-if (list_res_CpGIs[['clock_results']]$MSE. <= min(list_res_CpGIs[['clock_results']]$MSE., all_res$MSE.[all_res$regions == "CpG_island"])){
-  plot4 <- ggplot(list_res_CpGIs[["metaData"]], aes(x = Age_at_sample, y = predicted, color = dog_id))+
-    geom_abline(slope=1, color = "black")+
-    geom_point()+
-    geom_line()+
-    ggtitle(paste0("CpG regions \n alpha: ", alph, " MSE: ", round(list_res_CpGIs[["clock_results"]]$MSE., digits = 3)))+
-    ylab("Epigenetic age")+
-    xlab("Age at sample collection")+
-    theme_blaise + theme(legend.position = 'none')+#c(0.25, 0.82))+
-    xlim(c(0,as.integer(max(list_res_CpGIs[["metaData"]]$Age_at_sample))+1))+
-    ylim(c(0,as.integer(max(list_res_CpGIs[["metaData"]]$Age_at_sample))+1))+
-    labs(tag = "C")
-}
-if (list_res_rand[['clock_results']]$MSE. <= min(list_res_rand[['clock_results']]$MSE., all_res$MSE.[all_res$regions == "Random"])){
-  plot5 <- ggplot(list_res_rand[["metaData"]], aes(x = Age_at_sample, y = predicted, color = dog_id))+
-    geom_abline(slope=1, color = "black")+
-    geom_point()+
-    geom_line()+
-    ggtitle(paste0("Random regions \n alpha: ", alph, " MSE: ", round(list_res_rand[["clock_results"]]$MSE., digits = 3)))+
-    ylab("Epigenetic age")+
-    xlab("Age at sample collection")+
-    theme_blaise + theme(legend.position = 'none')+#c(0.25, 0.82))+
-    xlim(c(0,as.integer(max(list_res_rand[["metaData"]]$Age_at_sample))+1))+
-    ylim(c(0,as.integer(max(list_res_rand[["metaData"]]$Age_at_sample))+1))+
-    labs(tag = "C")
+plot1
+
+for (region in unique(all_res_metaData$regions)){
+  print(region)
+  for (cohort in unique(all_res_metaData$Cohort)){
+    print(cohort)
+    duplicated_dogs <- duplicated(all_res_metaData$dog_id[all_res_metaData$Cohort == cohort &
+                                                                                    all_res_metaData$regions == region])
+    for (dog_id in unique(all_res_metaData$dog_id[duplicated_dogs])){
+      mean_predicted <- mean(all_res_metaData$predicted[all_res_metaData$dog_id == dog_id & 
+                                                          all_res_metaData$Cohort == cohort &
+                                                          all_res_metaData$regions == region])
+      all_res_metaData$predicted[all_res_metaData$dog_id == dog_id & 
+                                   all_res_metaData$Cohort == cohort &
+                                   all_res_metaData$regions == region] <- mean_predicted
+    }
+    all_res_metaData <- unique(all_res_metaData)
+  }
 }
 
+plot_list <- list()
+for (alph in c(0.25,0.5,0.75)){
+  for (region in unique(all_res_metaData$regions)){
+    if (region == "Random"){next}
+    plot11 <- ggplot(all_res_metaData[all_res_metaData$regions == region & all_res_metaData$alpha == alph,],
+                     aes(x = Age_at_sample, y = predicted, color = dog_id))+
+      geom_abline(slope=1, color = "black")+
+      geom_point()+
+      geom_line()+
+      ggtitle(paste0(gsub("_"," ",region), " regions \n alpha: ", alph))+
+      ylab("Epigenetic age")+
+      xlab("Age at sample collection")+
+      theme_blaise + theme(legend.position = 'none')+# c(0.25, 0.82))+
+      xlim(c(0,as.integer(max(all_res_metaData$Age_at_sample))+1))+
+      ylim(c(0,as.integer(max(all_res_metaData$Age_at_sample))+1))+
+      labs(tag = "")
+    # print(plot11)
+    plot_list[[paste0(region,alph)]] <- print(plot11)
+  }
+}
 
-svglite("DAP_FIGURE4.svg", fix_text_size=F, width = 14, height = 14)
-(plot1 + plot2 +plot3 ) / plot6
+plot11 <- patchwork::wrap_plots(plot_list, nrow = 3, ncol = 4)
+plot11
+
+# if (list_res[['clock_results']]$MSE. <= min(list_res[['clock_results']]$MSE., all_res$MSE.[all_res$regions == "All"])){
+#   plot1 <- ggplot(list_res[["metaData"]], aes(x = Age_at_sample, y = predicted, color = dog_id))+
+#     geom_abline(slope=1, color = "black")+
+#     geom_point()+
+#     geom_line()+
+#     ggtitle(paste0("All regions \n alpha: ", alph, " MSE: ", round(list_res[["clock_results"]]$MSE., digits = 3)))+
+#     ylab("Epigenetic age")+
+#     xlab("Age at sample collection")+
+#     theme_blaise + theme(legend.position = 'none')+# c(0.25, 0.82))+
+#     xlim(c(0,as.integer(max(list_res[["metaData"]]$Age_at_sample))+1))+
+#     ylim(c(0,as.integer(max(list_res[["metaData"]]$Age_at_sample))+1))+
+#     labs(tag = "A")
+# }
+
+# lets do a leave one out
+
+for (breed_size in c("Giant","Small")){
+  time_start <- Sys.time()
+  print(time_start)
+  all_res_list <- parallel::mclapply(alphs_oi, 
+                                     DAPDNAm::clock_simulate,
+                                     metaData, 
+                                     region_metaData,
+                                     perc_meth, 
+                                     region_metaData_te,
+                                     perc_meth_te,
+                                     region_metaData_prmtr,
+                                     perc_meth_prmtr,
+                                     region_metaData_cpgisl,
+                                     perc_meth_cpgisl,
+                                     unique(metaData$dog_id[metaData$Breed_size == breed_size]),
+                                     mc.cores = 20
+  )
+  names(all_res_list) <- alphs_oi
+  print(Sys.time()- time_start)
+  
+  for (alph in alphs_oi){
+    print(alph)
+    if (alph == alphs_oi[1]){
+      all_res_metaData <- all_res_list[[paste(alph)]][['metaData']]
+      all_res_clock <- all_res_list[[paste(alph)]][['clock_results']]
+    } else {
+      all_res_clock <- rbind(all_res_clock,all_res_list[[paste(alph)]][['clock_results']])
+      all_res_metaData <- rbind(all_res_metaData,all_res_list[[paste(alph)]][['metaData']])
+    }
+  }
+  all_res_clock$Breed_size <- breed_size
+  if (breed_size == "Giant"){
+    all_res_clock_final <- all_res_clock; all_res_metaData_final <- all_res_metaData
+  } else {
+    all_res_clock_final <- rbind(all_res_clock_final,all_res_clock); all_res_metaData_final <- rbind(all_res_metaData_final,all_res_metaData)
+    }
+}
+
+#### plotting ####
+write_rds(x = all_res_clock_final, file = "../LongDat/all_res_simulation_clock_breedsize.rds")
+write_rds(x = all_res_metaData_final, file = "../LongDat/all_res_simulation_metadata_breedsize.rds")
+
+all_res_clock_final <- read_rds("../LongDat/all_res_simulation_clock_breedsize.rds")
+all_res_metaData_final <- read_rds("../LongDat/all_res_simulation_metadata_breedsize.rds")
+
+all_res <- all_res_metaData_final
+
+all_res$oi <- (all_res$predicted - all_res$Age_at_sample)
+all_res$label_gg <- paste0(all_res$Breed_size, " dogs")
+
+all_res_sum <- WLSplot::data_summary(all_res, groupnames = c("label_gg", "alpha", "regions"), varname = "oi")
+
+plot2 <- ggplot(all_res_sum[all_res_sum$regions == "All",], aes(x = alpha, y = oi, color = label_gg))+
+  geom_point(size = 3)+
+  geom_line()+
+  geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
+  ggtitle(paste0(""))+
+  xlab("alpha")+
+  ylab("predicted age - actual age")+
+  scale_color_manual(values = c("red", "black"))+
+  theme_blaise+#theme(legend.position = 'none')+
+  labs(tag = "B")
+
+plot2
+
+plot3 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi, color = label_gg))+
+  geom_point(size = 3)+
+  geom_line()+
+  geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
+  ggtitle(paste0("TE clock"))+
+  xlab("alpha")+
+  ylab("predicted age - actual age")+
+  scale_color_manual(values = c("red", "black"))+
+  theme_blaise+
+  labs(tag = "C")
+plot3
+
+plot3 <- ggplot(all_res[all_res$regions == "All" & all_res$alpha == 0.3,], aes(x = label_gg, y = oi, color = label_gg, group = label_gg))+
+  geom_quasirandom() +
+  geom_boxplot(width = 0.2, color = "black", outliers = F)+
+  # geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
+  ggtitle(paste0(""))+
+  xlab("")+
+  ylab("predicted age - actual age")+
+  scale_color_manual(values = c("red", "black"))+
+  theme_blaise+
+  labs(tag = "C") 
+plot3
+
+t.test(all_res$oi[all_res$regions == "All" & all_res$alpha == 0.3 & all_res$Breed_size == "Small"], 
+       all_res$oi[all_res$regions == "All" & all_res$alpha == 0.3 & all_res$Breed_size == "Giant"])
+
+
+for (sex in c("Male", "Female")){
+  time_start <- Sys.time()
+  print(time_start)
+  all_res_list <- parallel::mclapply(alphs_oi, 
+                                     DAPDNAm::clock_simulate,
+                                     metaData, 
+                                     region_metaData,
+                                     perc_meth, 
+                                     region_metaData_te,
+                                     perc_meth_te,
+                                     region_metaData_prmtr,
+                                     perc_meth_prmtr,
+                                     region_metaData_cpgisl,
+                                     perc_meth_cpgisl,
+                                     unique(metaData$dog_id[metaData$Sex == sex]),
+                                     mc.cores = 20
+  )
+  names(all_res_list) <- alphs_oi
+  print(Sys.time()- time_start)
+  
+  for (alph in alphs_oi){
+    print(alph)
+    if (alph == alphs_oi[1]){
+      all_res_metaData <- all_res_list[[paste(alph)]][['metaData']]
+      all_res_clock <- all_res_list[[paste(alph)]][['clock_results']]
+    } else {
+      all_res_clock <- rbind(all_res_clock,all_res_list[[paste(alph)]][['clock_results']])
+      all_res_metaData <- rbind(all_res_metaData,all_res_list[[paste(alph)]][['metaData']])
+    }
+  }
+  all_res_clock$Sex <- sex
+  if (sex == "Male"){
+    all_res_clock_final <- all_res_clock; all_res_metaData_final <- all_res_metaData
+  } else {
+    all_res_clock_final <- rbind(all_res_clock_final,all_res_clock); all_res_metaData_final <- rbind(all_res_metaData_final,all_res_metaData)
+  }
+}
+write_rds(x = all_res_clock_final, file = "../LongDat/all_res_simulation_clock_sex.rds")
+write_rds(x = all_res_metaData_final, file = "../LongDat/all_res_simulation_metadata_sex.rds")
+
+all_res_clock_final <- read_rds("../LongDat/all_res_simulation_clock_sex.rds")
+all_res_metaData_final <- read_rds("../LongDat/all_res_simulation_metadata_sex.rds")
+#### plotting ####
+all_res <- all_res_metaData_final
+
+all_res$oi <- (all_res$predicted - all_res$Age_at_sample)
+all_res$label_gg <- paste0(all_res$Sex, " dogs")
+
+all_res_sum <- WLSplot::data_summary(all_res, groupnames = c("label_gg", "alpha", "regions"), varname = "oi")
+
+plot4 <- ggplot(all_res_sum[all_res_sum$regions == "All",], aes(x = alpha, y = oi, color = label_gg))+
+  geom_point(size = 3)+
+  geom_line()+
+  geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
+  ggtitle(paste0(""))+
+  xlab("alpha")+
+  ylab("predicted age - actual age")+
+  scale_color_manual(
+    values = c("blue", "red")
+    )+
+  theme_blaise+#theme(legend.position = 'none')+
+  labs(tag = "C")
+
+plot4
+
+plot5 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi, color = label_gg))+
+  geom_point(size = 3)+
+  geom_line()+
+  geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
+  ggtitle(paste0("TE clock"))+
+  xlab("alpha")+
+  ylab("predicted age - actual age")+
+  scale_color_manual(
+    values = c("blue", "red")
+  )+
+  theme_blaise+
+  labs(tag = "E")
+
+plot5
+
+svglite("DAP_FIGURE4.svg", fix_text_size = F, height = 16, width = 12)
+print(plot1 / plot2 / plot4)
 dev.off()
 
-#what if I train with precision_1 samples and test with 2,3?#
-
-for (alph in alphs_oi){
-  print(alph)
-  list_res <- DAPDNAm::build_clock(alph,
-                                   metaData,
-                                   region_metaData,
-                                   perc_meth,
-                                   test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
-  )
-  
-  list_res_TE <- DAPDNAm::build_clock(alph,
-                                      metaData,
-                                      region_metaData_te,
-                                      perc_meth_te,
-                                      test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
-  )
-  
-  list_res_PR <- DAPDNAm::build_clock(alph,
-                                      metaData,
-                                      region_metaData_prmtr,
-                                      perc_meth_prmtr,
-                                      test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
-  )
-  
-  list_res_CpGIs <- DAPDNAm::build_clock(alph,
-                                         metaData,
-                                         region_metaData_cpgisl,
-                                         perc_meth_cpgisl,
-                                         test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
-  )
-  
-  list_res_rand <- DAPDNAm::build_clock(alph,
-                                        metaData,
-                                        region_metaData_rand,
-                                        perc_meth_rand,
-                                        test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
-  )
-  
-  list_res[['clock_results']]$regions <- "All"
-  list_res_TE[['clock_results']]$regions <- "TE"
-  list_res_PR[['clock_results']]$regions <- "Promoter"
-  list_res_CpGIs[['clock_results']]$regions <- "CpG_island"
-  list_res_rand[['clock_results']]$regions <- "Random"
-  
-  if (alph == alphs_oi[1]){
-    all_res <- rbind(list_res[['clock_results']], list_res_TE[['clock_results']],list_res_PR[['clock_results']], list_res_CpGIs[['clock_results']],list_res_rand[['clock_results']])
-  }else{
-    all_res <- rbind(all_res, list_res[['clock_results']], list_res_TE[['clock_results']],list_res_PR[['clock_results']], list_res_CpGIs[['clock_results']],list_res_rand[['clock_results']])
-  }
-  
-  
-  save_res <- all_res
-}
-
-#### plotting ####
-all_res <- save_res
-all_res <- all_res[order(all_res$regions),]
-
-colnames(all_res) <- c("alpha", "MSE", "n_regions", "training_samples", "testing_samples", "regions")
-all_res <- all_res[,c("regions", "n_regions", "alpha", "MSE", "training_samples", "testing_samples")]
-
-all_res$label_gg <- paste0(all_res$regions, " regions (", all_res$n_regions, ")")
-
-all_res<-all_res[all_res$alpha>0,]
-
-plot6 <- ggplot(all_res, aes(x = alpha, y = MSE, color = label_gg))+
-  geom_point(size = 3)+
-  geom_line()+
-  ggtitle("p1 training")+
-  xlab("alpha")+
-  ylab("Clock's mean standard error")+
-  scale_color_manual(values = c("black", "darkred","darkorange", "darkblue", "darkgreen"))+
-  theme_blaise+
-  labs(tag = "D")
-plot6
-
-
-# what if I only look at the dogs below age 10? #
-
-# metadata
-p1 <- read_rds("../metadata_samples/P1-DAP-metaData-2400216.rds")
-p2 <- read_rds("../metadata_samples/P2-DAP-metaData-240124.rds")
-p3 <- read_rds("../metadata_samples/P3-DAP-metaData-240124.rds")
-
-metaData <- rbind(p1,p2,p3)
-metaData <- metaData[metaData$Age_at_sample < 10,]
-
-maxgap = "250"
-
-coverage_all_chr <- read_rds(paste0("../getcoverage_data_and_plots/longitudinal_maxGap_250_all_coverage_regions_oi.rds"))
-methylation_all_chr <- read_rds(paste0("../getcoverage_data_and_plots/longitudinal_maxGap_250_all_methylation_regions_oi.rds"))
-region_metaData <- readRDS(paste0("../metadata_regions/metaData_regions_maxgap_", maxgap,".rds"))
-
-coverage_all_chr <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData$region,]
-methylation_all_chr <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData$region,]
-
-if (! "DAPDNAm" %in% installed.packages()){devtools::install_github("blaisemariner17/DAPDNAm", force = TRUE)}
-
-# load in packages needed
-library(glmnet)
-library(tidyverse)
-
-region_metaData <- read_rds("../metadata_regions/metaData_regions_maxgap_250.rds")
-
-all(colnames(methylation_all_chr) == colnames(coverage_all_chr))
-all(rownames(methylation_all_chr) == rownames(coverage_all_chr))
-
-perc_meth <- methylation_all_chr / coverage_all_chr
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth)) {
-  row_of_interest <- perc_meth[row_,]
-  if (sum(is.na(perc_meth[row_,])) == ncol(perc_meth)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth[row_,])))
-}
-perc_meth <- perc_meth[-c(rm_row),]
-
-#### Promoter regions ####
-region_metaData_prmtr <- region_metaData[region_metaData$Promoter == 1,]
-coverage_all_chr_prmtr <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData_prmtr$region,]
-methylation_all_chr_prmtr <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData_prmtr$region,]
-all(colnames(methylation_all_chr_prmtr) == colnames(coverage_all_chr_prmtr))
-all(rownames(methylation_all_chr_prmtr) == rownames(coverage_all_chr_prmtr))
-perc_meth_prmtr <- methylation_all_chr_prmtr / coverage_all_chr_prmtr
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth_prmtr)) {
-  row_of_interest <- perc_meth_prmtr[row_,]
-  if (sum(is.na(perc_meth_prmtr[row_,])) == ncol(perc_meth_prmtr)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth_prmtr[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth_prmtr[row_,])))
-}
-perc_meth_prmtr <- perc_meth_prmtr[-c(rm_row),]
-
-#### CpG Is regions ####
-region_metaData_cpgisl <- region_metaData[region_metaData$CpG_island == 1,]
-coverage_all_chr_cpgisl <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData_cpgisl$region,]
-methylation_all_chr_cpgisl <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData_cpgisl$region,]
-all(colnames(methylation_all_chr_cpgisl) == colnames(coverage_all_chr_cpgisl))
-all(rownames(methylation_all_chr_cpgisl) == rownames(coverage_all_chr_cpgisl))
-perc_meth_cpgisl <- methylation_all_chr_cpgisl / coverage_all_chr_cpgisl
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth_cpgisl)) {
-  row_of_interest <- perc_meth_cpgisl[row_,]
-  if (sum(is.na(perc_meth_cpgisl[row_,])) == ncol(perc_meth_cpgisl)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth_cpgisl[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth_cpgisl[row_,])))
-}
-perc_meth_cpgisl <- perc_meth_cpgisl[-c(rm_row),]
-
-#### TE regions #####
-region_metaData_te <- region_metaData[region_metaData$TE == 1,]
-coverage_all_chr_te <- coverage_all_chr[rownames(coverage_all_chr) %in% region_metaData_te$region,]
-methylation_all_chr_te <- methylation_all_chr[rownames(methylation_all_chr) %in% region_metaData_te$region,]
-all(colnames(methylation_all_chr_te) == colnames(coverage_all_chr_te))
-all(rownames(methylation_all_chr_te) == rownames(coverage_all_chr_te))
-perc_meth_te <- methylation_all_chr_te / coverage_all_chr_te
-
-# tempData <- mice::mice(t(epi))
-# completedData <- mice::complete(tempData,1)
-rm_row <- c()
-for (row_ in 1:nrow(perc_meth_te)) {
-  row_of_interest <- perc_meth_te[row_,]
-  if (sum(is.na(perc_meth_te[row_,])) == ncol(perc_meth_te)){rm_row <- append(rm_row, row_)}
-  mean_row <- mean(row_of_interest, na.rm = T)
-  row_of_interest[is.na(row_of_interest)] <- mean_row
-  perc_meth_te[row_,] <- row_of_interest
-  # print(sum(is.na(perc_meth_te[row_,])))
-}
-perc_meth_te <- perc_meth_te[-c(rm_row),]
-
-#### random regions #####
-set.seed(100)
-sampling <- sample(rownames(perc_meth), as.integer(mean(nrow(perc_meth_te), nrow(perc_meth_prmtr), nrow(perc_meth_cpgisl))))
-perc_meth_rand <- perc_meth[rownames(perc_meth) %in% sampling,]
-region_metaData_rand <- region_metaData[region_metaData$region %in% sampling,]
-
-sampling <- sample(unique(metaData$dog_id), 90)
-
-for (alph in alphs_oi){
-  print(alph)
-  list_res <- DAPDNAm::build_clock(alph,
-                                   metaData,
-                                   region_metaData,
-                                   perc_meth,
-                                   test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
-  )
-  
-  list_res_TE <- DAPDNAm::build_clock(alph,
-                                      metaData,
-                                      region_metaData_te,
-                                      perc_meth_te,
-                                      test_samples = colnames(perc_meth_te) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
-  )
-  
-  list_res_PR <- DAPDNAm::build_clock(alph,
-                                      metaData,
-                                      region_metaData_prmtr,
-                                      perc_meth_prmtr,
-                                      test_samples = colnames(perc_meth_prmtr) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
-  )
-  
-  list_res_CpGIs <- DAPDNAm::build_clock(alph,
-                                         metaData,
-                                         region_metaData_cpgisl,
-                                         perc_meth_cpgisl,
-                                         test_samples = colnames(perc_meth_cpgisl) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
-  )
-  
-  list_res_rand <- DAPDNAm::build_clock(alph,
-                                        metaData,
-                                        region_metaData_rand,
-                                        perc_meth_rand,
-                                        test_samples = colnames(perc_meth_rand) %in% metaData$lid_pid[metaData$dog_id %in% sampling]
-  )
-  
-  list_res[['clock_results']]$regions <- "All"
-  list_res_TE[['clock_results']]$regions <- "TE"
-  list_res_PR[['clock_results']]$regions <- "Promoter"
-  list_res_CpGIs[['clock_results']]$regions <- "CpG_island"
-  list_res_rand[['clock_results']]$regions <- "Random"
-  
-  if (alph == alphs_oi[1]){
-    all_res <- rbind(list_res[['clock_results']], list_res_TE[['clock_results']],list_res_PR[['clock_results']], list_res_CpGIs[['clock_results']],list_res_rand[['clock_results']])
-  }else{
-    all_res <- rbind(all_res, list_res[['clock_results']], list_res_TE[['clock_results']],list_res_PR[['clock_results']], list_res_CpGIs[['clock_results']],list_res_rand[['clock_results']])
-  }
-  
-  save_res <- all_res
-}
-
-#### plotting ####
-all_res <- save_res
-all_res <- all_res[order(all_res$regions),]
-
-colnames(all_res) <- c("alpha", "MSE", "n_regions", "training_samples", "testing_samples", "regions")
-all_res <- all_res[,c("regions", "n_regions", "alpha", "MSE", "training_samples", "testing_samples")]
-
-all_res$label_gg <- paste0(all_res$regions, " regions (", all_res$n_regions, ")")
-
-all_res<-all_res[all_res$alpha>0,]
-
-plot6 <- ggplot(all_res, aes(x = alpha, y = MSE, color = label_gg))+
-  geom_point(size = 3)+
-  geom_line()+
-  ggtitle("just dogs samples w age < 10")+
-  xlab("alpha")+
-  ylab("Clock's mean standard error")+
-  scale_color_manual(values = c("black", "darkred","darkorange", "darkblue", "darkgreen"))+
-  theme_blaise+
-  labs(tag = "D")
-plot6
+svglite("DAP_FIGURE4_chrn_v_pred_allSims.svg", fix_text_size = F, height = 16, width = 12)
+print(plot11)
+dev.off()

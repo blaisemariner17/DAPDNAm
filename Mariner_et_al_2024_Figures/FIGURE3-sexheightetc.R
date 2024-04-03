@@ -202,6 +202,74 @@ plot2 <- ggplot(fit_oi_all, aes(x = group, y = beta, group = group, color =group
 
 plot2
 
+
+fit <- readRDS("../pqlseq_results/pqlseq_res_fixed.rds")
+fit <- fit[fit$converged_Age_at_sample_int_Female == T,]
+fit <- fit[fit$converged_Age_at_sample_int_Male == T,]
+pqlseq_res <- readRDS("../pqlseq_results/pqlseq_res_maxgap250.rds")
+pqlseq_res <- pqlseq_res[order(pqlseq_res$padj),]
+pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
+
+pqlseq_res$count <- 1:nrow(pqlseq_res)
+pqlseq_res$fdr <- pqlseq_res$count * pqlseq_res$padj
+pqlseq_res$fdr_perc <- pqlseq_res$fdr / pqlseq_res$count
+fit <- fit[rownames(fit) %in% rownames(pqlseq_res)[pqlseq_res$fdr_perc < 0.01 & pqlseq_res$beta < 0],]
+
+col_oi <- "TE"
+for (col in c()){
+  
+  fit_ <- fit[,grepl(col, colnames(fit))]
+  
+  new_colname <-  paste0("Age_at_sample_int_", gsub(".*Sex","",col))
+  
+  colnames(fit_) <- gsub(paste0("_",new_colname), "", colnames(fit_))
+  
+  fit_ <- fit_[order(fit_$padj),]
+  fit_ <- fit_[fit_$converged == T,]
+  
+  fit_$count <- 1:nrow(fit_)
+  fit_$fdr <- fit_$count * fit_$padj
+  fit_$fdr_perc <- fit_$fdr / fit_$count
+  
+  age_effect_plots_fdr05=list()
+  region_metaData_oi <- region_metaData[region_metaData[,c(paste("TE"))] == 1,]
+  fit_oi <- fit_[rownames(fit_) %in% region_metaData_oi$region,]
+  
+  fit_oi$group <- col
+  
+  if (col == "Female") { fit_oi_all <- fit_oi} else {fit_oi_all <- rbind(fit_oi_all, fit_oi)}
+}
+
+# fit_oi_all$beta <- abs(fit_oi_all$beta)
+
+plot31 <- ggplot(fit_oi_all, aes(x = group, y = beta, group = group, color =group)) +
+  geom_quasirandom() +
+  geom_boxplot(width = 0.2, color = "black", outliers = F)+
+  # geom_density(data = fit_oi_all[fit_oi_all$group == "Male",],alpha = 0.2, linewidth = 1) +
+  # geom_density(data = fit_oi_all[fit_oi_all$group == "Female",],alpha = 0.2, linewidth = 1) +
+  # geom_histogram(fill = paste0(density_plot_color), color = "black", alpha = 0.5)+
+  ylab("Effect size of age:sex") +
+  xlab("")+#, " (", nrow(for_ggplot), " hits)"))+
+  ggtitle("Age-associated TEs") +
+  theme_blaise +
+  scale_color_manual(
+    limits = c("Male", "Female"),
+    values = c("red", "lightblue")
+  )+
+  # xlim(-1,1)+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"),
+        legend.position = 'none'
+  )+ 
+  # scale_x_discrete(expand = c(0.01,0.01))+ 
+  scale_y_continuous(expand = c(0.01,0.01))+
+  coord_cartesian(clip = "off")+
+  geom_signif(
+    comparisons = list(c("Male", "Female")),
+    map_signif_level = TRUE, textsize = 5, na.rm = T, test = 't.test',  step_increase = 0.1, color = "black", tip_length = 0, #vjust = 0.6
+  )+
+  labs(tag = 'B')
+
+plot31
 ###heritability
 #is DNAm in age-associated DMRs more heritable than in non-age-associated DMRs?
 fit <- readRDS("../pqlseq_results/pqlseq_res_maxgap250.rds")

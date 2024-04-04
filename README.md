@@ -3,5 +3,7 @@ A GitHub R package with functions and workflows for the processing of dog <ins>D
 
 ### Installation
 
+```
 devtools::install("blaisemariner17/DAPDNAm")
+```
 

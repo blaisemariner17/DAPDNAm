@@ -81,7 +81,7 @@ impute_mice_par <- function(perc_meth){
   return(perc_meth)
 }
 
-read_in_perc_meth=F
+read_in_perc_meth=T
 if (read_in_perc_meth){
   perc_meth <- read_rds("../LongDat/perc_meth_imputed.rds")
 } else {
@@ -109,9 +109,9 @@ if (read_in_perc_meth){
   
   for (chr in chrs){
     if (chr == chrs[1]){
-      perc_meth <- perc_meth_list[[paste(chr)]]
+      perc_meth <- perc_meth_list_imputed[[paste(chr)]]
     }else{
-      perc_meth <- rbind(perc_meth, perc_meth_list[[paste(chr)]])
+      perc_meth <- rbind(perc_meth, perc_meth_list_imputed[[paste(chr)]])
     }
   }
   write_rds(perc_meth, "../LongDat/perc_meth_imputed.rds") 
@@ -134,10 +134,13 @@ if (read_in_perc_meth){
 # hist(na_byregion)
 
 #### Promoter regions ####
-perc_meth_prmtr_ <- perc_meth[rownames(perc_meth) %in% region_metaData$region[region_metaData$Promoter == 1],]
+perc_meth_prmtr <- perc_meth[rownames(perc_meth) %in% region_metaData$region[region_metaData$Promoter == 1],]
+region_metaData_prmtr <- region_metaData[region_metaData$Promoter == 1,]
 #### CpG Is regions ####
 perc_meth_cpgisl <- perc_meth[rownames(perc_meth) %in% region_metaData$region[region_metaData$CpG_island == 1],]
+region_metaData_cpgisl <- region_metaData[region_metaData$CpG_island == 1,]
 #### TE regions #####
+region_metaData_te <- region_metaData[region_metaData$TE == 1,]
 perc_meth_te <- perc_meth[rownames(perc_meth) %in% region_metaData$region[region_metaData$TE == 1],]
 
 set.seed(100)
@@ -341,7 +344,7 @@ plot2 <- ggplot(all_res_sum[all_res_sum$regions == "All",], aes(x = alpha, y = o
 
 plot2
 
-plot3 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi, color = label_gg))+
+plot21 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi, color = label_gg))+
   geom_point(size = 3)+
   geom_line()+
   geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
@@ -351,9 +354,9 @@ plot3 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi
   scale_color_manual(values = c("red", "black"))+
   theme_blaise+
   labs(tag = "C")
-plot3
+plot21
 
-plot3 <- ggplot(all_res[all_res$regions == "All" & all_res$alpha == 0.3,], aes(x = label_gg, y = oi, color = label_gg, group = label_gg))+
+plot22 <- ggplot(all_res[all_res$regions == "All" & all_res$alpha == 0.5,], aes(x = label_gg, y = oi, color = label_gg, group = label_gg))+
   geom_quasirandom() +
   geom_boxplot(width = 0.2, color = "black", outliers = F)+
   # geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
@@ -361,12 +364,16 @@ plot3 <- ggplot(all_res[all_res$regions == "All" & all_res$alpha == 0.3,], aes(x
   xlab("")+
   ylab("predicted age - actual age")+
   scale_color_manual(values = c("red", "black"))+
-  theme_blaise+
+  theme_blaise+  
+  geom_signif(
+    comparisons = list(c("Giant dogs", "Small dogs")),
+    map_signif_level = T, textsize = 8, na.rm = T, test = 't.test', color = 'black', tip_length = 0 #step_increase = 0.05, 
+  )+
   labs(tag = "C") 
-plot3
+plot22
 
-t.test(all_res$oi[all_res$regions == "All" & all_res$alpha == 0.3 & all_res$Breed_size == "Small"], 
-       all_res$oi[all_res$regions == "All" & all_res$alpha == 0.3 & all_res$Breed_size == "Giant"])
+t.test(all_res$oi[all_res$regions == "All" & all_res$alpha == 0.5 & all_res$Breed_size == "Small"], 
+       all_res$oi[all_res$regions == "All" & all_res$alpha == 0.5 & all_res$Breed_size == "Giant"])
 
 
 for (sex in c("Male", "Female")){
@@ -434,7 +441,7 @@ plot4 <- ggplot(all_res_sum[all_res_sum$regions == "All",], aes(x = alpha, y = o
 
 plot4
 
-plot5 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi, color = label_gg))+
+plot41 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi, color = label_gg))+
   geom_point(size = 3)+
   geom_line()+
   geom_errorbar(aes(ymin = oi - se, ymax = oi + se), width=0.02)+
@@ -447,12 +454,14 @@ plot5 <- ggplot(all_res_sum[all_res_sum$regions == "TE",], aes(x = alpha, y = oi
   theme_blaise+
   labs(tag = "E")
 
-plot5
+plot41
 
 svglite("DAP_FIGURE4.svg", fix_text_size = F, height = 16, width = 12)
 print(plot1 / plot2 / plot4)
 dev.off()
 
-svglite("DAP_FIGURE4_chrn_v_pred_allSims.svg", fix_text_size = F, height = 16, width = 12)
+svglite("DAP_FIGURE4_chrn_v_pred_allSims.svg", fix_text_size = F, height = 16, width = 16)
 print(plot11)
 dev.off()
+
+save.image("FIG4.RData")

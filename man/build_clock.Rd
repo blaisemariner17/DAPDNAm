@@ -4,9 +4,11 @@
 \alias{build_clock}
 \title{generate region metadata from regions of interest given provided annotation files}
 \usage{
-build_clock(alph, metaData, region_metaData, perc_meth, dog_id)
+build_clock(dog_id, alph, metaData, region_metaData, perc_meth)
 }
 \arguments{
+\item{dog_id}{the dog_id for testing}
+
 \item{alph}{alpha to use for glmnet}
 
 \item{metaData}{sample metaData}
@@ -14,8 +16,6 @@ build_clock(alph, metaData, region_metaData, perc_meth, dog_id)
 \item{region_metaData}{region metaData}
 
 \item{perc_meth}{imputed percent methylation matrix}
-
-\item{dog_id}{the dog_id for testing}
 }
 \value{
 Function returns a list of predicted age as a column to the input metaData, region weights as a column to the input region_metaData, and clock results as a list

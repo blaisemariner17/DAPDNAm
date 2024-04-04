@@ -8,11 +8,11 @@
 #' @return Function returns a list of predicted age as a column to the input metaData, region weights as a column to the input region_metaData, and clock results as a list
 #' @export build_clock
 
-build_clock <- function(alph,
+build_clock <- function(dog_id,
+                        alph,
                         metaData,
                         region_metaData,
-                        perc_meth,
-                        dog_id
+                        perc_meth
                         ) {
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData
@@ -95,8 +95,7 @@ build_clock <- function(alph,
   return_[["clock_results"]] <- data.frame("alpha" = alph,
                                            "MSE:" = mse,
                                            "n_regions" = n_regions,
-                                           "training_samples" = sum(!test_samples),
-                                           "testing_samples" = sum(test_samples))
+                                           "testing_samples" = dog_id)
 
   return(return_)
 }

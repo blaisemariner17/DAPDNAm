@@ -66,7 +66,7 @@ p1$Age_at_sample <- as.numeric(p1$Age_at_sample)
 p1$Age_at_sample <- as.numeric(p1$Age_at_sample)
 
 hist_plots[['age_female']] <-ggplot(p1[p1$Sex == "Female" ,], aes(x = Age_at_sample)) +
-  geom_histogram(fill = "lightblue", color = "white", bins = 40) +
+  geom_histogram(fill = "blue", color = "white", bins = 40) +
   xlab("Age") +
   ylab("Count") +
   labs(tag='A') +
@@ -88,7 +88,7 @@ hist_plots[['age_male']] <- ggplot(p1[p1$Sex == "Male",], aes(x = Age_at_sample)
   scale_x_continuous(expand = c(0.005,0), limits = c(0,max(p1$Age_at_sample)+1))
 
 hist_plots[['weight_female']] <- ggplot(p1[p1$Sex == "Female",], aes(x = weight)) +
-  geom_histogram(fill = "lightblue", color = "white", bins = 20) +
+  geom_histogram(fill = "blue", color = "white", bins = 20) +
   xlab("Weight") +
   ylab("Count") +
   theme_blaise+
@@ -108,7 +108,7 @@ hist_plots[['weight_male']] <- ggplot(p1[p1$Sex == "Male",], aes(x = weight)) +
 # hist_plots[['weight_male']]
 
 hist_plots[['weight_age_female']]  <- ggplot(p1[p1$Sex == "Female",], aes(x = Age_at_sample, y = weight)) +
-  geom_point(color = "lightblue",size = 2) +
+  geom_point(color = "blue",size = 2) +
   xlab("Age") +
   ylab("Weight") +
   theme_blaise+
@@ -143,12 +143,13 @@ methylation_all_chr <- read_rds(paste0("../getcoverage_data_and_plots/maxGap_", 
 
 region_metaData <- readRDS("../metadata_regions/metaData_regions_maxgap_250.rds")
 col_oi = c(
-  "Promoter", "gene_bool",
+  "Promoter","exon", "intron",# "gene_bool",
   "CpG_island", "CpG_shore", "CpG_shelf",
   # "ChrSt_promoter", 
   "ChrSt_quies","ChrSt_heterochromatin",
-  "ChrSt_polycomb", "ChrSt_enhancer",
-  # "exon", "intron",
+  # "ChrSt_polycomb", 
+  "ChrSt_enhancer",
+  # 
   "TE"
 )
 percent_methylation_plots <- region_metaData_median_percent_methylation(coverage_all_chr, methylation_all_chr, region_metaData, 

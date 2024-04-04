@@ -460,7 +460,7 @@ svglite("DAP_FIGURE4.svg", fix_text_size = F, height = 16, width = 12)
 print(plot1 / plot2 / plot4)
 dev.off()
 
-svglite("DAP_FIGURE4_chrn_v_pred_allSims.svg", fix_text_size = F, height = 16, width = 16)
+svglite("DAP_FIGURE4_chrn_v_pred_allSims.svg", fix_text_size = F, height = 16, width = 18)
 print(plot11)
 dev.off()
 

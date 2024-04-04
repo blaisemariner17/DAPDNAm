@@ -7,12 +7,12 @@
 ##
 ## abbreviations: oi = of interest; chr = chromosome; dap = dog aging project
 col_oi = c(
-  "Promoter", "gene_bool",
+  "Promoter", "exon", "intron",# "gene_bool",
   "CpG_island", "CpG_shore", "CpG_shelf",
   # "ChrSt_promoter", 
   "ChrSt_quies","ChrSt_heterochromatin",
   "ChrSt_polycomb", "ChrSt_enhancer",
-  # "exon", "intron",
+  # 
   "DNA.transposon", "Retrotransposon", "TE"
 )
 if (isRStudio <- Sys.getenv("RSTUDIO") == "1"){
@@ -185,7 +185,7 @@ plot2 <- ggplot(fit_oi_all, aes(x = group, y = beta, group = group, color =group
   theme_blaise +
   scale_color_manual(
     limits = c("Male", "Female"),
-    values = c("red", "lightblue")
+    values = c("red", "blue")
   )+
   # xlim(-1,1)+
   theme(plot.margin = margin(0, 0, 0, 0, "cm"),
@@ -203,9 +203,12 @@ plot2 <- ggplot(fit_oi_all, aes(x = group, y = beta, group = group, color =group
 plot2
 
 
-fit <- readRDS("../pqlseq_results/pqlseq_res_fixed.rds")
-fit <- fit[fit$converged_Age_at_sample_int_Female == T,]
-fit <- fit[fit$converged_Age_at_sample_int_Male == T,]
+fit <- readRDS("../pqlseq_results/pqlseq_res_fixedstatusintage_maxgap250.rds")
+colnames(fit) <- gsub("_int_scale.(Age_at_sample, scale = F.)","",colnames(fit))
+colnames(fit) <- gsub(":",".",colnames(fit))
+fit <- fit[fit$converged_Age_at_sample.fixedIntact == T,]
+fit <- fit[fit$converged_Age_at_sample.fixedNeutered == T,]
+fit <- fit[fit$converged_Age_at_sample.fixedSpayed == T,]
 pqlseq_res <- readRDS("../pqlseq_results/pqlseq_res_maxgap250.rds")
 pqlseq_res <- pqlseq_res[order(pqlseq_res$padj),]
 pqlseq_res <- pqlseq_res[pqlseq_res$converged == T,]
@@ -216,13 +219,11 @@ pqlseq_res$fdr_perc <- pqlseq_res$fdr / pqlseq_res$count
 fit <- fit[rownames(fit) %in% rownames(pqlseq_res)[pqlseq_res$fdr_perc < 0.01 & pqlseq_res$beta < 0],]
 
 col_oi <- "TE"
-for (col in c()){
+for (col in c("_Age_at_sample.fixedSpayed","_Age_at_sample.fixedIntact", "_Age_at_sample.fixedNeutered")){
   
   fit_ <- fit[,grepl(col, colnames(fit))]
   
-  new_colname <-  paste0("Age_at_sample_int_", gsub(".*Sex","",col))
-  
-  colnames(fit_) <- gsub(paste0("_",new_colname), "", colnames(fit_))
+  colnames(fit_) <- gsub(paste0(col), "", colnames(fit_))
   
   fit_ <- fit_[order(fit_$padj),]
   fit_ <- fit_[fit_$converged == T,]
@@ -235,9 +236,9 @@ for (col in c()){
   region_metaData_oi <- region_metaData[region_metaData[,c(paste("TE"))] == 1,]
   fit_oi <- fit_[rownames(fit_) %in% region_metaData_oi$region,]
   
-  fit_oi$group <- col
+  fit_oi$group <- gsub("_Age_at_sample.fixed","",col)
   
-  if (col == "Female") { fit_oi_all <- fit_oi} else {fit_oi_all <- rbind(fit_oi_all, fit_oi)}
+  if (col == "_Age_at_sample.fixedSpayed") { fit_oi_all <- fit_oi} else {fit_oi_all <- rbind(fit_oi_all, fit_oi)}
 }
 
 # fit_oi_all$beta <- abs(fit_oi_all$beta)
@@ -248,14 +249,10 @@ plot31 <- ggplot(fit_oi_all, aes(x = group, y = beta, group = group, color =grou
   # geom_density(data = fit_oi_all[fit_oi_all$group == "Male",],alpha = 0.2, linewidth = 1) +
   # geom_density(data = fit_oi_all[fit_oi_all$group == "Female",],alpha = 0.2, linewidth = 1) +
   # geom_histogram(fill = paste0(density_plot_color), color = "black", alpha = 0.5)+
-  ylab("Effect size of age:sex") +
+  ylab("Effect size of age:fixed") +
   xlab("")+#, " (", nrow(for_ggplot), " hits)"))+
   ggtitle("Age-associated TEs") +
   theme_blaise +
-  scale_color_manual(
-    limits = c("Male", "Female"),
-    values = c("red", "lightblue")
-  )+
   # xlim(-1,1)+
   theme(plot.margin = margin(0, 0, 0, 0, "cm"),
         legend.position = 'none'
@@ -264,12 +261,17 @@ plot31 <- ggplot(fit_oi_all, aes(x = group, y = beta, group = group, color =grou
   scale_y_continuous(expand = c(0.01,0.01))+
   coord_cartesian(clip = "off")+
   geom_signif(
-    comparisons = list(c("Male", "Female")),
+    comparisons = list(c("Intact", "Neutered"), c("Intact", "Spayed")),
     map_signif_level = TRUE, textsize = 5, na.rm = T, test = 't.test',  step_increase = 0.1, color = "black", tip_length = 0, #vjust = 0.6
   )+
   labs(tag = 'B')
 
 plot31
+
+mean(fit_oi_all$beta[fit_oi_all$group == "Intact"])
+mean(fit_oi_all$beta[fit_oi_all$group == "Spayed"])
+mean(fit_oi_all$beta[fit_oi_all$group == "Neutered"])
+
 ###heritability
 #is DNAm in age-associated DMRs more heritable than in non-age-associated DMRs?
 fit <- readRDS("../pqlseq_results/pqlseq_res_maxgap250.rds")
@@ -344,8 +346,8 @@ fit$TE <- as.character(region_metaData_$LINE)
 # fit <- fit[fit$h2>0,]
 fit <- fit[fit$fdr_perc<0.05,]
 
-fit$group <- "notGenebody"
-fit$group[fit$gene_id != '0'] <- 'Genebody'
+fit$group <- "notExon"
+fit$group[fit$gene_id != '0'] <- 'Exon'
 
 fit_ <- fit
 fit_$group <- "notPromoter"
@@ -356,7 +358,7 @@ fit_ <- fit
 fit_$group <- "notTE"
 fit_$group[fit$TE != '0'] <- 'TE'
 fit <- rbind(fit, fit_)
-plot4 <- ggplot(fit, aes(x = factor(group, levels = c("notGenebody", "Genebody", "notPromoter", "Promoter","notTE","TE")), 
+plot4 <- ggplot(fit, aes(x = factor(group, levels = c("notExon", "Exon", "notPromoter", "Promoter","notTE","TE")), 
                          y = h2, color = group)) +
   geom_quasirandom() +
   geom_boxplot(width = 0.2, color = "black", outliers = F)+
@@ -370,7 +372,7 @@ plot4 <- ggplot(fit, aes(x = factor(group, levels = c("notGenebody", "Genebody",
   theme(legend.position = "none")+
   coord_cartesian(clip = "off")+
   geom_signif(
-    comparisons = list(c("notGenebody", "Genebody"), c("notPromoter", "Promoter"), c("notTE", "TE")),
+    comparisons = list(c("notExon", "Exon"), c("notPromoter", "Promoter"), c("notTE", "TE")),
     map_signif_level = T, textsize = 5, na.rm = T, test = 't.test',  step_increase = 0, color = "black", tip_length = 0
   )#+
 # geom_label_repel(aes(label=ifelse(gene_id!="0" & h2>0.3,

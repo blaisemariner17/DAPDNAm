@@ -9,12 +9,12 @@
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 col_oi = c(
-  "Promoter", "gene_bool",
+  "Promoter", "gene_bool","exon", "intron",
   "CpG_island", "CpG_shore", "CpG_shelf",
   # "ChrSt_promoter", 
   "ChrSt_quies","ChrSt_heterochromatin",
-  "ChrSt_polycomb", "ChrSt_enhancer",
-  # "exon", "intron",
+  # "ChrSt_polycomb", 
+  "ChrSt_enhancer",
   # "DNA.transposon", "Retrotransposon",
   "TE"
 )
@@ -234,7 +234,9 @@ for_ggplot_both$class_hyper[for_ggplot_both$class_hyper == "ChrSt_polycomb"] <- 
 for_ggplot_both$class_hyper[for_ggplot_both$class_hyper == "ChrSt_quies"] <- "quiescent"
 for_ggplot_both$class_hyper[for_ggplot_both$class_hyper == "ChrSt_heterochromatin"] <- "heterochromatin"
 
-levels_order <- rev(c("promoter", "gene body", "CpG island", "CpG shore", "CpG shelf", "quiescent", "heterochromatin", "polycomb", "enhancer", "DNA.transposon", "Retrotransposon", "TE"))
+levels_order <- rev(c("promoter", "exon", "intron", "CpG island", "CpG shore", "CpG shelf", "quiescent", "heterochromatin", 
+                      # "polycomb", 
+                      "enhancer", "DNA.transposon", "Retrotransposon", "TE"))
 
 # for_ggplot_both$class_hyper <- factor(for_ggplot_both$class_hyper,                                    # Factor levels in decreasing order
 #                                              levels = for_ggplot_both$class_hyper[order(for_ggplot_both$odds_ratio_log2_hyper, decreasing = FALSE)])
@@ -253,7 +255,9 @@ label_order = c(
   "Depleted in hyper & hypo"
 )
 
-interested_class <- c("promoter", "gene body", "TE", "heterochromatin", "polycomb", "enhancer", "CpG island", "CpG shore", "CpG shelf", "quiescent")
+interested_class <- c("promoter", "exon", "intron", "TE", "heterochromatin", 
+                      # "polycomb", 
+                      "enhancer", "CpG island", "CpG shore", "CpG shelf", "quiescent")
 
 theme_blaise <- theme(plot.title.position = "plot", axis.text.x = element_text(angle=0),      plot.title = element_text(family = "sans", size = 24, hjust = 0.5, color="black", face='bold'),      plot.subtitle = element_text(family = "sans", size = 11, color="black"), axis.text = element_text(family = "sans", size = 18, color="black"),axis.title.y = element_markdown(family = "sans", size = 20), axis.title.x = element_markdown(family = "sans", size = 20),       panel.border = element_blank(),      axis.line = element_line(colour = "black", linewidth = 1),       axis.ticks = element_line(colour = "black", linewidth = 1),       legend.key.size = unit(1.5, 'cm'),      legend.key = element_rect(fill=NA),      legend.text = element_text(family = "sans", size = 20),      legend.title = element_blank(),      legend.background = element_blank(),      legend.box.background = element_blank(),      legend.text.align =	0,      panel.background = element_blank(),      panel.grid.major = element_line(colour = "black"),      panel.grid.minor = element_blank())+ removeGrid()
 color_order =c("purple", "blue", "darkgreen", "black", "darkorange", "maroon", "red","#66b2b2","lightpink" )

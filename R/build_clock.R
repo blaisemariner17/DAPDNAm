@@ -4,7 +4,7 @@
 #' @param metaData sample metaData
 #' @param region_metaData region metaData
 #' @param perc_meth imputed percent methylation matrix
-#' @param test_samples test samples for elastic net
+#' @param dog_id the dog_id for testing
 #' @return Function returns a list of predicted age as a column to the input metaData, region weights as a column to the input region_metaData, and clock results as a list
 #' @export build_clock
 
@@ -12,7 +12,7 @@ build_clock <- function(alph,
                         metaData,
                         region_metaData,
                         perc_meth,
-                        test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
+                        dog_id
                         ) {
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData
@@ -37,15 +37,15 @@ build_clock <- function(alph,
 
   # Remove test subject(s)
   # SAMP indexes from 1 to N samples
-  SAMP <- test_samples
-  train <- epi[, -SAMP]
-  test <- epi[, SAMP]
+  test_lid_pid <- metaData$lid_pid[metaData$dog_id == dog_id]
+  train <- epi[, colnames(epi)!=test_lid_pid]
+  test <- epi[, colnames(epi)==test_lid_pid]
 
   # Create a vector of training and test ages for elastic net model construction
-  trainage <- meta$Age_at_sample[-SAMP]
-  testage <- meta$Age_at_sample[SAMP]
-  test_id <- meta$dog_id[SAMP]
-  test_lid <- meta$lid_pid[SAMP]
+  trainage <- meta$Age_at_sample[colnames(epi)!=test_lid_pid]
+  testage <- meta$Age_at_sample[colnames(epi)==test_lid_pid]
+  test_id <- meta$dog_id[colnames(epi)==test_lid_pid]
+  test_lid <- meta$lid_pid[colnames(epi)==test_lid_pid]
 
   #### Elastic-net model building ####
 

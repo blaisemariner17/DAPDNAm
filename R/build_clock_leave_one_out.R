@@ -4,15 +4,15 @@
 #' @param metaData sample metaData
 #' @param region_metaData region metaData
 #' @param perc_meth imputed percent methylation matrix
-#' @param test_samples test samples for elastic net
+#' @param dog_id the dog_id for testing
 #' @return Function returns a list of predicted age as a column to the input metaData, region weights as a column to the input region_metaData, and clock results as a list
-#' @export build_clock
+#' @export build_clock_leave_one_out
 
-build_clock <- function(alph,
+build_clock_leave_one_out <- function(dog_id,
+                        alph,
                         metaData,
                         region_metaData,
-                        perc_meth,
-                        test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
+                        perc_meth
                         ) {
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData
@@ -37,15 +37,15 @@ build_clock <- function(alph,
 
   # Remove test subject(s)
   # SAMP indexes from 1 to N samples
-  SAMP <- test_samples
-  train <- epi[, -SAMP]
-  test <- epi[, SAMP]
+  test_lid_pid <- metaData$lid_pid[metaData$dog_id == dog_id]
+  train <- epi[, colnames(epi)!=test_lid_pid]
+  test <- epi[, colnames(epi)==test_lid_pid]
 
   # Create a vector of training and test ages for elastic net model construction
-  trainage <- meta$Age_at_sample[-SAMP]
-  testage <- meta$Age_at_sample[SAMP]
-  test_id <- meta$dog_id[SAMP]
-  test_lid <- meta$lid_pid[SAMP]
+  trainage <- meta$Age_at_sample[colnames(epi)!=test_lid_pid]
+  testage <- meta$Age_at_sample[colnames(epi)==test_lid_pid]
+  test_id <- meta$dog_id[colnames(epi)==test_lid_pid]
+  test_lid <- meta$lid_pid[colnames(epi)==test_lid_pid]
 
   #### Elastic-net model building ####
 
@@ -71,32 +71,28 @@ build_clock <- function(alph,
   # Extract weights for this model
   weights <- unlist(coef(model, lambda = "lambda.min"))[, 1]
 
-  meta <- meta[meta$lid_pid %in% rownames(predicted),]
+  meta <- as.matrix(meta[meta$lid_pid %in% test_lid_pid,])
 
-  for (lid_pid in meta$lid_pid){
-    meta$predicted[meta$lid_pid == lid_pid] <- predicted[rownames(predicted) == lid_pid,1]
-  }
+  # meta$predicted <- predicted[1,1]
 
-  region_metaData <- region_metaData[region_metaData$region %in% names(weights),]
-  weights <- weights[names(weights) %in% region_metaData$region]
+  # region_metaData <- region_metaData[region_metaData$region %in% names(weights),]
+  # weights <- weights[names(weights) %in% region_metaData$region]
+  #
+  # region_metaData <- region_metaData[order(region_metaData$region),]
+  # weights <- weights[order(names(weights))]
+  #
+  # if (all(names(weights) == region_metaData$region)){
+  #   reg_meta <- cbind(weights, region_metaData)
+  # } else {
+  #   stop("regions used in clock do not match region_metaData$region")
+  # }
+  # return_ <- list()
+  # return_[["metaData"]] <- meta
+  # return_[["region_metaData"]] <- reg_meta
+  # return_[["clock_results"]] <- data.frame("alpha" = alph,
+  #                                          "MSE:" = mse,
+  #                                          "n_regions" = n_regions,
+  #                                          "testing_samples" = dog_id)
 
-  region_metaData <- region_metaData[order(region_metaData$region),]
-  weights <- weights[order(names(weights))]
-
-  if (all(names(weights) == region_metaData$region)){
-    reg_meta <- cbind(weights, region_metaData)
-  } else {
-    stop("regions used in clock do not match region_metaData$region")
-  }
-
-  return_ <- list()
-  return_[["metaData"]] <- meta
-  return_[["region_metaData"]] <- reg_meta
-  return_[["clock_results"]] <- data.frame("alpha" = alph,
-                                           "MSE:" = mse,
-                                           "n_regions" = n_regions,
-                                           "training_samples" = sum(!test_samples),
-                                           "testing_samples" = sum(test_samples))
-
-  return(return_)
+  return(predicted[1,1])
 }

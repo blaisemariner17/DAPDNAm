@@ -71,7 +71,7 @@ build_clock <- function(dog_id,
   # Extract weights for this model
   weights <- unlist(coef(model, lambda = "lambda.min"))[, 1]
 
-  meta <- meta[meta$lid_pid %in% rownames(predicted),]
+  meta <- as.matrix(meta[meta$lid_pid %in% test_lid_pid,])
 
   for (lid_pid in meta$lid_pid){
     meta$predicted[meta$lid_pid == lid_pid] <- predicted[rownames(predicted) == lid_pid,1]

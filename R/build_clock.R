@@ -68,8 +68,9 @@ build_clock <- function(alph,
   # Calculate mean squared error (MSE)
   mse <- mean((predicted - testage) ^ 2)
 
-  mae <- MLmetrics::MAE(all_res$predicted_, all_res$Age_at_sample)s
-  r2 <- MLmetrics::R2_Score(all_res$predicted_, all_res$Age_at_sample)
+  median_ae <- MLmetrics::MedianAE(predicted_, testage)
+  mae <- MLmetrics::MAE(predicted_, testage)
+  r2 <- MLmetrics::R2_Score(predicted_, testage)
 
   # Extract weights for this model
   weights <- unlist(coef(model, lambda = "lambda.min"))[, 1]
@@ -98,6 +99,7 @@ build_clock <- function(alph,
   return_[["clock_results"]] <- data.frame("alpha" = alph,
                                            "MSE" = mse,
                                            "MAE" = mae,
+                                           "Median_ae" = median_ae,
                                            "R2" = r2,
                                            "n_regions" = n_regions,
                                            "training_samples" = sum(!test_samples),

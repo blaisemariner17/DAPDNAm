@@ -68,6 +68,9 @@ build_clock <- function(alph,
   # Calculate mean squared error (MSE)
   mse <- mean((predicted - testage) ^ 2)
 
+  mae <- MLmetrics::MAE(all_res$predicted_, all_res$Age_at_sample)s
+  r2 <- MLmetrics::R2_Score(all_res$predicted_, all_res$Age_at_sample)
+
   # Extract weights for this model
   weights <- unlist(coef(model, lambda = "lambda.min"))[, 1]
 
@@ -93,7 +96,9 @@ build_clock <- function(alph,
   return_[["metaData"]] <- meta
   return_[["region_metaData"]] <- reg_meta
   return_[["clock_results"]] <- data.frame("alpha" = alph,
-                                           "MSE:" = mse,
+                                           "MSE" = mse,
+                                           "MAE" = mae,
+                                           "R2" = r2,
                                            "n_regions" = n_regions,
                                            "training_samples" = sum(!test_samples),
                                            "testing_samples" = sum(test_samples))

@@ -12,7 +12,7 @@ build_clock <- function(alph,
                         metaData,
                         region_metaData,
                         perc_meth,
-                        test_samples = colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]
+                        test_samples =  colnames(perc_meth)[colnames(perc_meth) %in% metaData$lid_pid[metaData$Cohort != "precision_1"]]
                         ) {
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData
@@ -36,16 +36,14 @@ build_clock <- function(alph,
   epi <- epi[,order(colnames(epi))]
 
   # Remove test subject(s)
-  # SAMP indexes from 1 to N samples
-  SAMP <- test_samples
-  train <- epi[, -SAMP]
-  test <- epi[, SAMP]
+  train <- epi[, !colnames(epi) %in% test_samples]
+  test <- epi[, colnames(epi) %in% test_samples]
 
   # Create a vector of training and test ages for elastic net model construction
-  trainage <- meta$Age_at_sample[-SAMP]
-  testage <- meta$Age_at_sample[SAMP]
-  test_id <- meta$dog_id[SAMP]
-  test_lid <- meta$lid_pid[SAMP]
+  trainage <- meta$Age_at_sample[!rownames(meta) %in% test_samples]
+  testage <- meta$Age_at_sample[rownames(meta) %in% test_samples]
+  test_id <- meta$dog_id[rownames(meta) %in% test_samples]
+  test_lid <- meta$lid_pid[rownames(meta) %in% test_samples]
 
   #### Elastic-net model building ####
 
@@ -102,8 +100,8 @@ build_clock <- function(alph,
                                            "Median_ae" = median_ae,
                                            "R2" = r2,
                                            "n_regions" = n_regions,
-                                           "training_samples" = sum(!test_samples),
-                                           "testing_samples" = sum(test_samples))
+                                           "training_samples" = length(colnames(perc_meth)[!colnames(perc_meth) %in% test_samples]),
+                                           "testing_samples" = length(test_samples))
 
   return(return_)
 }

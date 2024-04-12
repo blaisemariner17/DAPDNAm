@@ -28,8 +28,9 @@ build_clock_leave_one_out <- function(dog_id,
   # Read in data - This should be the imputed df you are working with
   epi <- perc_meth
 
-  #filter epi for dogs you have meta data for
+  #filter epi for dogs you have meta data for and the metadata for the perc meth you have data for
   epi <- epi[, colnames(epi) %in% meta$lid_pid]
+  meta <- meta[meta$lid_pid %in% colnames(epi),]
 
   # Reorder the columns in 'epi' to match the order of 'meta$lid'
   meta <- meta[order(meta$lid_pid),]

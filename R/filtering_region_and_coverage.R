@@ -1,6 +1,7 @@
 #'generate region, methylation, and coverage data of a bsseq object. can be run in parallel with a list of bsseq obects (e.g. by chromosomes)
 #'
 #' @param dap_chr_oi the bsseq object to be passed into the function-- can be done in parallel as a list with mclapply
+#' @param metaData sample metaData for colnames of the dap_list
 #' @param maxgap keyword arg for region definition for regionFinder3
 #' @param at_least_n_sites_per_region lower bound (inclusive) of CpG sites for a region to be considered in this analysis (default = 5)
 #' @param at_least_X_coverage_of_a_region used in concert with in_at_least_X_samples (default 5x coverage in 200 samples)
@@ -12,6 +13,7 @@
 #' @export filtering_region_and_coverage
 
 filtering_region_and_coverage <- function(dap_chr_oi,
+                                          metaData = NULL,
                                           maxgap = 50,
                                           at_least_n_sites_per_region = 5,
                                           at_least_X_coverage_of_a_region = 10,
@@ -21,11 +23,13 @@ filtering_region_and_coverage <- function(dap_chr_oi,
                                           regions_manual_input = NULL){
 
   if (is.null(regions_manual_input)){
+    p1_metaData <- metaData[metaData$Cohort == "precision_1",]
     #get the regions
+    dap_chr_oi_p1 <- dap_chr_oi[,colnames(dap_chr_oi) %in% p1_metaData$lid_pid]
     regions <- bsseq:::regionFinder3(x = as.integer(rep(1,
-                                                        length(dap_chr_oi))),
-                                     chr = as.character(GenomeInfoDb::seqnames(dap_chr_oi)),
-                                     positions = BiocGenerics::start(dap_chr_oi), maxGap = maxgap,
+                                                        length(dap_chr_oi_p1))),
+                                     chr = as.character(GenomeInfoDb::seqnames(dap_chr_oi_p1)),
+                                     positions = BiocGenerics::start(dap_chr_oi_p1), maxGap = maxgap,
                                      verbose = FALSE)[["up"]]
     rownames(regions) <- paste(regions$chr, regions$start, regions$end, sep = "_")
     regions <- regions[regions$n >= at_least_n_sites_per_region,]

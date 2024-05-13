@@ -163,30 +163,69 @@ write.csv(file = "metadata_samples/na_dog_id_clinical_and_eLab.csv", metaData[is
 
 ###########################################################################################################################
 ###########################################################################################################################
-########################## now we can add the cohort information####### ###################################################
+#####################           SAMPLE SWAPS    ###########################################################################
 ###########################################################################################################################
 ###########################################################################################################################
 
-#triad cohort information is going to be from the shiny_metaData
-for (sid in metaData$sid){
-  cohort <- unique(na.omit(shiny_metaData$dap_elab_cohort[shiny_metaData$sid == sid]))
-  if(length(cohort) == 0){next}
-  if (grepl("triad", cohort)) {
-    metaData$Cohort_group[metaData$sid == sid] <- "Triad"
-    metaData$Cohort[metaData$sid == sid] <- cohort
+genotyping_file <- readRDS("metadata_samples/dap_check_lid_res.rds")
+genotyping_file$lid_pid <- gsub(".match", "", genotyping_file$lid_pid)
+genotyping_file$pid <- gsub(".*_P", "P", genotyping_file$lid_pid)
+genotyping_file <- genotyping_file[genotyping_file$lid_pid %in% metaData$lid_pid,]
+genotyping_file <- genotyping_file[order(genotyping_file$lid_pid),]
+metaData <- metaData[order(metaData$lid_pid),]
+all(metaData$lid_pid == genotyping_file$lid_pid)
+
+genotyping_res <- cbind(metaData[,c("lid_pid", "lid", "pid", "rdid", "sid", "dog_id")], genotyping_file[,c(4,5,6,1,2,3)])
+genotyping_res$tophit <- as.character(genotyping_res$tophit)
+genotyping_res$secondhit <- as.character(genotyping_res$secondhit)
+genotyping_res$thirdhit <- as.character(genotyping_res$thirdhit)
+mismatches <- genotyping_res
+for (lid_pid in unique(mismatches$lid_pid)){
+  if (is.na(unique(mismatches$dog_id[mismatches$lid_pid == lid_pid]))) {next}
+  if (is.na(unique(mismatches$tophit[mismatches$lid_pid == lid_pid]))) {next}
+
+  if (unique(mismatches$dog_id[mismatches$lid_pid == lid_pid]) == unique(mismatches$tophit[mismatches$lid_pid == lid_pid])){
+    mismatches <- mismatches[mismatches$lid_pid != lid_pid,]
   }
 }
-# precision information is from paul's metadata
-for (sid in metaData$sid){
-  dog_id <- unique(na.omit(metaData$dog_id[metaData$sid ==sid]))
-  if (length(dog_id) == 0){next}
-  if (dog_id %in% pauls_precision$dog_id){
-    metaData$Cohort_group[metaData$sid == sid] <- "Precision"
-    cohort <- clinical_metaData$Sample_Year[clinical_metaData$DAP_Sample_ID == sid]
-    if (length(cohort) == 0){cohort = "need updated clincial_metaData file"}
-    metaData$Cohort[metaData$sid == sid] <- cohort
-  }
-}
+mismatches <- mismatches[!is.na(mismatches$lid),]
+mismatches <- mismatches[order(mismatches$pid),]
+metaData$no_lid <- as.numeric(gsub("LID_", "", metaData$lid))
+metaData$no_pid <- as.numeric(gsub("PID_", "", metaData$pid))
+pid_oi <- metaData[metaData$pid == "PID_10558" , ]
+pid_oi <- pid_oi[order(pid_oi$no_lid),]
+pid_oi[,c("pid","lid","dog_id")]
+#remove the identified swaps so far
+mismatches <- mismatches[!rownames(mismatches) %in% c("LID_1070233_PID_10558", "LID_1070236_PID_10558",
+                                                      "LID_1071350_PID_10558", "LID_1070234_PID_10558"
+),]
+
+pool_oi <- mismatches[mismatches$pid == "PID_10558",]
+dog_id_oi = "97916"
+pool_oi[pool_oi$dog_id == dog_id_oi | pool_oi$tophit == dog_id_oi| pool_oi$secondhit == dog_id_oi | pool_oi$thirdhit ==dog_id_oi,]
+#swaps identified 5/10/24 blm
+metaData$lid_pid[metaData$lid_pid == "LID_1070233_PID_10558" & metaData$lid == "LID_1070233"] <- "_LID_1070236_PID_10558"
+metaData$lid_pid[metaData$lid_pid == "LID_1070236_PID_10558" & metaData$lid == "LID_1070236"] <- "_LID_1070233_PID_10558"
+metaData$lid_pid[metaData$lid_pid == "LID_1070234_PID_10558" & metaData$lid == "LID_1070234"] <- "_LID_1071350_PID_10558"
+metaData$lid_pid[metaData$lid_pid == "LID_1071350_PID_10558" & metaData$lid == "LID_1071350"] <- "_LID_1071334_PID_10558"
+# metaData$lid_pid[metaData$lid_pid == "LID_1070232_PID_10558" & metaData$lid == "LID_1070232"] <- "_LID_1070237_PID_10558"
+# metaData$lid_pid[metaData$lid_pid == "LID_1070230_PID_10558" & metaData$lid == "LID_1070230"] <- "_LID_1070223_PID_10558"
+
+#swaps in pid 10559
+pool_oi <- mismatches[mismatches$pid == "PID_10559"
+                      ,]
+# for (dog_id in pool_oi$dog_id){
+#   mismatch_hit <- pool_oi[pool_oi$tophit == dog_id,]
+#   if (nrow(mismatch_hit) > 0){
+#     print(mismatch_hit)
+#   }
+# }
+
+write.csv(x = mismatches, file = "metadata_samples/mismatches.csv")
+
+#remove all the mismatches that we were not able to identify
+metaData <- metaData[!metaData$lid_pid %in% rownames(mismatches),]
+rownames(metaData) <- metaData$lid_pid <- gsub("_LID" , "LID", metaData$lid_pid)
 
 ###########################################################################################################################
 ###########################################################################################################################
@@ -207,7 +246,7 @@ for (sid in unique(metaData$sid)){
   Estimated_DOB <- DogOverview$Estimated_DOB[DogOverview$dog_id == dog_id];metaData$Estimated_DOB[metaData$sid == sid] <- Estimated_DOB
   Breed_Status <- DogOverview$Breed_Status[DogOverview$dog_id == dog_id];metaData$Breed_Status[metaData$sid == sid] <- Breed_Status
   breed <- DogOverview$Breed[DogOverview$dog_id == dog_id]; metaData$Breed[metaData$sid == sid] <- breed
-  Sex_class <- DogOverview$Sex_class_at_HLES[DogOverview$dog_id == dog_id]; metaData$Sex_class[metaData$sid == sid] <- Sex_class
+  Sex_class <- DogOverview$Sex_Class_at_HLES[DogOverview$dog_id == dog_id]; metaData$Sex_class[metaData$sid == sid] <- Sex_class
   Breed_Size_Class_at_HLES <- DogOverview$Breed_Size_Class_at_HLES[DogOverview$dog_id == dog_id]; metaData$Breed_Size_Class_at_HLES[metaData$sid == sid] <- Breed_Size_Class_at_HLES
 
   #clinical info
@@ -296,6 +335,31 @@ for (sid in metaData$sid[metaData$Estimated_DOB != "unknown"]){
 
 ###########################################################################################################################
 ###########################################################################################################################
+########################## now we can add the cohort information ##########################################################
+###########################################################################################################################
+###########################################################################################################################
+
+triad_dogs <- read.csv("metadata_samples/Randomized TRIAD Dogs.csv")
+colnames(triad_dogs) <- "dog_id"
+precision_dogs <- pauls_precision
+
+metaData$Cohort_group <- "none"
+for (lid_pid in metaData$lid_pid){
+  cohort <- unique(na.omit(shiny_metaData$dap_elab_cohort[shiny_metaData$lid_pid == lid_pid]))
+  dog_id <- unique(metaData$dog_id[metaData$lid_pid == lid_pid])
+  if (dog_id %in% precision_dogs$dog_id){metaData$Cohort_group[metaData$lid_pid == lid_pid] <- "precision"}
+  if (dog_id %in% triad_dogs$dog_id){metaData$Cohort_group[metaData$lid_pid == lid_pid] <- "triad"}
+}
+
+for (sid in metaData$sid[metaData$Cohort_group == "precision"]){
+  if (!sid %in% clinical_metaData$DAP_Sample_ID){next}
+  sample_year <- clinical_metaData$Sample_Year[clinical_metaData$DAP_Sample_ID == sid]
+  metaData$Cohort[metaData$sid == sid] <- sample_year
+  # print(sample_year)
+}
+
+###########################################################################################################################
+###########################################################################################################################
 #####################      Predicted height    ###########################################################################
 ###########################################################################################################################
 ###########################################################################################################################
@@ -318,72 +382,6 @@ for (sid in metaData$sid) {
 
 ###########################################################################################################################
 ###########################################################################################################################
-#####################           SAMPLE SWAPS    ###########################################################################
-###########################################################################################################################
-###########################################################################################################################
-
-genotyping_file <- readRDS("metadata_samples/dap_check_lid_res.rds")
-genotyping_file$lid_pid <- gsub(".match", "", genotyping_file$lid_pid)
-genotyping_file$pid <- gsub(".*_P", "P", genotyping_file$lid_pid)
-genotyping_file <- genotyping_file[genotyping_file$lid_pid %in% metaData$lid_pid,]
-genotyping_file <- genotyping_file[order(genotyping_file$lid_pid),]
-metaData <- metaData[order(metaData$lid_pid),]
-all(metaData$lid_pid == genotyping_file$lid_pid)
-
-genotyping_res <- cbind(metaData[,c("lid_pid", "lid", "pid", "rdid", "sid", "dog_id")], genotyping_file[,c(4,5,6,1,2,3)])
-genotyping_res$tophit <- as.character(genotyping_res$tophit)
-genotyping_res$secondhit <- as.character(genotyping_res$secondhit)
-genotyping_res$thirdhit <- as.character(genotyping_res$thirdhit)
-mismatches <- genotyping_res
-for (lid_pid in unique(mismatches$lid_pid)){
-  if (is.na(unique(mismatches$dog_id[mismatches$lid_pid == lid_pid]))) {next}
-  if (is.na(unique(mismatches$tophit[mismatches$lid_pid == lid_pid]))) {next}
-
-  if (unique(mismatches$dog_id[mismatches$lid_pid == lid_pid]) == unique(mismatches$tophit[mismatches$lid_pid == lid_pid])){
-    mismatches <- mismatches[mismatches$lid_pid != lid_pid,]
-  }
-}
-mismatches <- mismatches[!is.na(mismatches$lid),]
-mismatches <- mismatches[order(mismatches$pid),]
-metaData$no_lid <- as.numeric(gsub("LID_", "", metaData$lid))
-metaData$no_pid <- as.numeric(gsub("PID_", "", metaData$pid))
-pid_oi <- metaData[metaData$pid == "PID_10558" , ]
-pid_oi <- pid_oi[order(pid_oi$no_lid),]
-pid_oi[,c("pid","lid","dog_id")]
-#remove the identified swaps so far
-mismatches <- mismatches[!rownames(mismatches) %in% c("LID_1070233_PID_10558", "LID_1070236_PID_10558",
-                                                      "LID_1071350_PID_10558", "LID_1070234_PID_10558"
-),]
-
-pool_oi <- mismatches[mismatches$pid == "PID_10558",]
-dog_id_oi = "97916"
-pool_oi[pool_oi$dog_id == dog_id_oi | pool_oi$tophit == dog_id_oi| pool_oi$secondhit == dog_id_oi | pool_oi$thirdhit ==dog_id_oi,]
-#swaps identified 5/10/24 blm
-metaData$lid_pid[metaData$lid_pid == "LID_1070233_PID_10558" & metaData$lid == "LID_1070233"] <- "_LID_1070236_PID_10558"
-metaData$lid_pid[metaData$lid_pid == "LID_1070236_PID_10558" & metaData$lid == "LID_1070236"] <- "_LID_1070233_PID_10558"
-metaData$lid_pid[metaData$lid_pid == "LID_1070234_PID_10558" & metaData$lid == "LID_1070234"] <- "_LID_1071350_PID_10558"
-metaData$lid_pid[metaData$lid_pid == "LID_1071350_PID_10558" & metaData$lid == "LID_1071350"] <- "_LID_1071334_PID_10558"
-# metaData$lid_pid[metaData$lid_pid == "LID_1070232_PID_10558" & metaData$lid == "LID_1070232"] <- "_LID_1070237_PID_10558"
-# metaData$lid_pid[metaData$lid_pid == "LID_1070230_PID_10558" & metaData$lid == "LID_1070230"] <- "_LID_1070223_PID_10558"
-
-#swaps in pid 10559
-pool_oi <- mismatches[mismatches$pid == "PID_10559"
-                      ,]
-for (dog_id in pool_oi$dog_id){
-  mismatch_hit <- pool_oi[pool_oi$tophit == dog_id,]
-  if (nrow(mismatch_hit) > 0){
-    print(mismatch_hit)
-  }
-}
-
-write.csv(x = mismatches, file = "metadata_samples/mismatches.csv")
-
-#remove all the mismatches that we were not able to identify
-metaData <- metaData[!metaData$lid_pid %in% rownames(mismatches),]
-rownames(metaData) <- metaData$lid_pid <- gsub("_LID" , "LID", metaData$lid_pid)
-
-###########################################################################################################################
-###########################################################################################################################
 #####################    write this shit out    ###########################################################################
 ###########################################################################################################################
 ###########################################################################################################################
@@ -393,7 +391,7 @@ metaData$Cohort_group[is.na(metaData$Cohort_group)] <- "idk"
 
 write_rds("metadata_samples/ALL-DAP-metaData-240124.rds", x = metaData)
 
-metaData <- metaData[metaData$Cohort_group == "Precision",]
+metaData <- metaData[metaData$Cohort_group == "precision",]
 
 p1 <- metaData[metaData$Cohort == "precision_1",]
 for (dog_id in p1$dog_id[duplicated(p1$dog_id)]){

@@ -7,7 +7,7 @@
 odds_ratio_hyper_hypo_plot(
   pqlseq_res,
   region_metaData = region_metaData,
-  fdr_perc = 0.05,
+  fdr_cutoff = 0.05,
   omit_class = c(),
   label_order = c("Enriched in hyper & depleted in hypo", "Enriched in hyper only",
     "Depleted in hypo only",
@@ -22,7 +22,7 @@ odds_ratio_hyper_hypo_plot(
 
 \item{region_metaData}{region metadata}
 
-\item{fdr_perc}{fdr percent cutoff}
+\item{fdr_cutoff}{fdr percent cutoff}
 
 \item{omit_class}{what classes to omit from the scatterplot. e.g. c("SINE","LINE")}
 

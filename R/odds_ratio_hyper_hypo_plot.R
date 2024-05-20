@@ -2,7 +2,7 @@
 #'
 #' @param pqlseq_res pqlseq_results
 #' @param region_metaData region metadata
-#' @param fdr_perc fdr percent cutoff
+#' @param fdr_cutoff fdr percent cutoff
 #' @param omit_class what classes to omit from the scatterplot. e.g. c("SINE","LINE")
 #' @param label_order the labels to be assigned to the plots in ggplot
 #' @return Function returns dataframe of oddsratio calculations for hypo and hyper comparisons of interest. It searches through all the region_metadata columns for columns with 0 and 1 in them and does it automatically
@@ -10,7 +10,7 @@
 
 odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
                                        region_metaData = region_metaData,
-                                       fdr_perc = 0.05,
+                                       fdr_cutoff = 0.05,
                                        omit_class = c(),
                                        label_order = c(
                                          "Enriched in hyper & depleted in hypo",
@@ -33,10 +33,7 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
   pqlseq_res$name <- rownames(pqlseq_res)
 
   # generate the fdr percentage for odds ratio calculation
-  pqlseq_res$count <- 1:nrow(pqlseq_res)
-  pqlseq_res$fdr <- pqlseq_res$count * pqlseq_res$padj
-  pqlseq_res$fdr_perc <- pqlseq_res$fdr / pqlseq_res$count
-  pqlseq_res_fdr1 <- pqlseq_res[pqlseq_res$fdr_perc < fdr_perc,]
+  pqlseq_res_fdr1 <- pqlseq_res[pqlseq_res$fdr < fdr_cutoff,]
   region_metaData_fdr1 <- region_metaData[region_metaData$region %in% rownames(pqlseq_res_fdr1),]
   pqlseq_res_fdr1 <- pqlseq_res_fdr1[order(rownames(pqlseq_res_fdr1)),]
   region_metaData_fdr1 <- region_metaData_fdr1[order(region_metaData_fdr1$region),]

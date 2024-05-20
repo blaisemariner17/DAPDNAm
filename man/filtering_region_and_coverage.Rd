@@ -6,6 +6,7 @@
 \usage{
 filtering_region_and_coverage(
   dap_chr_oi,
+  metaData = NULL,
   maxgap = 50,
   at_least_n_sites_per_region = 5,
   at_least_X_coverage_of_a_region = 10,
@@ -17,6 +18,8 @@ filtering_region_and_coverage(
 }
 \arguments{
 \item{dap_chr_oi}{the bsseq object to be passed into the function-- can be done in parallel as a list with mclapply}
+
+\item{metaData}{sample metaData for colnames of the dap_list}
 
 \item{maxgap}{keyword arg for region definition for regionFinder3}
 

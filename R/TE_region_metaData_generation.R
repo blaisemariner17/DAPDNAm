@@ -74,10 +74,11 @@ TE_region_metaData_generation <- function(regions,
 
     nearest_gene = 0
     if(line == 1 | sine == 1){
-      gene_gene_annotation_oi <- as.data.frame(genome_gene_annotation[GenomeInfoDb::seqnames(genome_gene_annotation) == chromosome,])
+      genome_gene_annotation <- data.frame(genome_gene_annotation)
+      gene_gene_annotation_oi <- data.frame(genome_gene_annotation[genome_gene_annotation$seqnames == chromosome,])
+      gene_gene_annotation_oi <- gene_gene_annotation_oi[gene_gene_annotation_oi$type == "start_codon",]
       gene_gene_annotation_oi <- gene_gene_annotation_oi[,c("seqnames", "start", "end", "type", "gene_id")]
       colnames(gene_gene_annotation_oi) <- c("seqnames", "start", "end", "class", "id")
-      gene_gene_annotation_oi <- gene_gene_annotation_oi[gene_gene_annotation_oi$type == "start_codon",]
       increase = 250
       while (increase < 20000){
         ph <- stringr::str_split(region, stringr::fixed("_"))

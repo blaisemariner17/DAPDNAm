@@ -72,13 +72,14 @@ TE_region_metaData_generation <- function(regions,
     if (grepl("L1", paste(line_id, collapse = " & "))){l1 <- 1}else{l1<-0}
     if (grepl("L2", paste(line_id, collapse = " & "))){l2 <- 1}else{l2<-0}
 
+    nearest_gene = 0
     if(line == 1 | sine == 1){
       gene_gene_annotation_oi <- as.data.frame(genome_gene_annotation[GenomeInfoDb::seqnames(genome_gene_annotation) == chromosome,])
       gene_gene_annotation_oi <- gene_gene_annotation_oi[,c("seqnames", "start", "end", "type", "gene_id")]
       colnames(gene_gene_annotation_oi) <- c("seqnames", "start", "end", "class", "id")
       gene_gene_annotation_oi <- gene_gene_annotation_oi[gene_gene_annotation_oi$type == "start_codon",]
       increase = 250
-      while (increase < 10000){
+      while (increase < 20000){
         ph <- stringr::str_split(region, stringr::fixed("_"))
         start <-  as.numeric(ph[[1]][2])
         end <-  as.numeric(ph[[1]][3])
@@ -95,7 +96,7 @@ TE_region_metaData_generation <- function(regions,
         }
         increase = increase + 250
       }
-    }else{nearest_gene = 0}
+    }
 
     if (i == 1){
       region_metaData <- data.frame("region" = region,

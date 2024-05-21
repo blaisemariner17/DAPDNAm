@@ -4,7 +4,7 @@
 \alias{build_clock_leave_one_out}
 \title{generate region metadata from regions of interest given provided annotation files}
 \usage{
-build_clock_leave_one_out(dog_id, alph, metaData, region_metaData, perc_meth)
+build_clock_leave_one_out(dog_id, alph, metaData, perc_meth)
 }
 \arguments{
 \item{dog_id}{the dog_id for testing}
@@ -12,8 +12,6 @@ build_clock_leave_one_out(dog_id, alph, metaData, region_metaData, perc_meth)
 \item{alph}{alpha to use for glmnet}
 
 \item{metaData}{sample metaData}
-
-\item{region_metaData}{region metaData}
 
 \item{perc_meth}{imputed percent methylation matrix}
 }

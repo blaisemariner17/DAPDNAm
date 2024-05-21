@@ -1,23 +1,21 @@
 #'generate region metadata from regions of interest given provided annotation files
 #'
+#' @param dog_id the dog_id for testing
 #' @param alph alpha to use for glmnet
 #' @param metaData sample metaData
-#' @param region_metaData region metaData
 #' @param perc_meth imputed percent methylation matrix
-#' @param dog_id the dog_id for testing
 #' @return Function returns a list of predicted age as a column to the input metaData, region weights as a column to the input region_metaData, and clock results as a list
 #' @export build_clock_leave_one_out
 
 build_clock_leave_one_out <- function(dog_id,
                         alph,
                         metaData,
-                        region_metaData,
                         perc_meth
                         ) {
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData
 
-  lids <- colnames(perc_meth)
+  lid_pids <- colnames(perc_meth)
   meta <- all_info[,c("lid_pid", "Age_at_sample","dog_id", "Cohort", "Breed_size", "Sex")]
 
   n_regions <- nrow(perc_meth)
@@ -65,35 +63,6 @@ build_clock_leave_one_out <- function(dog_id,
 
   # Predict age using the test sample from parameters that minimized MSE during internal CV
   predicted <- predict(model, newx = t(test), s = "lambda.min")
-
-  # Calculate mean squared error (MSE)
-  mse <- mean((predicted - testage) ^ 2)
-
-  # Extract weights for this model
-  weights <- unlist(coef(model, lambda = "lambda.min"))[, 1]
-
-  meta <- as.matrix(meta[meta$lid_pid %in% test_lid_pid,])
-
-  # meta$predicted <- predicted[1,1]
-
-  # region_metaData <- region_metaData[region_metaData$region %in% names(weights),]
-  # weights <- weights[names(weights) %in% region_metaData$region]
-  #
-  # region_metaData <- region_metaData[order(region_metaData$region),]
-  # weights <- weights[order(names(weights))]
-  #
-  # if (all(names(weights) == region_metaData$region)){
-  #   reg_meta <- cbind(weights, region_metaData)
-  # } else {
-  #   stop("regions used in clock do not match region_metaData$region")
-  # }
-  # return_ <- list()
-  # return_[["metaData"]] <- meta
-  # return_[["region_metaData"]] <- reg_meta
-  # return_[["clock_results"]] <- data.frame("alpha" = alph,
-  #                                          "MSE:" = mse,
-  #                                          "n_regions" = n_regions,
-  #                                          "testing_samples" = dog_id)
 
   return(predicted[1,1])
 }

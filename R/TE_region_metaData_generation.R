@@ -80,7 +80,7 @@ TE_region_metaData_generation <- function(regions,
       gene_gene_annotation_oi <- gene_gene_annotation_oi[,c("seqnames", "start", "end", "type", "gene_id")]
       colnames(gene_gene_annotation_oi) <- c("seqnames", "start", "end", "class", "id")
       increase = 0
-      while (increase < 20000 & nearest_gene = 0){
+      while (increase < 20000 & nearest_gene == 0){
         ph <- stringr::str_split(region, stringr::fixed("_"))
         start <-  as.numeric(ph[[1]][2])
         end <-  as.numeric(ph[[1]][3])

@@ -64,5 +64,5 @@ build_clock_leave_one_out <- function(dog_id,
   # Predict age using the test sample from parameters that minimized MSE during internal CV
   predicted <- predict(model, newx = t(test), s = "lambda.min")
 
-  return(predicted[1,1])
+  return(data.frame("lid_pid" = test_lid_pid, "Predicted_age" = predicted[1,1]))
 }

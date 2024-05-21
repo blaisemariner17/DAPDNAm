@@ -90,7 +90,7 @@ TE_region_metaData_generation <- function(regions,
         ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
         hit <- gene_gene_annotation_oi[ov,]
         if (nrow(hit) > 0){
-          nearest_gene = paste(unique(hit$id[hit$class == "gene"]), collapse = ' & ')
+          nearest_gene = paste(unique(hit$gene_id), collapse = ' & ')
           break
         }
         increase = increase + 250

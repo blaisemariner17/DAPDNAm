@@ -79,8 +79,8 @@ TE_region_metaData_generation <- function(regions,
       gene_gene_annotation_oi <- gene_gene_annotation_oi[gene_gene_annotation_oi$type == "start_codon",]
       gene_gene_annotation_oi <- gene_gene_annotation_oi[,c("seqnames", "start", "end", "type", "gene_id")]
       colnames(gene_gene_annotation_oi) <- c("seqnames", "start", "end", "class", "id")
-      increase = 250
-      while (increase < 20000){
+      increase = 0
+      while (increase < 20000 & nearest_gene = 0){
         ph <- stringr::str_split(region, stringr::fixed("_"))
         start <-  as.numeric(ph[[1]][2])
         end <-  as.numeric(ph[[1]][3])
@@ -92,8 +92,7 @@ TE_region_metaData_generation <- function(regions,
         ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
         hit <- gene_gene_annotation_oi[ov,]
         if (nrow(hit) > 0){
-          nearest_gene = paste(unique(hit$gene_id), collapse = ' & ')
-          break
+          nearest_gene = paste(unique(hit$id), collapse = ' & ')
         }
         increase = increase + 250
       }

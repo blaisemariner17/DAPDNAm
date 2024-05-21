@@ -7,6 +7,7 @@
 TE_region_metaData_generation(
   regions,
   transposons_annotation,
+  genome_gene_annotation,
   sw_score_cutoff = 225,
   expanded_search_if_nec = 50,
   return_classes = FALSE
@@ -16,6 +17,8 @@ TE_region_metaData_generation(
 \item{regions}{regions of interest}
 
 \item{transposons_annotation}{TE annotation file}
+
+\item{genome_gene_annotation}{gene annotation to find the nearest gene}
 
 \item{sw_score_cutoff}{the minimum sw score that will be queried here}
 

@@ -2,6 +2,7 @@
 #'
 #' @param regions regions of interest
 #' @param transposons_annotation TE annotation file
+#' @param genome_gene_annotation gene annotation to find the nearest gene
 #' @param sw_score_cutoff the minimum sw score that will be queried here
 #' @param expanded_search_if_nec expanding the search if necessary for region overlaps
 #' @param return_classes if TRUE, returns if the region overlaps with transposon classes (LINE1, LINE2, SINE_tRNA, etc.)
@@ -10,6 +11,7 @@
 
 TE_region_metaData_generation <- function(regions,
                                        transposons_annotation,
+                                       genome_gene_annotation,
                                        sw_score_cutoff = 225,
                                        expanded_search_if_nec = 50,
                                        return_classes = FALSE
@@ -70,6 +72,31 @@ TE_region_metaData_generation <- function(regions,
     if (grepl("L1", paste(line_id, collapse = " & "))){l1 <- 1}else{l1<-0}
     if (grepl("L2", paste(line_id, collapse = " & "))){l2 <- 1}else{l2<-0}
 
+    if(line == 1 | sine == 1){
+      gene_gene_annotation_oi <- as.data.frame(genome_gene_annotation[GenomeInfoDb::seqnames(genome_gene_annotation) == chromosome,])
+      gene_gene_annotation_oi <- gene_gene_annotation_oi[,c("seqnames", "start", "end", "type", "gene_id")]
+      colnames(gene_gene_annotation_oi) <- c("seqnames", "start", "end", "class", "id")
+      gene_gene_annotation_oi <- gene_gene_annotation_oi[gene_gene_annotation_oi$type == "start_codon",]
+      increase = 250
+      while (increase < 10000){
+        ph <- stringr::str_split(region, stringr::fixed("_"))
+        start <-  as.numeric(ph[[1]][2])
+        end <-  as.numeric(ph[[1]][3])
+
+        rangesA <- IRanges::IRanges(start - increase, end + increase)
+        rangesB <- IRanges::IRanges(gene_gene_annotation_oi$start, gene_gene_annotation_oi$end)
+
+        #which regionsB overlap w regionA
+        ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
+        hit <- gene_gene_annotation_oi[ov,]
+        if (nrow(hit) > 0){
+          nearest_gene = paste(unique(hit$id[hit$class == "gene"]), collapse = ' & ')
+          break
+        }
+        increase = increase + 250
+      }
+    }else{nearest_gene = 0}
+
     if (i == 1){
       region_metaData <- data.frame("region" = region,
                                     "DNA_transposon" = dna,
@@ -88,7 +115,8 @@ TE_region_metaData_generation <- function(regions,
                                     "Satellite" = paste(Satellite, collapse = " & "),
                                     "Simple_repeat" = paste(Simple_repeat, collapse = " & "),
                                     "Low_complexity" = paste(Low_complexity, collapse = " & "),
-                                    "Unknown" = paste(Unknown, collapse = " & ")
+                                    "Unknown" = paste(Unknown, collapse = " & "),
+                                    "nearest_gene" = nearest_gene
                                     )
 
       i = 2
@@ -110,7 +138,8 @@ TE_region_metaData_generation <- function(regions,
                                                            "Satellite" = paste(Satellite, collapse = " & "),
                                                            "Simple_repeat" = paste(Simple_repeat, collapse = " & "),
                                                            "Low_complexity" = paste(Low_complexity, collapse = " & "),
-                                                           "Unknown" = paste(Unknown, collapse = " & ")
+                                                           "Unknown" = paste(Unknown, collapse = " & "),
+                                                           "nearest_gene" = nearest_gene
                                                            )
                                )
     }

@@ -93,9 +93,7 @@ plotBinHist <- function(x, b, breaks = 10 * nlevels(b),
                         xlab = deparse(substitute(x, env = as.environment(-1))),
                         ylab = "Frequency",
                         main = "", legend = "topright", legend.cex = 1.0, ...) {
-  .assertVector(x = b, type = "factor", len = length(x))
   stopifnot("breaks" %in% names(attributes(b)))
-  .assertScalar(x = legend.cex, type = "numeric", rngExcl = c(0, Inf))
   cols <- getColsByBin(b, ...)
   binbreaks <- attr(b, "breaks")
   bincols <- attr(cols, "cols")
@@ -150,9 +148,7 @@ plotBinDensity <- function(x, b,
                            ylab = "Density",
                            main = "", legend = "topright", 
                            legend.cex = 1.0, ...) {
-  .assertVector(x = b, type = "factor", len = length(x))
   stopifnot("breaks" %in% names(attributes(b)))
-  .assertScalar(x = legend.cex, type = "numeric", rngExcl = c(0, Inf))
   cols <- getColsByBin(b, ...)
   binbreaks <- attr(b, "breaks")
   bincols <- attr(cols, "cols")
@@ -219,9 +215,7 @@ plotBinScatter <- function(x, y, b,
                                                      env = as.environment(-1))),
                            main = "", legend = "topright", 
                            legend.cex = 1.0, ...) {
-  .assertVector(x = y, len = length(x))
-  .assertVector(x = b, len = length(x))
-  .assertScalar(x = legend.cex, type = "numeric", rngExcl = c(0, Inf))
+
   if (length(cols) == 1L)
     cols <- rep(cols, length(x))
   stopifnot(length(x) == length(cols))
@@ -363,14 +357,6 @@ motif_heatmap <- function(x,
     (!show_motif_GC || "motif.percentGC" %in% colnames(rowData(x)))
   })
   b <- metadata(x)$bins
-  .assertScalar(x = width, type = "numeric", rngExcl = c(0, Inf))
-  .assertScalar(x = show_dendrogram, type = "logical")
-  .assertScalar(x = show_motif_GC, type = "logical")
-  .assertScalar(x = show_seqlogo, type = "logical")
-  .assertScalar(x = width.seqlogo, type = "numeric", rngExcl = c(0, Inf))
-  .assertScalar(x = use_raster, type = "logical")
-  .assertScalar(x = na_col, type = "character")
-  .assertScalar(x = doPlot, type = "logical")
   stopifnot(exprs = {
     ncol(x) == nlevels(b)
     all(which.plots %in% c("negLog10P", "negLog10Padj", 
@@ -665,20 +651,12 @@ plotSelectionProb <- function(se,
                               ...) {
   
   # checks
-  .assertScalar(x = directional, type = "logical")
-  .assertScalar(x = selProbMin, type = "numeric", rngIncl = c(0, 1))
-  .assertScalar(x = selProbMinPlot, type = "numeric", rngIncl = c(0, 1))
-  .assertScalar(x = showSelProbMin, type = "logical")
-  .assertScalar(x = legend, type = "character")
-  .assertScalar(x = legend.cex, type = "numeric", rngExcl = c(0, Inf))
   stopifnot(exprs = {
     is(se, "SummarizedExperiment")
     selProbMin >= selProbMinPlot
   })
-  .assertVector(x = col, len = 3L)
   method <- match.arg(method)
-  .assertScalar(x = ylimext, type = "numeric", rngIncl = c(0, Inf))
-  
+
   # selection probabilities * sign(correlation to y)
   probs <- se$selProb
   cols <- ifelse(probs > selProbMin, col[1], col[2])

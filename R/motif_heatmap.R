@@ -403,7 +403,7 @@ motif_heatmap <- function(x,
                              show_annotation_name = FALSE,
                              which = "column", width = unit(width,"inch"),
                              annotation_height = unit(width / 16, "inch"),
-                             show_legend = FALSE)
+                             show_legend = TRUE)
   tmp <- matrix(if (!is.null(highlight)) {
     as.character(highlight) 
   } else {

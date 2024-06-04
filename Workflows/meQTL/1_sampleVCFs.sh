@@ -1,8 +1,12 @@
 #!/bin/bash
-#SBATCH -G a100:2
-#SBATCH -t 0-2
-#SBATCH --mem=100G
-#SBATCH --cpus-per-task=12
+
+#SBATCH -N 1            # number of nodes
+#SBATCH -c 48           # number of cores 
+#SBATCH --mem=200G
+#SBATCH -t 0-20:00:00   # time in d-hh:mm:ss
+#SBATCH -p general      # partition 
+#SBATCH -q public       # QOS
+#SBATCH -o slurm.%j.out # file to save job's STDOUT (%j = JobId)
 
 module load bowtie2-2.4.2-gcc-11.2.0
 module load samtools-1.13-gcc-11.2.0

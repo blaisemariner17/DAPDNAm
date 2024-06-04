@@ -2,7 +2,7 @@
 
 #SBATCH -N 1            # number of nodes
 #SBATCH -c 48           # number of cores 
-#SBATCH --mem=100G
+#SBATCH --mem=200G
 #SBATCH -t 0-20:00:00   # time in d-hh:mm:ss
 #SBATCH -p general      # partition 
 #SBATCH -q public       # QOS

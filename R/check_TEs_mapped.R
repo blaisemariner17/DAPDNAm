@@ -36,8 +36,9 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
   scan_bam_df<-scan_bam_df[scan_bam_df$mapq >= 1,] # limit the read multimapping a little bit https://sequencing.qcfail.com/articles/mapq-values-are-really-useful-but-their-implementation-is-a-mess/
   mapped_reads <- nrow(scan_bam_df)
 
-  res <- 0
+  i = 1
   for (chr in chrs){
+    # print(chr)
     scan_bam_df_oi <- scan_bam_df[scan_bam_df$rname == paste(chr),]
     te_oi_locations_oi <- te_oi_locations[te_oi_locations$chr == paste(chr),]
 
@@ -45,11 +46,23 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
     rangesB <- IRanges::IRanges(scan_bam_df_oi$start, scan_bam_df_oi$stop)
 
     #which regionsB overlap w no regionA regions
-    ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type = 'any')>=1
-    res <- res + sum(ov)
+    count <- GenomicRanges::countOverlaps(rangesA, rangesB, type = 'any')
+
+    if (i == 1){
+      te_oi_res <- cbind(te_oi_locations_oi, ov)
+      i=2
+    } else {
+      te_oi_res<- rbind(te_oi_res, cbind(te_oi_locations_oi, ov))
+    }
   }
 
-  res_df <- data.frame("dog_id" = dog_id, "Age" = age, "mapped_reads" = mapped_reads, "TE_mapped_reads" = res)
+  # res_df <- data.frame("dog_id" = dog_id, "Age" = age, "mapped_reads" = mapped_reads, "TE_mapped_reads" = res)
 
-  return(res_df)
+  te_oi_res$dog_id <- dog_id
+  te_oi_res$Age <- age
+  te_oi_res$mapped_reads <- mapped_reads
+  te_oi_res$width <- te_oi_res$stop - te_oi_res$start
+  te_oi_res$fpkm <- ((te_oi_res$ov) / (te_oi_res$width * te_oi_res$mapped_reads))*1e10
+
+  return(te_oi_res)
 }

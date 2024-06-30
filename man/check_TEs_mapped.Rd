@@ -8,7 +8,8 @@ check_TEs_mapped(
   bam,
   DogOverview = DogOverview,
   chrs = chrs,
-  te_oi_locations = te_oi_locations
+  te_oi_locations = te_oi_locations,
+  path_to_bams = "/scratch/vsohrab/dap_map_canfam4/nvidia_fq2bam_mapping/bams/"
 )
 }
 \arguments{
@@ -18,9 +19,9 @@ check_TEs_mapped(
 
 \item{chrs}{chromosomes vector}
 
-\item{path_to_bams}{directory path}
+\item{te_oi_locations}{locations of interest}
 
-\item{locations_oi}{locations of interest}
+\item{path_to_bams}{directory path}
 }
 \value{
 check a bam file for reads overlapping ones of interest

@@ -4,7 +4,7 @@
 #' @param path_to_bams directory path
 #' @param DogOverview dog_id metaData
 #' @param chrs chromosomes vector
-#' @param locations_oi locations of interest
+#' @param te_oi_locations locations of interest
 #' @return check a bam file for reads overlapping ones of interest
 #' @export check_TEs_mapped
 
@@ -16,22 +16,24 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
   fl <- paste0(path_to_bams, bam)
 
   ## filter to a single file
-  param <- ScanBamParam(
+  param <- Rsamtools::ScanBamParam(
     flag=scanBamFlag(isUnmappedQuery=FALSE),
     what="seq")
   filter <- FilterRules(list(MinWidth = function(x) width(x$seq) > 35))
-  dest <- filterBam(fl, tempfile(), param=param, filter=filter)
-  res3 <- scanBam(dest, param=ScanBamParam(what=c("qname","rname","pos","qwidth","mapq")))[[1]]
+  dest <- Rsamtools::filterBam(fl, tempfile(), param=param, filter=filter)
+  res3 <- Rsamtools::scanBam(dest, param=ScanBamParam(what=c("flag", "qname","rname","pos","qwidth","mapq")))[[1]]
 
-  scan_bam_df <- (data.frame(res3["qname"], res3["rname"], res3["pos"], res3["qwidth"],res3["mapq"] ))
+  scan_bam_df <- (data.frame(res3["qname"], res3["flag"], res3["rname"], res3["pos"], res3["qwidth"],res3["mapq"] ))
+  #get rid of the PCR or optical duplicates
+  scan_bam_df <- scan_bam_df[!scan_bam_df$flag %in% c(1171,1123,1187,1107,1161,1145,1185,1105,1097,1201,1121,1169,1137,1089,1153,1209),]
 
   scan_bam_df <- scan_bam_df[scan_bam_df$rname %in% chrs,]
   scan_bam_df <- scan_bam_df[! is.na(scan_bam_df$pos),]
   scan_bam_df$start <- scan_bam_df$pos
   scan_bam_df$stop <- scan_bam_df$pos + scan_bam_df$qwidth
 
-  all_mapped_reads <- nrow(scan_bam_df)
-  scan_bam_df<-scan_bam_df[scan_bam_df$mapq >=20,] #99% chance of unique
+  # all_mapped_reads <- nrow(scan_bam_df)
+  scan_bam_df<-scan_bam_df[scan_bam_df$mapq >= 1,] # limit the read multimapping a little bit https://sequencing.qcfail.com/articles/mapq-values-are-really-useful-but-their-implementation-is-a-mess/
   uniquely_mapped_reads <- nrow(scan_bam_df)
 
   res <- 0
@@ -47,10 +49,7 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
     res <- res + sum(ov)
   }
 
-
-  # print(paste("Age:", age, ". TE overlaps:", res))
-
-  res_df <- data.frame("dog_id" = dog_id, "Age" = age, "all_mapped_reads" = all_mapped_reads, "uniquely_mapped_reads" = uniquely_mapped_reads, "TE_mapped_reads" = res)
+  res_df <- data.frame("dog_id" = dog_id, "Age" = age, "uniquely_mapped_reads" = uniquely_mapped_reads, "TE_mapped_reads" = res)
 
   return(res_df)
 }

@@ -8,14 +8,17 @@
 #' @return check a bam file for reads overlapping ones of interest
 #' @export check_TEs_mapped
 
-check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_locations=te_oi_locations){
-  bf <- Rsamtools::BamFile(paste0("/scratch/vsohrab/dap_map_canfam4/nvidia_fq2bam_mapping/bams/", bam))
+check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_locations=te_oi_locations, path_to_bams = "/scratch/vsohrab/dap_map_canfam4/nvidia_fq2bam_mapping/bams/"){
+  bf <- Rsamtools::BamFile(paste0(path_to_bams, bam))
   dog_id <- gsub(".canfam4.bam","",bam)
   age <- DogOverview$Estimated_Age_Years_at_HLES[DogOverview$dog_id == dog_id]
 
-  fl <- paste0("/scratch/vsohrab/dap_map_canfam4/nvidia_fq2bam_mapping/bams/", bam)
+  fl <- paste0(path_to_bams, bam)
 
   ## filter to a single file
+  param <- ScanBamParam(
+    flag=scanBamFlag(isUnmappedQuery=FALSE),
+    what="seq")
   filter <- FilterRules(list(MinWidth = function(x) width(x$seq) > 35))
   dest <- filterBam(fl, tempfile(), param=param, filter=filter)
   res3 <- scanBam(dest, param=ScanBamParam(what=c("qname","rname","pos","qwidth","mapq")))[[1]]

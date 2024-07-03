@@ -46,7 +46,7 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
     rangesB <- IRanges::IRanges(scan_bam_df_oi$start, scan_bam_df_oi$stop)
 
     #which regionsB overlap w no regionA regions
-    ov <- GenomicRanges::countOverlaps(rangesA, rangesB, type = 'any')
+    ov <- GenomicRanges::countOverlaps(rangesA, rangesB, type = 'within')
 
     if (i == 1){
       te_oi_res <- cbind(te_oi_locations_oi, ov)

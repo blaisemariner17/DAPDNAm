@@ -46,13 +46,20 @@ TE_region_metaData_generation <- function(regions,
     rangesA <- IRanges::IRanges(start, end)
     rangesB <- IRanges::IRanges(transposons_annotation$start, transposons_annotation$end)
 
-    ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
+    ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="within")>0
     hit <- transposons_annotation[ov,]
+
+    if (nrow(hit) == 0){within_TE = 0} else {within_TE = 1}
+
     #expand the search of the region to assess if there is a nearby annotation in an effort to improve our region annotation
     if (nrow(hit) == 0){
-      rangesA <- IRanges::IRanges(start-expanded_search_if_nec, end+expanded_search_if_nec)
       ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
       hit <- transposons_annotation[ov,]
+      if (nrow(hit) == 0){
+        rangesA <- IRanges::IRanges(start-expanded_search_if_nec, end+expanded_search_if_nec)
+        ov <- GenomicRanges::countOverlaps(rangesB, rangesA, type="any")>0
+        hit <- transposons_annotation[ov,]
+      }
     }
 
     length_ = 0
@@ -100,6 +107,7 @@ TE_region_metaData_generation <- function(regions,
 
     if (i == 1){
       region_metaData <- data.frame("region" = region,
+                                    "within_TE" = within_TE,
                                     "DNA_transposon" = dna,
                                     "LTR" = ltr,
                                     "LINE" = line,
@@ -123,6 +131,7 @@ TE_region_metaData_generation <- function(regions,
       i = 2
     } else {
       region_metaData <- rbind(region_metaData, data.frame("region" = region,
+                                                           "within_TE" = within_TE,
                                                            "DNA_transposon"= dna,
                                                            "LTR" = ltr,
                                                            "LINE" = line,

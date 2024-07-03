@@ -21,10 +21,10 @@ region_metaData_generation <- function(regions,
 
   promoter_annotation_neg <- promoter_annotation[promoter_annotation$strand == "-",]
   promoter_annotation_neg$promoter_start <- promoter_annotation_neg$end
-  promoter_annotation_neg$promoter_end <- promoter_annotation_neg$end + 2500
+  promoter_annotation_neg$promoter_end <- promoter_annotation_neg$end + 2000
 
   promoter_annotation_pos <- promoter_annotation[promoter_annotation$strand == "+",]
-  promoter_annotation_pos$promoter_start <- promoter_annotation_pos$start - 2500
+  promoter_annotation_pos$promoter_start <- promoter_annotation_pos$start - 2000
   promoter_annotation_pos$promoter_end <- promoter_annotation_pos$start
 
   promoter_annotation <- rbind(promoter_annotation_pos, promoter_annotation_neg)

@@ -6,12 +6,12 @@
 #' @param numCore numer of cores
 #' @param RelatednessMatrix Relatedness Matrix
 #' @return BMM mixed-model result
-#' @export pqlseq
+#' @export pqlseq_MW
 #'
 
 ########################################################################################################################
 
-pqlseq <- function(RawCountDataSet, Phenotypes=NULL, Covariates=NULL, RelatednessMatrix=NULL, LibSize=NULL,
+pqlseq_MW <- function(RawCountDataSet, Phenotypes=NULL, Covariates=NULL, RelatednessMatrix=NULL, LibSize=NULL,
                    fit.model="PMM", fit.method = "AI.REML", fit.maxiter=500, fit.tol=1e-5, numCore=1,
                    filtering=TRUE, verbose=FALSE, ...) {
   # specify the number of cores we want to use

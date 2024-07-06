@@ -10,6 +10,9 @@ bam_sort=/scratch/nsnyderm/dap_rrbs/sort_bam/${sampleID}.sort.bam
 path_out=/scratch/bmarine2/Precision123-240506/QTL/sample_vcfs/${sampleID}.CGmap
 path_ref=/scratch/bmarine2/Precision123-240506/genome/UU_Cfam_GSD_1.0-Y/UU_Cfam_GSD_1.0_ROSY.fa
 
+#get the cgmaptools commands that youve added to the bash rc file
+source ~/.bashrc
+
 #convert the bams to cgmap format
 cgmaptools convert bam2cgmap -b $bam_sort -g $path_ref -o $path_out
 

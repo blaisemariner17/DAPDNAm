@@ -25,10 +25,16 @@ module load bcftools-1.10.2-gcc-12.1.0
 
 source activate snp_calling_env
 
+echo "snp calling start"
+
 bgzip -c $path_out.vcf > $path_out.vcf.gz
 tabix -p vcf $path_out.vcf.gz
+
+echo "2"
 bcftools view -f 'PASS,.' $path_out.vcf.gz --output-type z > $path_out.PASS.vcf.gz
 tabix -p vcf $path_out.PASS.vcf.gz
+
+echo "3"
 bcftools filter -i 'FORMAT/DP>4' $path_out.PASS.vcf.gz --output $path_out.PASS.DP5.vcf.gz --output-type z --regions-file /scratch/bmarine2/Triad_mapping/nvidia_fq2bam_mapping/vcfs_merged/DAP_Triad_and_Precision_240602.vcf.gz
 tabix -p vcf $path_out.PASS.DP5.vcf.gz
 

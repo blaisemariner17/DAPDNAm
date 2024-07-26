@@ -71,8 +71,8 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
 
       # if (odds_ratio$p.value[2,2] < 0.05) { color = "red"} else {color = "black"}
 
-      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 5), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
-                         "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
+      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 10), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 10),
+                         "lower" = round(log2(odds_ratio$measure[2,2]), digits = 10), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 10))
       if (i == 1){
         odds_ratio_results_hyper <- res_
         i = 2
@@ -111,8 +111,8 @@ odds_ratio_hyper_hypo_plot <- function(pqlseq_res,
       odds_ratio <- epitools::oddsratio(data_oi)
       #odds_ratio
 
-      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 2), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 5),
-                         "lower" = round(log2(odds_ratio$measure[2,2]), digits = 5), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 5))
+      res_ <- data.frame("class" = col, "pval" = round(odds_ratio$p.value[2,2], digits = 10), "odds_ratio_log2" = round(log2(odds_ratio$measure[2,1]), digits = 10),
+                         "lower" = round(log2(odds_ratio$measure[2,2]), digits = 10), "upper" = round(log2(odds_ratio$measure[2,3]), digits = 10))
       if (i == 1){
         odds_ratio_results_hypo <- res_
         i = 2

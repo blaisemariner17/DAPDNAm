@@ -132,6 +132,14 @@ format_for_image <- function(getSNPs){
     y2[rownames(y2) == snp_cpg,] <- allele2_meth_reads
   }
 
+  geno <- t(geno)
+  r <- t(r)
+  y <- t(y)
+  r1 <- t(r1)
+  r2 <- t(r2)
+  y1 <- t(y1)
+  y1 <- t(y2)
+  
   data_res <- list()
   data_res[['geno']] <- geno
   data_res[['r']] <- r
@@ -149,9 +157,9 @@ IMAGE_format_list <- parallel::mclapply(getSNPs_list,
 )
 
 save.image(file = "meQTL_filtering/merge_filter.RData")
+################################################################################################## chekcpoint
 
-load("meQTL_filtering/merge_filter.RData")
-rm(getSNPs_list)
+# load("meQTL_filtering/merge_filter.RData")
 
 IMAGE_format <- list()
 for (i in 1:length(IMAGE_format_list)){
@@ -163,20 +171,21 @@ for (i in 1:length(IMAGE_format_list)){
     IMAGE_format[['r2']] <- IMAGE_format_list[[i]][["r2"]]
     IMAGE_format[['y1']] <- IMAGE_format_list[[i]][["y1"]]
     IMAGE_format[['y2']] <- IMAGE_format_list[[i]][["y2"]]
+    next
   } else{
-    for(colname in colnames(IMAGE_format_list[[i]][["geno"]])){
-      if (! colname %in% colnames(IMAGE_format[['geno']])){
+    for(rowname in rownames(IMAGE_format_list[[i]][["geno"]])){
+      if (! rowname %in% rownames(IMAGE_format[['geno']])){
         for(name_ in names(IMAGE_format)){
-          IMAGE_format[[paste(name_)]][,paste(colname)] <- 0
-          IMAGE_format[[paste(name_)]] <- IMAGE_format[[paste(name_)]][,order(colnames(IMAGE_format[[paste(name_)]]))]
+          IMAGE_format[[paste(name_)]][paste(rowname),] <- 0
+          IMAGE_format[[paste(name_)]] <- IMAGE_format[[paste(name_)]][order(rownames(IMAGE_format[[paste(name_)]])),]
         }
       }
     }
-    for(colname in colnames(IMAGE_format[['geno']])){
-      if (! colname %in% colnames(IMAGE_format_list[[i]][["geno"]])){
+    for(rowname in rownames(IMAGE_format[['geno']])){
+      if (! rowname %in% rownames(IMAGE_format_list[[i]][["geno"]])){
         for(name_ in names(IMAGE_format)){
-          IMAGE_format_list[[i]][[paste(name_)]][,paste(colname)] <- 0
-          IMAGE_format_list[[i]][[paste(name_)]] <- IMAGE_format_list[[i]][[paste(name_)]][,order(colnames(IMAGE_format_list[[i]][[paste(name_)]]))]
+          IMAGE_format_list[[i]][[paste(name_)]][paste(rowname),] <- 0
+          IMAGE_format_list[[i]][[paste(name_)]] <- IMAGE_format_list[[i]][[paste(name_)]][order(rownames(IMAGE_format_list[[i]][[paste(name_)]])),]
         }
       }
     }
@@ -191,32 +200,43 @@ for (i in 1:length(IMAGE_format_list)){
   }
 }
 
-rm(IMAGE_format_list)
+save.image(file = "meQTL_filtering/merge_filter.RData")
+
+# load("meQTL_filtering/merge_filter.RData")
+
+# rm(IMAGE_format_list)
 
 IMAGE_format_data <- IMAGE_format[names(IMAGE_format) %in% c("r","y","r1", "r2","y1","y2")]
 genotypem<-IMAGE_format[["geno"]]
-rm(IMAGE_format)
+# rm(IMAGE_format)
 
 RelatednessMatrix <- readRDS(file = "../metadata_samples/240415-p123_GRM.rds")
 
-RelatednessMatrix <- RelatednessMatrix[rownames(RelatednessMatrix) %in% colnames(genotypem),colnames(RelatednessMatrix) %in% colnames(genotypem)]
+RelatednessMatrix <- RelatednessMatrix[rownames(RelatednessMatrix) %in% rownames(genotypem),rownames(RelatednessMatrix) %in% rownames(genotypem)]
+for(colname in rownames(genotypem)[!rownames(genotypem) %in% rownames(RelatednessMatrix)]){
+  N=nrow(RelatednessMatrix)
+  rownames_og <- rownames(RelatednessMatrix)
+  RelatednessMatrix<- cbind(RelatednessMatrix, rep(0,N))
+  RelatednessMatrix <- rbind(RelatednessMatrix,c(rep(0,N), 1))
+  rownames(RelatednessMatrix)<-c(rownames_og, paste(colname))
+  rownames(RelatednessMatrix)<-c(rownames_og, paste(colname))
+}
 RelatednessMatrix <- RelatednessMatrix[order(rownames(RelatednessMatrix)), order(colnames(RelatednessMatrix))]
 
-#get the geno into their shit format
-
+#get the geno into their format
 geno<-list()
-geno[[1]]<-matrix(0,ncol=nrow(genotypem),nrow=nrow(RelatednessMatrix))
-geno[[2]]<-matrix(0,ncol=nrow(genotypem),nrow=nrow(RelatednessMatrix))
-for(i in 1:nrow(genotypem)){
-  for(j in 1:nrow(RelatednessMatrix))
+geno[[1]]<-matrix(0,ncol=ncol(genotypem),nrow=nrow(genotypem))
+geno[[2]]<-matrix(0,ncol=ncol(genotypem),nrow=nrow(genotypem))
+for(i in 1:ncol(genotypem)){
+  for(j in 1:nrow(genotypem))
   {
-    if(is.na(genotypem[i,j]))
+    if(is.na(genotypem[j,i]))
     {
       geno[[2]][j,i]=0/0
       geno[[1]][j,i]=0/0
-    }else if(genotypem[i,j]==1){
+    }else if(genotypem[j,i]==1){
       geno[[2]][j,i]=1
-    }else if(genotypem[i,j]==2){
+    }else if(genotypem[j,i]==2){
       geno[[2]][j,i]=1
       geno[[1]][j,i]=1
     }
@@ -227,10 +247,12 @@ names(geno) <- c('hap1', 'hap2')
 # covariates_oi <- rbinom(nrow(geno), 1, 0.5)
 
 image_res <- IMAGE::image(geno = geno,
-                          data = IMAGE_format_data,
-                          K = RelatednessMatrix,
-                          verbose = T,
-                          # Covariates = covariates_oi,
-                          numCore=2)
+             data = IMAGE_format_data,
+             K = RelatednessMatrix,
+             verbose = T,
+             # Covariates = covariates_oi,
+             numCore=2)
 
 save.image("AFTER_IMAGE.RData")
+
+# load("AFTER_IMAGE.RData")

@@ -19,72 +19,73 @@ library(ggExtra)
 library(patchwork)
 library(IMAGE)
 
-compile_asms=F
-if (compile_asms){
-  i=1
-  for(file_oi in list.files("ASM/")){
-    print(file_oi)
-    asm_oi <- read.table(paste0("ASM/", file_oi), header = T)
-    asm_oi$lid_pid <- gsub(".CGmap.PASS.DP5.ASM","",file_oi)
-    if(i==1){asm<-asm_oi;i=2}else{asm<-rbind(asm,asm_oi)}
-  }
-  write.table(asm,"ALL_ASM.ASM")
-}
-
-
-chrs <- paste0("chr", c(1:38))
-
-getSNPs <- function(chr) {
-  print(chr)
-  NUMIDS <- length(list.files("ASM/"))
-
-  asm_all <- data.frame(read.table("ALL_ASM.ASM", header = T))
-
-  asm_chr <- asm_all[asm_all$Chr == chr,]
-  rm(asm_all)
-
-  #remove the cpgs that are in less than 10% of individuals (Fan et al., 2019)
-  asm_chr <- asm_chr[asm_chr$C_Pos %in% names(table(asm_chr$C_Pos)[table(asm_chr$C_Pos) > .1*NUMIDS]),]
-
-  #remove the snp cpg instances found with >5 total reads (Fan et al., 2019)
-  asm_chr$Allele1_reads <- as.numeric(gsub("-.*","", asm_chr$Allele1_linked_C)) + as.numeric(gsub(".*-","", asm_chr$Allele1_linked_C))
-  asm_chr$Allele2_reads <- as.numeric(gsub("-.*","", asm_chr$Allele2_linked_C)) + as.numeric(gsub(".*-","", asm_chr$Allele2_linked_C))
-  asm_chr$total_reads <- asm_chr$Allele1_reads + asm_chr$Allele2_reads
-  asm_chr <- asm_chr[asm_chr$total_reads >=5,]
-
-  #remove the perpetually methylated snp cpgs >90% or <10% (Fan et al., 2019)
-  asm_chr$Allele1_meth <- as.numeric(gsub("-.*","", asm_chr$Allele1_linked_C))
-  asm_chr$Allele2_meth <- as.numeric(gsub("-.*","", asm_chr$Allele2_linked_C))
-
-  asm_chr$Allele1_pmeth <- asm_chr$Allele1_meth / asm_chr$Allele1_reads
-  asm_chr$Allele2_pmeth <- asm_chr$Allele2_meth / asm_chr$Allele2_reads
-
-  asm_chr <- asm_chr[asm_chr$Allele1_pmeth < 0.9 | asm_chr$Allele1_pmeth > 0.1 | asm_chr$Allele2_pmeth < 0.9 | asm_chr$Allele2 > 0.1,]
-
-  # require at least 5% mean allele frequency up to here (Fan et al., 2019)
-  asm_chr <- asm_chr[asm_chr$SNP_Pos %in% names(table(asm_chr$SNP_Pos)[table(asm_chr$SNP_Pos) > .05*NUMIDS]),]
-
-  #label the geno of the snp
-  # and their "geno" variable is also infuriating but 0 means the reference allele matches both allele 1 and allele 2, 2 means neither match, and 1 means else....
-  asm_chr$geno <- 1
-  asm_chr$geno[asm_chr$Ref == asm_chr$Allele1 & asm_chr$Allele1 == asm_chr$Allele2] <- 0
-  asm_chr$geno[asm_chr$Ref != asm_chr$Allele1 & asm_chr$Allele1 != asm_chr$Allele2] <- 2
-
-  return(asm_chr)
-}
-
-getSNPs_list <- parallel::mclapply(chrs,
-                                   getSNPs,
-                                   mc.cores = 2
-                                   )
-
-save.image(file = "meQTL_filtering/merge_filter.RData")
-
-print("done getting SNPs")
+# compile_asms=F
+# if (compile_asms){
+#   i=1
+#   for(file_oi in list.files("ASM/")){
+#     print(file_oi)
+#     asm_oi <- read.table(paste0("ASM/", file_oi), header = T)
+#     asm_oi$lid_pid <- gsub(".CGmap.PASS.DP5.ASM","",file_oi)
+#     if(i==1){asm<-asm_oi;i=2}else{asm<-rbind(asm,asm_oi)}
+#   }
+#   write.table(asm,"ALL_ASM.ASM")
+# }
+# 
+# 
+# chrs <- paste0("chr", c(1:38))
+# 
+# getSNPs <- function(chr) {
+#   print(chr)
+#   NUMIDS <- length(list.files("ASM/"))
+# 
+#   asm_all <- data.frame(read.table("ALL_ASM.ASM", header = T))
+# 
+#   asm_chr <- asm_all[asm_all$Chr == chr,]
+#   rm(asm_all)
+# 
+#   #remove the cpgs that are in less than 10% of individuals (Fan et al., 2019)
+#   asm_chr <- asm_chr[asm_chr$C_Pos %in% names(table(asm_chr$C_Pos)[table(asm_chr$C_Pos) > .1*NUMIDS]),]
+# 
+#   #remove the snp cpg instances found with >5 total reads (Fan et al., 2019)
+#   asm_chr$Allele1_reads <- as.numeric(gsub("-.*","", asm_chr$Allele1_linked_C)) + as.numeric(gsub(".*-","", asm_chr$Allele1_linked_C))
+#   asm_chr$Allele2_reads <- as.numeric(gsub("-.*","", asm_chr$Allele2_linked_C)) + as.numeric(gsub(".*-","", asm_chr$Allele2_linked_C))
+#   asm_chr$total_reads <- asm_chr$Allele1_reads + asm_chr$Allele2_reads
+#   asm_chr <- asm_chr[asm_chr$total_reads >=5,]
+# 
+#   #remove the perpetually methylated snp cpgs >90% or <10% (Fan et al., 2019)
+#   asm_chr$Allele1_meth <- as.numeric(gsub("-.*","", asm_chr$Allele1_linked_C))
+#   asm_chr$Allele2_meth <- as.numeric(gsub("-.*","", asm_chr$Allele2_linked_C))
+# 
+#   asm_chr$Allele1_pmeth <- asm_chr$Allele1_meth / asm_chr$Allele1_reads
+#   asm_chr$Allele2_pmeth <- asm_chr$Allele2_meth / asm_chr$Allele2_reads
+# 
+#   asm_chr <- asm_chr[asm_chr$Allele1_pmeth < 0.9 | asm_chr$Allele1_pmeth > 0.1 | asm_chr$Allele2_pmeth < 0.9 | asm_chr$Allele2 > 0.1,]
+# 
+#   # require at least 5% mean allele frequency up to here (Fan et al., 2019)
+#   asm_chr <- asm_chr[asm_chr$SNP_Pos %in% names(table(asm_chr$SNP_Pos)[table(asm_chr$SNP_Pos) > .05*NUMIDS]),]
+# 
+#   #label the geno of the snp
+#   # and their "geno" variable is also infuriating but 0 means the reference allele matches both allele 1 and allele 2, 2 means neither match, and 1 means else....
+#   asm_chr$geno <- 1
+#   asm_chr$geno[asm_chr$Ref == asm_chr$Allele1 & asm_chr$Allele1 == asm_chr$Allele2] <- 0
+#   asm_chr$geno[asm_chr$Ref != asm_chr$Allele1 & asm_chr$Allele1 != asm_chr$Allele2] <- 2
+# 
+#   return(asm_chr)
+# }
+# 
+# getSNPs_list <- parallel::mclapply(chrs,
+#                                    getSNPs,
+#                                    mc.cores = 2
+#                                    )
+# 
+# save.image(file = "meQTL_filtering/merge_filter.RData")
+# 
+# print("done getting SNPs")
 
 ##########################      meqtl       ################################################3
 # we have to prepare the data because the above function gets everything done faster but now the data structure has to be corrected
 # note their garbage non-descriptive variables: r = read count, y = methylated count. 1 = allele 1 and 2 = allele 2. so y1 for example is the methylated count for allele 1
+load("meQTL_filtering/merge_filter.RData")
 
 format_for_image <- function(getSNPs){
   rownames(getSNPs) <- paste(getSNPs$Chr, getSNPs$SNP_Pos, getSNPs$C_Pos, getSNPs$lid_pid, sep='_')
@@ -138,7 +139,7 @@ format_for_image <- function(getSNPs){
   r1 <- t(r1)
   r2 <- t(r2)
   y1 <- t(y1)
-  y1 <- t(y2)
+  y2 <- t(y2)
   
   data_res <- list()
   data_res[['geno']] <- geno
@@ -159,7 +160,7 @@ IMAGE_format_list <- parallel::mclapply(getSNPs_list,
 save.image(file = "meQTL_filtering/merge_filter.RData")
 ################################################################################################## chekcpoint
 
-# load("meQTL_filtering/merge_filter.RData")
+load("meQTL_filtering/merge_filter.RData")
 
 IMAGE_format <- list()
 for (i in 1:length(IMAGE_format_list)){
@@ -171,32 +172,38 @@ for (i in 1:length(IMAGE_format_list)){
     IMAGE_format[['r2']] <- IMAGE_format_list[[i]][["r2"]]
     IMAGE_format[['y1']] <- IMAGE_format_list[[i]][["y1"]]
     IMAGE_format[['y2']] <- IMAGE_format_list[[i]][["y2"]]
-    next
+    
   } else{
-    for(rowname in rownames(IMAGE_format_list[[i]][["geno"]])){
-      if (! rowname %in% rownames(IMAGE_format[['geno']])){
-        for(name_ in names(IMAGE_format)){
-          IMAGE_format[[paste(name_)]][paste(rowname),] <- 0
-          IMAGE_format[[paste(name_)]] <- IMAGE_format[[paste(name_)]][order(rownames(IMAGE_format[[paste(name_)]])),]
+    unique_rownames <- unique(c(rownames(IMAGE_format_list[[i]][["r"]]),rownames(IMAGE_format[['r']]),rownames(IMAGE_format_list[[i]][["geno"]]),rownames(IMAGE_format[['geno']])))
+    for(rowname in unique_rownames){
+      for(name_ in names(IMAGE_format)){
+        if (! rowname %in% rownames(IMAGE_format[[paste(name_)]])){
+          og_rownames <- rownames(IMAGE_format[[paste(name_)]])
+          IMAGE_format[[paste(name_)]] <- rbind(IMAGE_format[[paste(name_)]], rep(0, ncol(IMAGE_format[[paste(name_)]])))
+          rownames(IMAGE_format[[paste(name_)]]) <- c(og_rownames, rowname)
         }
-      }
-    }
-    for(rowname in rownames(IMAGE_format[['geno']])){
-      if (! rowname %in% rownames(IMAGE_format_list[[i]][["geno"]])){
-        for(name_ in names(IMAGE_format)){
-          IMAGE_format_list[[i]][[paste(name_)]][paste(rowname),] <- 0
-          IMAGE_format_list[[i]][[paste(name_)]] <- IMAGE_format_list[[i]][[paste(name_)]][order(rownames(IMAGE_format_list[[i]][[paste(name_)]])),]
+        if (! rowname %in% rownames(IMAGE_format_list[[i]][[paste(name_)]])){
+          og_rownames <- rownames(IMAGE_format_list[[i]][[paste(name_)]])
+          IMAGE_format_list[[i]][[paste(name_)]] <- rbind(IMAGE_format_list[[i]][[paste(name_)]], rep(0, ncol(IMAGE_format_list[[i]][[paste(name_)]])))
+          rownames(IMAGE_format_list[[i]][[paste(name_)]]) <- c(og_rownames, rowname)
         }
       }
     }
 
-    IMAGE_format[['geno']] <- rbind(IMAGE_format[['geno']],IMAGE_format_list[[i]][["geno"]])
-    IMAGE_format[['r']] <- rbind(IMAGE_format[['r']],IMAGE_format_list[[i]][["r"]])
-    IMAGE_format[['y']] <- rbind(IMAGE_format[['y']],IMAGE_format_list[[i]][["y"]])
-    IMAGE_format[['r1']] <- rbind(IMAGE_format[['r1']],IMAGE_format_list[[i]][["r1"]])
-    IMAGE_format[['r2']] <- rbind(IMAGE_format[['r2']],IMAGE_format_list[[i]][["r2"]])
-    IMAGE_format[['y1']] <- rbind(IMAGE_format[['y1']],IMAGE_format_list[[i]][["y1"]])
-    IMAGE_format[['y2']] <- rbind(IMAGE_format[['y2']],IMAGE_format_list[[i]][["y2"]])
+    for(name_ in names(IMAGE_format)){
+      IMAGE_format[[paste(name_)]] <- IMAGE_format[[paste(name_)]][order(rownames(IMAGE_format[[paste(name_)]])),]
+      IMAGE_format_list[[i]][[paste(name_)]] <- IMAGE_format_list[[i]][[paste(name_)]][order(rownames(IMAGE_format_list[[i]][[paste(name_)]])),]
+    }
+    
+    if (i == 1){next}
+    
+    IMAGE_format[['geno']] <- cbind(IMAGE_format[['geno']],IMAGE_format_list[[i]][["geno"]])
+    IMAGE_format[['r']] <- cbind(IMAGE_format[['r']],IMAGE_format_list[[i]][["r"]])
+    IMAGE_format[['y']] <- cbind(IMAGE_format[['y']],IMAGE_format_list[[i]][["y"]])
+    IMAGE_format[['r1']] <- cbind(IMAGE_format[['r1']],IMAGE_format_list[[i]][["r1"]])
+    IMAGE_format[['r2']] <- cbind(IMAGE_format[['r2']],IMAGE_format_list[[i]][["r2"]])
+    IMAGE_format[['y1']] <- cbind(IMAGE_format[['y1']],IMAGE_format_list[[i]][["y1"]])
+    IMAGE_format[['y2']] <- cbind(IMAGE_format[['y2']],IMAGE_format_list[[i]][["y2"]])
   }
 }
 

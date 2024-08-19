@@ -73,7 +73,7 @@ build_clock <- function(alph,
   # Extract weights for this model
   weights <- unlist(coef(model, lambda = "lambda.min"))[, 1]
 
-  meta <- meta[meta$lid_pid %in% rownames(predicted),]
+  meta <- data.frame(meta[meta$lid_pid %in% rownames(predicted),])
 
   for (lid_pid in meta$lid_pid){
     meta$predicted[meta$lid_pid == lid_pid] <- predicted[rownames(predicted) == lid_pid,1]

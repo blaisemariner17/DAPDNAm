@@ -14,6 +14,8 @@ build_clock <- function(test_samples,
                         region_metaData,
                         perc_meth
                         ) {
+  test_samples <- order(test_samples)
+
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData
 
@@ -63,7 +65,7 @@ build_clock <- function(test_samples,
   # Predict age using the test sample from parameters that minimized MSE during internal CV
   predicted <- predict(model, newx = t(test), s = "lambda.min")
 
-  rownames(predicted) <- testing_samples
+  rownames(predicted) <- test_samples
 
   # Calculate mean squared error (MSE)
   mse <- mean((predicted - testage) ^ 2)

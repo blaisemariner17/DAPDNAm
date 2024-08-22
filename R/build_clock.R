@@ -14,7 +14,7 @@ build_clock <- function(test_samples,
                         region_metaData,
                         perc_meth
                         ) {
-  test_samples <- order(test_samples)
+  test_samples <- test_samples[order(test_samples)]
 
   # Read in meta info with known chronological ages/sex and technical variables.
   all_info <- metaData

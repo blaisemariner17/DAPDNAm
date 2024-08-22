@@ -79,16 +79,16 @@ build_clock <- function(test_samples,
     meta$predicted[meta$lid_pid == lid_pid] <- predicted[rownames(predicted) == lid_pid,1]
   }
 
-  region_metaData <- region_metaData[region_metaData$region %in% names(weights),]
-  weights <- weights[names(weights) %in% region_metaData$region]
+  region_metaData <- region_metaData[rownames(region_metaData) %in% names(weights),]
+  weights <- weights[names(weights) %in% rownames(region_metaData)]
 
-  region_metaData <- region_metaData[order(region_metaData$region),]
+  region_metaData <- region_metaData[order(rownames(region_metaData)),]
   weights <- weights[order(names(weights))]
 
-  if (all(names(weights) == region_metaData$region)){
+  if (all(names(weights) == rownames(region_metaData))){
     reg_meta <- cbind(weights, region_metaData)
   } else {
-    stop("regions used in clock do not match region_metaData$region")
+    stop("regions used in clock do not match rownames(region_metaData)")
   }
 
   return_ <- list()

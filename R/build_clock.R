@@ -14,27 +14,30 @@ build_clock <- function(test_samples,
                         region_metaData,
                         perc_meth
                         ) {
+
+
   test_samples <- test_samples[order(test_samples)]
-
-  # Read in meta info with known chronological ages/sex and technical variables.
-  all_info <- metaData
-
   lids <- colnames(perc_meth)
-  meta <- all_info[,c("lid_pid", "Age_at_sample","dog_id", "Cohort", "Breed_size", "Sex")]
-
   n_regions <- nrow(perc_meth)
 
+  if (!"Age_at_sample" %in% colnames(metaData)){stop("Your metaData is missing the Age_at_sample colname with the known age of your samples! Add that column and try again.")}
+
+  perc_meth <- perc_meth[,order(colnames(perc_meth))]
+  metaData <- metaData[order(rownames(metaData)),]
+
+  if (!all(colnames(perc_meth) == rownames(metaData))){stop("colnames of percent methylation matrix and rownames of metadata are not the same!")}
+
+  meta <- metaData
   # Convert the 'Age_at_sample' column to numeric
   meta$Age_at_sample <- as.numeric(meta$Age_at_sample)
 
-  # Read in data - This should be the imputed df you are working with
   epi <- perc_meth
 
   #filter epi for dogs you have meta data for
-  epi <- epi[, colnames(epi) %in% meta$lid_pid]
+  epi <- epi[, colnames(epi) %in% rownames(meta)]
 
   # Reorder the columns in 'epi' to match the order of 'meta$lid'
-  meta <- meta[order(meta$lid_pid),]
+  meta <- meta[order(rownames(meta)),]
   epi <- epi[,order(colnames(epi))]
 
   # Remove test subject(s)
@@ -45,7 +48,7 @@ build_clock <- function(test_samples,
   trainage <- meta$Age_at_sample[!rownames(meta) %in% test_samples]
   testage <- meta$Age_at_sample[rownames(meta) %in% test_samples]
   test_id <- meta$dog_id[rownames(meta) %in% test_samples]
-  test_lid <- meta$lid_pid[rownames(meta) %in% test_samples]
+  test_lid <- rownames(meta)[rownames(meta) %in% test_samples]
 
   #### Elastic-net model building ####
 
@@ -77,10 +80,10 @@ build_clock <- function(test_samples,
   # Extract weights for this model
   weights <- unlist(coef(model, lambda = "lambda.min"))[, 1]
 
-  meta <- data.frame(meta[meta$lid_pid %in% rownames(predicted),])
+  meta <- data.frame(meta[rownames(meta) %in% rownames(predicted),])
 
-  for (lid_pid in meta$lid_pid){
-    meta$predicted[meta$lid_pid == lid_pid] <- predicted[rownames(predicted) == lid_pid,1]
+  for (lid_pid in rownames(meta)){
+    meta$predicted[rownames(meta) == lid_pid] <- predicted[rownames(predicted) == lid_pid,1]
   }
 
   region_metaData <- region_metaData[rownames(region_metaData) %in% names(weights),]
@@ -89,11 +92,18 @@ build_clock <- function(test_samples,
   region_metaData <- region_metaData[order(rownames(region_metaData)),]
   weights <- weights[order(names(weights))]
 
-  if (all(names(weights) == rownames(region_metaData))){
-    reg_meta <- cbind(weights, region_metaData)
-  } else {
-    stop("regions used in clock do not match rownames(region_metaData)")
+  if (! is.null(region_metaData)){
+    if (all(names(weights) == rownames(region_metaData))){
+      reg_meta <- cbind(weights, region_metaData)
+    }else {
+      warning("Region metadata rows do not match the percent methylation matrix")
+      reg_meta <- weights
+    }
+  }else {
+    warning("Region metadata not provided")
+    reg_meta <- weights
   }
+
 
   return_ <- list()
   return_[["metaData"]] <- meta

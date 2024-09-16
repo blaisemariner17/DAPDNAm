@@ -1,4 +1,4 @@
-#'generate region metadata from regions of interest given provided annotation files
+#'check the reads that map to TEs in chromsomes of interest, and return the age and some metadata information for the dog
 #'
 #' @param bam bam filename
 #' @param path_to_bams directory path
@@ -40,6 +40,8 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
   for (chr in chrs){
     # print(chr)
     scan_bam_df_oi <- scan_bam_df[scan_bam_df$rname == paste(chr),]
+    if(chr == "chrX"){chrX_reads <- nrow(scan_bam_df_oi)}
+
     te_oi_locations_oi <- te_oi_locations[te_oi_locations$chr == paste(chr),]
 
     rangesA <- IRanges::IRanges(te_oi_locations_oi$start, te_oi_locations_oi$stop)
@@ -62,6 +64,7 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
   te_oi_res$Age <- age
   te_oi_res$mapped_reads <- mapped_reads
   te_oi_res$width <- te_oi_res$stop - te_oi_res$start
+  te_oi_res$chrX_reads <- chrX_reads
   te_oi_res$fpkm <- ((te_oi_res$ov) / (te_oi_res$width * te_oi_res$mapped_reads))*1e10
 
   return(te_oi_res)

@@ -27,6 +27,10 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
   #get rid of the PCR or optical duplicates
   scan_bam_df <- scan_bam_df[!scan_bam_df$flag %in% c(1171,1123,1187,1107,1161,1145,1185,1105,1097,1201,1121,1169,1137,1089,1153,1209),]
 
+  mapped_reads <- nrow(scan_bam_df[scan_bam_df$rname %in%
+                                     c(paste0("chr", c(1:38,"X")))
+                                     ,])
+
   scan_bam_df <- scan_bam_df[scan_bam_df$rname %in% chrs,]
   scan_bam_df <- scan_bam_df[! is.na(scan_bam_df$pos),]
   scan_bam_df$start <- scan_bam_df$pos

@@ -38,7 +38,6 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
 
   # all_mapped_reads <- nrow(scan_bam_df)
   scan_bam_df<-scan_bam_df[scan_bam_df$mapq >= 1,] # limit the read multimapping a little bit https://sequencing.qcfail.com/articles/mapq-values-are-really-useful-but-their-implementation-is-a-mess/
-  mapped_reads <- nrow(scan_bam_df)
 
   i = 1
   for (chr in chrs){

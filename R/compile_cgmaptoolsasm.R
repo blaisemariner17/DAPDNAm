@@ -1,3 +1,4 @@
+#'compile the cgmaptools asm files
 #'
 #' @param chr chromosome oi (e.g., 'chr1')
 #' @param path path to asm files

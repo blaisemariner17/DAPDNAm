@@ -1,3 +1,4 @@
+#'formatting for image
 #'
 #' @param asm_res_oi the .asm file that you'd like to filter
 #' @return returns the snp cpg combinations with allele-specific methylation

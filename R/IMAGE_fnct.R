@@ -1,13 +1,14 @@
+#' running image
 #'
 #' @param format_for_image_chr the image formatted data
+#' @param Kin kinship matrix
 #' @return returns image results
 #' @export IMAGE_fnct
 
-IMAGE_fnct <- function(format_for_image_chr){
+IMAGE_fnct <- function(format_for_image_chr, Kin = Kin <- readRDS("../BASELINE-PRECISION-240820/metaData_samples/240821-baseline_GRM.rds")){
   genotype <- format_for_image_chr[["geno"]]
   lid_pids <- format_for_image_chr[['lid_pids']]
 
-  Kin <- readRDS("../BASELINE-PRECISION-240820/metaData_samples/240821-baseline_GRM.rds")
   Kin <- Kin[rownames(Kin) %in% lid_pids, colnames(Kin) %in% lid_pids]
 
   geno<-list()

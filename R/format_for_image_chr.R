@@ -1,3 +1,4 @@
+#'formatting for image by chr
 #'
 #' @param asm_chr the .asm file that you'd like to filter
 #' @return returns the image formated requirements

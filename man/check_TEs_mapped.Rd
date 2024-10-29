@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_TEs_mapped.R
 \name{check_TEs_mapped}
 \alias{check_TEs_mapped}
-\title{generate region metadata from regions of interest given provided annotation files}
+\title{check the reads that map to TEs in chromsomes of interest, and return the age and some metadata information for the dog}
 \usage{
 check_TEs_mapped(
   bam,
@@ -27,5 +27,5 @@ check_TEs_mapped(
 check a bam file for reads overlapping ones of interest
 }
 \description{
-generate region metadata from regions of interest given provided annotation files
+check the reads that map to TEs in chromsomes of interest, and return the age and some metadata information for the dog
 }

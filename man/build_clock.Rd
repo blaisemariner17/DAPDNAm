@@ -5,15 +5,17 @@
 \title{generate region metadata from regions of interest given provided annotation files}
 \usage{
 build_clock(
-  alph,
+  test_samples,
+  alph = 0.5,
   metaData,
   region_metaData,
   perc_meth,
-  test_samples = colnames(perc_meth)[colnames(perc_meth) \%in\%
-    metaData$lid_pid[metaData$Cohort != "precision_1"]]
+  standardize = FALSE
 )
 }
 \arguments{
+\item{test_samples}{test samples for elastic net}
+
 \item{alph}{alpha to use for glmnet}
 
 \item{metaData}{sample metaData}
@@ -21,8 +23,6 @@ build_clock(
 \item{region_metaData}{region metaData}
 
 \item{perc_meth}{imputed percent methylation matrix}
-
-\item{test_samples}{test samples for elastic net}
 }
 \value{
 Function returns a list of predicted age as a column to the input metaData, region weights as a column to the input region_metaData, and clock results as a list

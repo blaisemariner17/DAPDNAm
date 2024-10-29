@@ -5,7 +5,7 @@
 #' @return returns the compiled asm files for the chromosome of interest
 #' @export compile_cgmaptoolsasm
 
-compile_cgmaptoolsasm <- function(chr, path = "/scratch/bmarine2/meQTL-241004/traditional_asm_processing") {
+compile_cgmaptoolsasm <- function(chr, path = "/scratch/bmarine2/meQTL-241004/traditional_asm_processing/") {
   print(chr)
   NUMIDS <- length(list.files(paste(path), pattern = paste0(chr, ".asm")))
 

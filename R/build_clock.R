@@ -12,7 +12,8 @@ build_clock <- function(test_samples,
                         alph = 0.5,
                         metaData,
                         region_metaData,
-                        perc_meth
+                        perc_meth,
+                        standardize = FALSE
                         ) {
 
 
@@ -63,7 +64,7 @@ build_clock <- function(test_samples,
   }
 
   ## Transpose the train matrix to be samples x features
-  model <- glmnet::cv.glmnet(t(train), trainage, nfolds = 10, alpha = alph, standardize = FALSE)
+  model <- glmnet::cv.glmnet(t(train), trainage, nfolds = 10, alpha = alph, standardize = standardize)
 
   # Predict age using the test sample from parameters that minimized MSE during internal CV
   predicted <- predict(model, newx = t(test), s = "lambda.min")

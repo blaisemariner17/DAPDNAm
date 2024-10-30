@@ -6,7 +6,7 @@
 \usage{
 compile_cgmaptoolsasm(
   chr,
-  path = "/scratch/bmarine2/meQTL-241004/traditional_asm_processing"
+  path = "/scratch/bmarine2/meQTL-241004/traditional_asm_processing/"
 )
 }
 \arguments{

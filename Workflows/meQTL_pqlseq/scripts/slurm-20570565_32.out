@@ -1,0 +1,86 @@
+
+=====================================================================
+This module is intended solely for building or source activating user
+python environments, i.e.,
+
+    mamba create -n myenv -c conda-forge
+
+or
+
+    source activate myenv
+
+To list available environments, run:
+
+    mamba info --envs
+
+See our docs: https://links.asu.edu/solpy
+
+Any other use is NOT TESTED.
+=====================================================================
+
+  
+
+=====================================================================
+plink 1.90 BETA
+=====================================================================
+
+To use this module use the command "plink"
+
+  
+chr32
+Output directory is /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out
+Generate a XX kb window around each methylation site
+Get the vcf file from the imputed vcf
+Filter VCF for SNPs within 50kb of CpG regions
+***** WARNING: File /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/methylation_regions_chr32.bed has inconsistent naming convention for record:
+116310 95021 85665 24271 59537 96724 5057 8936 87278 63317 69899 60812 38367 81279 117552 63076 87852 85199 44305 47918 111642 84391 21970 3091 68856 112120 110915 49565 76780 79839 81276 99570 100703 112167 18803 109569 58474 99243 72740 116630 113431 76628 107147 81582 69487 108244 41125 55684 51329 107114 106181 79124 69942 13877 85517 108032 83318 98794 95604 108954 79351 112828 102310 79841 69239 57719 56728 79817 45500 4352 64685 85251 73745 69498 9114 90261 99704 98697 29084 100033 82567 8675 78481 67244 71683 85296 85057 85798 19422 52033 45918 77668 45473 79014 86795 99565 65385 75945 85064 98976 29058 52581 36879 47979 39075 9780 86415 85082 82722 98959 59573 99805 58787 63553 95322 24899 14042 81771 100242 63034 74429 78597 17854 68086 67089 70694 83123 73237 68409 80099 84008 90802 94033 59058 76704 95982 111614 111747 28063 613 75482 76254 72599 113686 55082 80300 110564 95810 95190 62476 110540 120116 118204 44899 57669 49838 84002 69452 76876 95897 109412 113940 52384 17037 112861 96381 89155 
+
+***** WARNING: File /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/methylation_regions_chr32.bed has inconsistent naming convention for record:
+116310 95021 85665 24271 59537 96724 5057 8936 87278 63317 69899 60812 38367 81279 117552 63076 87852 85199 44305 47918 111642 84391 21970 3091 68856 112120 110915 49565 76780 79839 81276 99570 100703 112167 18803 109569 58474 99243 72740 116630 113431 76628 107147 81582 69487 108244 41125 55684 51329 107114 106181 79124 69942 13877 85517 108032 83318 98794 95604 108954 79351 112828 102310 79841 69239 57719 56728 79817 45500 4352 64685 85251 73745 69498 9114 90261 99704 98697 29084 100033 82567 8675 78481 67244 71683 85296 85057 85798 19422 52033 45918 77668 45473 79014 86795 99565 65385 75945 85064 98976 29058 52581 36879 47979 39075 9780 86415 85082 82722 98959 59573 99805 58787 63553 95322 24899 14042 81771 100242 63034 74429 78597 17854 68086 67089 70694 83123 73237 68409 80099 84008 90802 94033 59058 76704 95982 111614 111747 28063 613 75482 76254 72599 113686 55082 80300 110564 95810 95190 62476 110540 120116 118204 44899 57669 49838 84002 69452 76876 95897 109412 113940 52384 17037 112861 96381 89155 
+
+Convert the filtered VCF to PLINK format
+PLINK v1.90b7 64-bit (16 Jan 2023)             www.cog-genomics.org/plink/1.9/
+(C) 2005-2023 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32.log.
+Options in effect:
+  --allow-extra-chr
+  --chr-set 38
+  --geno 0
+  --ld-window-kb 70
+  --ld-window-r2 0.2
+  --maf 0.1
+  --make-bed
+  --out /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32
+  --r2
+  --snps-only
+  --vcf /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_chr32_header.vcf
+
+515558 MB RAM detected; reserving 257779 MB for main workspace.
+--vcf: 1k variants complete.--vcf: 2k variants complete.--vcf: 3k variants complete.--vcf: 4k variants complete.--vcf: 5k variants complete.--vcf: 6k variants complete.--vcf: 7k variants complete.--vcf: 8k variants complete.--vcf: 9k variants complete.--vcf: 10k variants complete.--vcf: 11k variants complete.--vcf: 12k variants complete.--vcf: 13k variants complete.--vcf: 14k variants complete.--vcf: 15k variants complete.--vcf: 16k variants complete.--vcf: 17k variants complete.--vcf: 18k variants complete.--vcf: 19k variants complete.--vcf: 20k variants complete.--vcf: 21k variants complete.--vcf: 22k variants complete.--vcf: 23k variants complete.--vcf: 24k variants complete.--vcf: 25k variants complete.--vcf: 26k variants complete.--vcf: 27k variants complete.--vcf: 28k variants complete.--vcf: 29k variants complete.--vcf: 30k variants complete.--vcf: 31k variants complete.--vcf: 32k variants complete.--vcf:
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32-temporary.bed
++
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32-temporary.bim
++
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32-temporary.fam
+written.
+32119 variants loaded from .bim file.
+863 samples (0 males, 0 females, 863 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32.nosex .
+Using up to 4 threads (change this with --threads).
+Before main variant filters, 863 founders and 0 nonfounders present.
+Calculating allele frequencies... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+Total genotyping rate is exactly 1.
+0 variants removed due to missing genotype data (--geno).
+25621 variants removed due to minor allele threshold(s)
+(--maf/--max-maf/--mac/--max-mac).
+6498 variants and 863 samples pass filters and QC.
+Note: No phenotypes present.
+--make-bed to
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32.bed +
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32.bim +
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32.fam ...
+0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99%done.
+--r2 to
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr32.ld ...
+0% [processing]writing]             done.

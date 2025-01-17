@@ -1,0 +1,80 @@
+
+=====================================================================
+This module is intended solely for building or source activating user
+python environments, i.e.,
+
+    mamba create -n myenv -c conda-forge
+
+or
+
+    source activate myenv
+
+To list available environments, run:
+
+    mamba info --envs
+
+See our docs: https://links.asu.edu/solpy
+
+Any other use is NOT TESTED.
+=====================================================================
+
+  
+
+=====================================================================
+plink 1.90 BETA
+=====================================================================
+
+To use this module use the command "plink"
+
+  
+chr33
+Output directory is /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out
+Generate a XX kb window around each methylation site
+Get the vcf file from the imputed vcf
+Filter VCF for SNPs within 50kb of CpG regions
+Convert the filtered VCF to PLINK format
+PLINK v1.90b7 64-bit (16 Jan 2023)             www.cog-genomics.org/plink/1.9/
+(C) 2005-2023 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33.log.
+Options in effect:
+  --allow-extra-chr
+  --chr-set 38
+  --geno 0
+  --ld-window-kb 70
+  --ld-window-r2 0.2
+  --maf 0.1
+  --make-bed
+  --out /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33
+  --r2
+  --snps-only
+  --vcf /scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_chr33_header.vcf
+
+1031525 MB RAM detected; reserving 515762 MB for main workspace.
+--vcf: 1k variants complete.--vcf: 2k variants complete.--vcf: 3k variants complete.--vcf: 4k variants complete.--vcf: 5k variants complete.--vcf: 6k variants complete.--vcf: 7k variants complete.--vcf: 8k variants complete.--vcf: 9k variants complete.--vcf: 10k variants complete.--vcf: 11k variants complete.--vcf: 12k variants complete.--vcf: 13k variants complete.--vcf: 14k variants complete.--vcf: 15k variants complete.--vcf: 16k variants complete.--vcf: 17k variants complete.--vcf: 18k variants complete.--vcf: 19k variants complete.--vcf: 20k variants complete.--vcf: 21k variants complete.--vcf: 22k variants complete.--vcf: 23k variants complete.--vcf: 24k variants complete.--vcf: 25k variants complete.--vcf: 26k variants complete.--vcf: 27k variants complete.--vcf: 28k variants complete.--vcf: 29k variants complete.--vcf: 30k variants complete.--vcf: 31k variants complete.--vcf: 32k variants complete.--vcf: 33k variants complete.--vcf: 34k variants complete.--vcf: 35k variants complete.--vcf: 36k variants complete.--vcf: 37k variants complete.--vcf: 38k variants complete.--vcf: 39k variants complete.--vcf: 40k variants complete.--vcf: 41k variants complete.--vcf: 42k variants complete.--vcf: 43k variants complete.--vcf: 44k variants complete.--vcf: 45k variants complete.--vcf: 46k variants complete.--vcf: 47k variants complete.--vcf: 48k variants complete.--vcf: 49k variants complete.--vcf: 50k variants complete.--vcf: 51k variants complete.--vcf: 52k variants complete.--vcf: 53k variants complete.--vcf: 54k variants complete.--vcf: 55k variants complete.--vcf: 56k variants complete.--vcf: 57k variants complete.--vcf: 58k variants complete.--vcf: 59k variants complete.--vcf: 60k variants complete.--vcf: 61k variants complete.--vcf: 62k variants complete.--vcf: 63k variants complete.--vcf: 64k variants complete.--vcf: 65k variants complete.--vcf: 66k variants complete.--vcf: 67k variants complete.--vcf: 68k variants complete.--vcf: 69k variants complete.--vcf: 70k variants complete.--vcf: 71k variants complete.--vcf: 72k variants complete.--vcf:
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33-temporary.bed
++
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33-temporary.bim
++
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33-temporary.fam
+written.
+72722 variants loaded from .bim file.
+863 samples (0 males, 0 females, 863 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33.nosex .
+Using up to 4 threads (change this with --threads).
+Before main variant filters, 863 founders and 0 nonfounders present.
+Calculating allele frequencies... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+Total genotyping rate is exactly 1.
+0 variants removed due to missing genotype data (--geno).
+58206 variants removed due to minor allele threshold(s)
+(--maf/--max-maf/--mac/--max-mac).
+14516 variants and 863 samples pass filters and QC.
+Note: No phenotypes present.
+--make-bed to
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33.bed +
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33.bim +
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33.fam ...
+0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99%done.
+--r2 to
+/scratch/bmarine2/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr33.ld ...
+0% [processing]writing]             done.

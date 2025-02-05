@@ -61,6 +61,7 @@ read_in_plink_path <- function(chr
     test <- cbind(plink_in, plink_in2)
     plink_in <- test
     rm(test)
-    return(plink_in)
+
   }
+  return(plink_in)
 }

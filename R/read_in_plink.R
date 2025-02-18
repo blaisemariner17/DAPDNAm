@@ -6,7 +6,7 @@
 
 read_in_plink_path <- function(chr
 ) {
-  plink_data <- genio::read_plink(paste0("/scratch/bmarine2/dap_rrbs/1_meQTL/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr",chr,".bed"))
+  plink_data <- genio::read_plink(paste0("/scratch/bmarine2/dap_rrbs/1_meQTL/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_chr",chr,"_pruned.bed"))
   plink_in <- plink_data$X
   snp_bims <- data.frame(plink_data$bim)
   snp_bims$chr_snp <- paste0(chr, "_", snp_bims$pos)
@@ -29,7 +29,7 @@ read_in_plink_path <- function(chr
   if(chr=="X"){
     plink_in<- plink_in[rownames(plink_in) %in% metaData$dog_id,]
 
-    plink_data <- genio::read_plink(paste0("/scratch/bmarine2/dap_rrbs/1_meQTL/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_notPAR_chrX.bed"))
+    plink_data <- genio::read_plink(paste0("/scratch/bmarine2/dap_rrbs/1_meQTL/meQTL-241101-GEMMA/gemma_out/filtered_genotypes_notPAR_chrX_pruned.bed"))
     plink_in2 <- plink_data$X
     snp_bims <- data.frame(plink_data$bim)
     snp_bims$chr_snp <- paste0(chr, "_", snp_bims$pos)

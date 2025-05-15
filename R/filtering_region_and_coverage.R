@@ -23,7 +23,7 @@ filtering_region_and_coverage <- function(dap_chr_oi,
                                           regions_manual_input = NULL){
 
   if (is.null(regions_manual_input)){
-    p1_metaData <- metaData[metaData$use_for_regions == "yes",]
+    p1_metaData <- metaData[metaData$first_rrbs == "yes" & grepl("precision", metaData$Cohort),]
     #get the regions
     dap_chr_oi_p1 <- dap_chr_oi[,colnames(dap_chr_oi) %in% p1_metaData$lid_pid]
     regions <- bsseq:::regionFinder3(x = as.integer(rep(1,

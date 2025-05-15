@@ -25,7 +25,7 @@ filtering_region_and_coverage <- function(dap_chr_oi,
   if (is.null(regions_manual_input)){
     p1_metaData <- metaData[metaData$first_rrbs == "yes" & grepl("precision", metaData$Cohort),]
     #get the regions
-    dap_chr_oi_p1 <- dap_chr_oi[,colnames(dap_chr_oi) %in% p1_metaData$lid_pid]
+    dap_chr_oi_p1 <- dap_chr_oi[,sampleNames(dap_chr_oi) %in% p1_metaData$lid_pid]
     regions <- bsseq:::regionFinder3(x = as.integer(rep(1,
                                                         length(dap_chr_oi_p1))),
                                      chr = as.character(GenomeInfoDb::seqnames(dap_chr_oi_p1)),

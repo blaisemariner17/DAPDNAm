@@ -17,8 +17,10 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
 
   ## filter to a single file
   param <- Rsamtools::ScanBamParam(
-    flag=scanBamFlag(isUnmappedQuery=FALSE),
-    what="seq")
+  flag = scanBamFlag(isUnmappedQuery = FALSE, isDuplicate = FALSE),  # Explicitly remove duplicates
+  what = c("seq", "mapq")
+)
+scan_bam_df <- scan_bam_df[scan_bam_df$mapq >= 20, ]  # Stricter MapQ filter
   filter <- FilterRules(list(MinWidth = function(x) width(x$seq) > 35))
   dest <- Rsamtools::filterBam(fl, tempfile(), param=param, filter=filter)
   res3 <- Rsamtools::scanBam(dest, param=ScanBamParam(what=c("flag", "qname","rname","pos","qwidth","mapq")))[[1]]
@@ -51,7 +53,7 @@ check_TEs_mapped <- function(bam, DogOverview=DogOverview, chrs=chrs, te_oi_loca
     rangesB <- IRanges::IRanges(scan_bam_df_oi$start, scan_bam_df_oi$stop)
 
     #which regionsB overlap w no regionA regions
-    ov <- GenomicRanges::countOverlaps(rangesA, rangesB, type = 'within')
+    ov <- GenomicRanges::countOverlaps(rangesA, rangesB, type = 'any')
 
     if (i == 1){
       te_oi_res <- cbind(te_oi_locations_oi, ov)
